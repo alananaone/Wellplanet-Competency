@@ -1,0 +1,3501 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>好好星球文化基金會 360 年中成長評估系統</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- PapaParse for client-side CSV parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- ExcelJS for full color/style Excel generation in browser -->
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+  <!-- FileSaver for reliable browser download -->
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
+    
+    :root {
+      --bg-page: #FAF7F2;
+      --bg-card: #FFFDF9;
+      --bg-box: #F9F6EE;
+      --color-primary: #557A61;
+      --color-blush: #F4CCCC;
+      --color-apricot: #FCE5CD;
+      --color-border: #E8E2D8;
+      --color-text-main: #2E2827;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-page);
+      color: var(--color-text-main);
+      letter-spacing: -0.01em;
+      line-height: 1.75;
+    }
+
+    .font-serif-tc { font-family: 'Noto Serif TC', serif; }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #D9D2C9; border-radius: 4px; }
+
+    .badge-stable { background-color: #E4ECD3; color: #2D5239; border: 1px solid #CDE0BC; }
+    .badge-practice { background-color: #FCE5CD; color: #783E16; border: 1px solid #F5D3B3; }
+    .badge-missing { background-color: #FFF2D6; color: #B45309; border: 1px solid #FCE299; }
+    .badge-best { background-color: #E4ECD3; color: #2D5239; border: 1px solid #CDE0BC; }
+    .badge-worst { background-color: #FCE5CD; color: #8C4B1E; border: 1px solid #F5D3B3; }
+
+    .chunk-header-banner { background-color: var(--color-blush); color: #3E2426; border-bottom: 1px solid #E6BDBD; }
+    .chunk-subheader-banner { background-color: var(--color-apricot); color: #4A2E1C; border-bottom: 1px solid #EED1B4; }
+    .soft-card-shadow { box-shadow: 0 4px 20px -2px rgba(120, 100, 80, 0.06), 0 2px 6px -1px rgba(120, 100, 80, 0.04); }
+
+    .screen-only-view { display: block; }
+    .print-only-doc { display: none; }
+
+    @media print {
+      @page { size: A4 portrait; margin: 14mm 16mm 14mm 16mm; }
+      body { background-color: #FFFFFF !important; color: #111111 !important; font-size: 9.5pt; line-height: 1.5; font-family: 'Times New Roman', 'Noto Serif TC', '微軟正黑體', serif !important; }
+      header, #dropZone, nav, #toast, .no-print, button, .tab-btn, footer, .screen-only-view { display: none !important; }
+      .print-only-doc { display: block !important; }
+      main { padding: 0 !important; max-width: 100% !important; margin: 0 !important; }
+      .tab-content { display: block !important; }
+      .tab-content.hidden { display: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-shadow: none !important; border-radius: 0 !important; }
+      .word-doc-table { width: 100% !important; border-collapse: collapse !important; margin-top: 8px !important; margin-bottom: 14px !important; font-size: 9pt !important; }
+      .word-doc-table th, .word-doc-table td { border: 1px solid #555555 !important; padding: 5px 8px !important; vertical-align: middle !important; line-height: 1.4 !important; }
+      .word-doc-table th { background-color: #F2EFE9 !important; color: #2E2827 !important; font-weight: bold !important; text-align: center !important; }
+      .print-avoid-break, .word-doc-section, .word-feedback-block { break-inside: avoid !important; page-break-inside: avoid !important; }
+      .word-sec-title { font-size: 11pt !important; font-weight: bold !important; color: #2E2827 !important; background-color: #EAE6DF !important; padding: 4px 8px !important; border-left: 4px solid #557A61 !important; margin-top: 16px !important; margin-bottom: 8px !important; }
+      .word-doc-divider { border-top: 2px solid #557A61 !important; border-bottom: 1px solid #557A61 !important; height: 3px !important; margin: 10px 0 14px 0 !important; }
+      .print-footer { display: block !important; text-align: center; font-size: 8pt; color: #777777; margin-top: 20px; border-top: 1px solid #CCCCCC; padding-top: 6px; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- TOP HEADER (NO-PRINT) -->
+  <header class="bg-[#FFFDF9]/95 backdrop-blur-md border-b border-[#E8E2D8] sticky top-0 z-50 shadow-xs no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-18 gap-4">
+        <!-- BRAND -->
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-2xl bg-[#557A61] flex items-center justify-center text-white font-bold shadow-xs text-sm tracking-wider font-serif-tc">
+            360
+          </div>
+          <div>
+            <div class="flex items-center gap-2.5">
+              <h1 class="text-base sm:text-lg font-bold text-[#2E2827] leading-tight font-serif-tc">好好星球文化基金會 360 年中成長評估</h1>
+              <span class="px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#FCE5CD] text-[#783E16] border border-[#F3D1B0]">
+                2026 年中版
+              </span>
+            </div>
+            <p class="text-xs text-[#7A726D] mt-0.5">組織架構與職稱已更新 ｜ 支援自評 vs 主管評比對與 Excel 雙向載入</p>
+          </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="flex items-center gap-3">
+          <button onclick="window.print()" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#2E2827] hover:bg-[#EBE4D8] transition border border-[#E0D7CA]">
+            <i data-lucide="printer" class="w-4 h-4 text-[#557A61]"></i>
+            <span class="hidden sm:inline">列印 / 存為 PDF (Cmd+P)</span>
+            <span class="sm:hidden">列印 PDF</span>
+          </button>
+
+          <label class="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] hover:text-[#2E2827] transition border border-[#E0D7CA]">
+            <i data-lucide="upload" class="w-4 h-4 text-[#557A61]"></i>
+            <span class="hidden sm:inline">上傳最新 CSV / 主管評定</span>
+            <span class="sm:hidden">上傳</span>
+            <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="handleFileUpload(event)">
+          </label>
+
+          <div class="relative inline-block text-left" id="exportDropdown">
+            <button onclick="toggleDropdown()" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span class="hidden sm:inline">下載各類全彩 Excel 報表</span>
+              <span class="sm:hidden">下載 Excel</span>
+              <i data-lucide="chevron-down" class="w-4 h-4 opacity-80"></i>
+            </button>
+            
+            <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-92 origin-top-right rounded-2xl bg-[#FFFDF9] p-3 shadow-2xl ring-1 ring-black/5 z-50 divide-y divide-[#EFEAE1] border border-[#E8E2D8]">
+              <div class="py-2">
+                <div class="px-3 py-1 text-[11px] font-bold text-[#8C837C] uppercase tracking-wider">
+                  自評 vs 主管評對照包 (含認知差異與 L1~L5)
+                </div>
+                <button onclick="exportSupervisorTeamSubordinatesComprehensiveExcelClientSide('張希慈')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#E4ECD3]/40 rounded-xl transition">
+                  <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="git-compare" class="w-4 h-4"></i></div>
+                  <div>
+                    <div class="font-bold text-[#2E2827]">【張希慈】部屬自評 vs 主管評對照包</div>
+                    <div class="text-[11px] text-[#7A726D]">何維安、陳泳璇、張芳媐、姚品瑄、胡喻翔</div>
+                  </div>
+                </button>
+                <button onclick="exportSupervisorTeamSubordinatesComprehensiveExcelClientSide('何維安')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#E4ECD3]/40 rounded-xl transition">
+                  <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="git-compare" class="w-4 h-4"></i></div>
+                  <div>
+                    <div class="font-bold text-[#2E2827]">【何維安】部屬自評 vs 主管評對照包</div>
+                    <div class="text-[11px] text-[#7A726D]">林文琇（美感設計師）</div>
+                  </div>
+                </button>
+                <button onclick="exportSupervisorTeamSubordinatesComprehensiveExcelClientSide('姚品瑄')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#E4ECD3]/40 rounded-xl transition">
+                  <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="git-compare" class="w-4 h-4"></i></div>
+                  <div>
+                    <div class="font-bold text-[#2E2827]">【姚品瑄】部屬自評 vs 主管評對照包</div>
+                    <div class="text-[11px] text-[#7A726D]">薛筑瑄、戴佑珍（專案經理）</div>
+                  </div>
+                </button>
+              </div>
+
+              <div class="py-2">
+                <button onclick="exportFullWorkbookClientSide()" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm font-bold text-[#557A61] hover:bg-[#E4ECD3]/40 rounded-xl transition">
+                  <div class="p-2 bg-[#557A61] text-white rounded-xl"><i data-lucide="layers" class="w-4 h-4"></i></div>
+                  <div>
+                    <div>下載全組織 Master Excel (16 Sheets 完整整合)</div>
+                    <div class="text-[11px] text-[#557A61] font-normal">包含所有自評、主管評、同儕匿名表</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN TABS (NO-PRINT) -->
+      <nav class="flex space-x-2 border-t border-[#E8E2D8] pt-2.5 -mb-px overflow-x-auto custom-scrollbar no-print">
+        <button onclick="switchTab('subReview')" id="tab-btn-subReview" class="tab-btn inline-flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-semibold rounded-t-xl border-b-2 border-[#557A61] text-[#2D5239] bg-[#E4ECD3]/30 shrink-0 transition">
+          <i data-lucide="git-compare" class="w-4 h-4 text-[#557A61]"></i>
+          自評 vs 主管評對照（主管填核）
+          <span class="px-2 py-0.5 text-xs rounded-full bg-[#E4ECD3] text-[#2D5239] font-bold">核心對照</span>
+        </button>
+        <button onclick="switchTab('supervisor')" id="tab-btn-supervisor" class="tab-btn inline-flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-medium rounded-t-xl border-b-2 border-transparent text-[#6E6662] hover:text-[#2E2827] hover:bg-[#F2EEE6]/50 shrink-0 transition">
+          <i data-lucide="award" class="w-4 h-4"></i>
+          評主管（部屬回饋與統計）
+          <span class="px-2 py-0.5 text-xs rounded-full bg-[#F2EEE6] text-[#6E6662] font-bold" id="badge-sup-count">4</span>
+        </button>
+        <button onclick="switchTab('self')" id="tab-btn-self" class="tab-btn inline-flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-medium rounded-t-xl border-b-2 border-transparent text-[#6E6662] hover:text-[#2E2827] hover:bg-[#F2EEE6]/50 shrink-0 transition">
+          <i data-lucide="user-check" class="w-4 h-4"></i>
+          自評（依主管分流）
+          <span class="px-2 py-0.5 text-xs rounded-full bg-[#F2EEE6] text-[#6E6662] font-bold" id="badge-self-count">5</span>
+        </button>
+        <button onclick="switchTab('peerAnon')" id="tab-btn-peerAnon" class="tab-btn inline-flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-medium rounded-t-xl border-b-2 border-transparent text-[#6E6662] hover:text-[#2E2827] hover:bg-[#F2EEE6]/50 shrink-0 transition">
+          <i data-lucide="users" class="w-4 h-4"></i>
+          員工同儕匿名表（逐題明細）
+          <span class="px-2 py-0.5 text-xs rounded-full bg-[#F2EEE6] text-[#6E6662] font-bold">9人</span>
+        </button>
+        <button onclick="switchTab('peer')" id="tab-btn-peer" class="tab-btn inline-flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-medium rounded-t-xl border-b-2 border-transparent text-[#6E6662] hover:text-[#2E2827] hover:bg-[#F2EEE6]/50 shrink-0 transition">
+          <i data-lucide="pie-chart" class="w-4 h-4"></i>
+          評同事（同儕回饋總覽）
+          <span class="px-2 py-0.5 text-xs rounded-full bg-[#F2EEE6] text-[#6E6662] font-bold" id="badge-peer-count">23</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+
+    <!-- ========================================================================= -->
+    <!-- TAB: 自評 vs 主管評對照（主管填核回傳） -->
+    <!-- ========================================================================= -->
+    <section id="tab-section-subReview" class="tab-content space-y-7">
+      <div class="screen-only-view space-y-7">
+        
+        <!-- SUPERVISOR SELECTION FILTER BAR -->
+        <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E8E2D8] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <span class="text-xs font-bold text-[#8C837C] mr-1 flex items-center gap-1.5 uppercase tracking-wider">
+              <i data-lucide="filter" class="w-3.5 h-3.5 text-[#557A61]"></i> 主管團隊：
+            </span>
+            <button onclick="filterSubReviewTeam('張希慈')" id="sub-team-btn-張希慈" class="sub-team-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#557A61] text-white shadow-xs transition">
+              張希慈 的部屬 (5人)
+            </button>
+            <button onclick="filterSubReviewTeam('何維安')" id="sub-team-btn-何維安" class="sub-team-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
+              何維安 的部屬 (1人)
+            </button>
+            <button onclick="filterSubReviewTeam('姚品瑄')" id="sub-team-btn-姚品瑄" class="sub-team-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
+              姚品瑄 的部屬 (2人)
+            </button>
+            <button onclick="filterSubReviewTeam('張希慈_執行長')" id="sub-team-btn-張希慈_執行長" class="sub-team-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
+              執行長個人自評
+            </button>
+            <button onclick="filterSubReviewTeam('ALL')" id="sub-team-btn-ALL" class="sub-team-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
+              全體員工 (9人)
+            </button>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button onclick="window.print()" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
+              <i data-lucide="printer" class="w-4 h-4"></i> 列印 / 存為 PDF (Cmd+P)
+            </button>
+            <div id="sub-review-export-btn-container">
+              <!-- Export button -->
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBORDINATE MEMBER SELECTOR PILLS -->
+        <div class="bg-[#FFFDF9] rounded-2xl p-5 border border-[#E8E2D8] soft-card-shadow flex items-center gap-3 flex-wrap" id="sub-review-member-pills">
+          <!-- Injected via JS -->
+        </div>
+
+        <!-- REPORT CONTAINER -->
+        <div id="sub-review-report-container" class="space-y-7">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- PRINT-ONLY WORD-STYLE CONTAINER -->
+      <div id="sub-review-print-container" class="print-only-doc">
+        <!-- Injected via JS -->
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB: 評主管 -->
+    <!-- ======================================================== -->
+    <section id="tab-section-supervisor" class="tab-content hidden space-y-7">
+      <div class="screen-only-view space-y-7">
+        <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E8E2D8] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <span class="text-xs font-bold text-[#8C837C] mr-1 flex items-center gap-1.5 uppercase tracking-wider">
+              <i data-lucide="user" class="w-3.5 h-3.5 text-[#557A61]"></i> 受評主管：
+            </span>
+            <button onclick="filterSupervisor('ALL')" id="sup-filter-btn-ALL" class="sup-filter-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
+              全部主管 (4筆)
+            </button>
+            <button onclick="filterSupervisor('張希慈')" id="sup-filter-btn-張希慈" class="sup-filter-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#557A61] text-white shadow-xs transition">
+              張希慈 (3筆)
+            </button>
+            <button onclick="filterSupervisor('何維安')" id="sup-filter-btn-何維安" class="sup-filter-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
+              何維安 (1筆)
+            </button>
+          </div>
+          <button onclick="window.print()" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
+            <i data-lucide="printer" class="w-4 h-4"></i> 列印 / 存為 PDF (Cmd+P)
+          </button>
+        </div>
+
+        <div id="sup-stat-summary-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="bg-[#FFFDF9] p-6 rounded-2xl border border-[#E8E2D8] soft-card-shadow">
+            <h3 class="text-sm sm:text-base font-bold text-[#2E2827] mb-3 flex items-center gap-2 font-serif-tc">
+              <i data-lucide="compass" class="w-4 h-4 text-[#557A61]"></i> 四大文化實踐維度
+            </h3>
+            <div class="h-68 flex items-center justify-center">
+              <canvas id="supervisorRadarChart"></canvas>
+            </div>
+          </div>
+          <div class="bg-[#FFFDF9] p-6 rounded-2xl border border-[#E8E2D8] soft-card-shadow lg:col-span-2">
+            <h3 class="text-sm sm:text-base font-bold text-[#2E2827] mb-3 flex items-center gap-2 font-serif-tc">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-[#557A61]"></i> 管理能力各題平均得分 (滿分10分)
+            </h3>
+            <div class="h-68">
+              <canvas id="supervisorBarChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 sm:p-8 soft-card-shadow">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E8E2D8] pb-4 mb-5">
+            <div class="flex items-center gap-2.5">
+              <div class="p-2 bg-[#FCE5CD] text-[#783E16] rounded-xl"><i data-lucide="table-properties" class="w-4 h-4"></i></div>
+              <h3 class="text-base sm:text-lg font-bold text-[#2E2827] font-serif-tc">各題項評分統計表（平均分、最高最好、最低最差）</h3>
+            </div>
+            <span class="text-xs text-[#8C837C]">滿分 10 分 ｜ 標註綠色代表優異 (≥9.0分)，橙色代表有成長空間 (≤7.0分)</span>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-[#E8E2D8]">
+            <table class="w-full text-xs sm:text-sm text-left border-collapse" id="sup-item-stats-table">
+              <thead class="bg-[#FCE5CD] text-[#4A2E1C]">
+                <tr>
+                  <th class="py-3 px-3.5 font-bold text-center w-14 border-r border-[#E8E2D8]">題號</th>
+                  <th class="py-3 px-3.5 font-bold text-center w-28 border-r border-[#E8E2D8]">評估面向</th>
+                  <th class="py-3 px-4 font-bold border-r border-[#E8E2D8]">題目內容與能力指引</th>
+                  <th class="py-3 px-3.5 font-bold text-center w-24 border-r border-[#E8E2D8] bg-[#E4ECD3]/80 text-[#2D5239]">平均得分</th>
+                  <th class="py-3 px-3.5 font-bold text-center w-24 border-r border-[#E8E2D8]">最好 (最高)</th>
+                  <th class="py-3 px-3.5 font-bold text-center w-24 border-r border-[#E8E2D8]">最差 (最低)</th>
+                  <th class="py-3 px-4 font-bold text-center w-36">給分明細</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#EFEAE1] bg-white" id="sup-item-stats-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="supervisor-feedback-list" class="space-y-6"></div>
+      </div>
+
+      <div id="sup-print-document-container" class="print-only-doc"></div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB: 自評 (依主管分流) -->
+    <!-- ======================================================== -->
+    <section id="tab-section-self" class="tab-content hidden space-y-7">
+      <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E8E2D8] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
+        <div class="flex items-center gap-2.5 flex-wrap" id="self-supervisor-pills">
+          <span class="text-xs font-bold text-[#8C837C] mr-1 flex items-center gap-1.5 uppercase tracking-wider">
+            <i data-lucide="filter" class="w-3.5 h-3.5 text-[#557A61]"></i> 主管團隊：
+          </span>
+          <button onclick="filterSelfSupervisor('張希慈')" id="self-sup-btn-張希慈" class="self-sup-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#557A61] text-white shadow-xs transition">
+            張希慈 的部屬 (5人)
+          </button>
+          <button onclick="filterSelfSupervisor('何維安')" id="self-sup-btn-何維安" class="self-sup-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
+            何維安 的部屬 (1人)
+          </button>
+          <button onclick="filterSelfSupervisor('姚品瑄')" id="self-sup-btn-姚品瑄" class="self-sup-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
+            姚品瑄 的部屬 (2人)
+          </button>
+          <button onclick="filterSelfSupervisor('張希慈_執行長')" id="self-sup-btn-張希慈_執行長" class="self-sup-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
+            執行長個人自評
+          </button>
+          <button onclick="filterSelfSupervisor('ALL')" id="self-sup-btn-ALL" class="self-sup-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
+            全部已自評 (5人)
+          </button>
+        </div>
+
+        <div id="self-export-btn-container"></div>
+      </div>
+
+      <div id="self-team-banner" class="bg-[#FCE5CD]/40 border border-[#F3D1B0] rounded-2xl p-6 flex items-center justify-between">
+        <div class="flex items-center gap-3.5">
+          <div class="p-3 bg-[#F4CCCC] text-[#3E2426] rounded-xl shadow-2xs">
+            <i data-lucide="users" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 id="self-team-title" class="text-base sm:text-lg font-bold text-[#3E2426] font-serif-tc">張希慈 的部屬自評列表</h2>
+            <p id="self-team-subtitle" class="text-xs sm:text-sm text-[#7A4822] mt-0.5">涵蓋部屬：何維安（品牌經理）、陳泳璇（行政經理）、張芳媐（營運經理兼執行長特助）、姚品瑄（部門儲備主管）、胡喻翔（專案經理）</p>
+          </div>
+        </div>
+        <div class="text-xs sm:text-sm px-4 py-2 bg-white/90 rounded-full text-[#783E16] font-bold border border-[#F3D1B0] shadow-2xs" id="self-completion-status">
+          已填答 2 / 應填 5 人
+        </div>
+      </div>
+
+      <div id="self-eval-cards-container" class="space-y-9"></div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB: 員工同儕匿名表 (逐題明細) -->
+    <!-- ======================================================== -->
+    <section id="tab-section-peerAnon" class="tab-content hidden space-y-7">
+      <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E8E2D8] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
+        <div class="flex items-center gap-2.5 flex-wrap" id="peer-anon-member-pills"></div>
+        <div id="peer-anon-export-btn-container"></div>
+      </div>
+
+      <div id="peer-anon-report-container" class="space-y-7"></div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB: 評同事 (同儕回饋總覽) -->
+    <!-- ======================================================== -->
+    <section id="tab-section-peer" class="tab-content hidden space-y-7">
+      <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E8E2D8] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
+        <div class="flex items-center gap-2.5 flex-wrap" id="peer-pills-container"></div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-[#FFFDF9] p-6 rounded-2xl border border-[#E8E2D8] soft-card-shadow">
+          <h3 class="text-sm sm:text-base font-bold text-[#2E2827] mb-3 flex items-center gap-2 font-serif-tc">
+            <i data-lucide="compass" class="w-4 h-4 text-[#557A61]"></i> 文化實踐維度表現
+          </h3>
+          <div class="h-68 flex items-center justify-center">
+            <canvas id="peerRadarChart"></canvas>
+          </div>
+        </div>
+        <div class="bg-[#FFFDF9] p-6 rounded-2xl border border-[#E8E2D8] soft-card-shadow lg:col-span-2">
+          <h3 class="text-sm sm:text-base font-bold text-[#2E2827] mb-3 flex items-center gap-2 font-serif-tc">
+            <i data-lucide="bar-chart-3" class="w-4 h-4 text-[#557A61]"></i> 協作、當責與溝通評分 (滿分10分)
+          </h3>
+          <div class="h-68">
+            <canvas id="peerBarChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div id="peer-feedback-list" class="space-y-6"></div>
+    </section>
+
+  </main>
+
+  <!-- TOAST -->
+  <div id="toast" class="no-print fixed bottom-6 right-6 z-50 transform transition-all duration-300 opacity-0 translate-y-4 pointer-events-none bg-[#2E2827] text-white px-5 py-4 rounded-2xl shadow-xl flex items-center gap-3 text-xs sm:text-sm border border-[#4A433E]">
+    <div id="toast-icon" class="p-1 rounded-lg bg-[#557A61] text-white"><i data-lucide="check" class="w-4 h-4"></i></div>
+    <span id="toast-msg">操作成功</span>
+  </div>
+
+  <footer class="no-print bg-[#FFFDF9] border-t border-[#E8E2D8] py-7 text-center text-xs text-[#7A726D] mt-auto">
+    好好星球文化基金會 360 年中成長評估系統 · 支援 Cmd+P 列印為完整 PDF 報告 · 採用柔和色彩美學與模組化 Chunk 排版
+  </footer>
+
+  <script>
+    let RAW_DATA = [
+  {
+    "timestamp": "2026/8/13 下午 2:57:40",
+    "email": "vivian@wellplanet.org.tw",
+    "target": "何維安",
+    "relation": "自評",
+    "job_role": "品牌經理",
+    "self_eval": {
+      "job_role": "品牌經理",
+      "top3_stable": [
+        "準時、認真、當責",
+        "面向目標、適應變動",
+        "發揮專業、解決問題"
+      ],
+      "top3_practice": [
+        "向下管理、帶人帶心",
+        "人際溝通、人際相處",
+        "開放心態、實驗精神"
+      ],
+      "values": {
+        "信任": "進行部門招募時策略、執行與協調都能夠獨立完成，同時協調其他部門需求，確保招募目標符合所有人想像。",
+        "多元": "酷童工作人員徽章製作時有一些分歧，在決定權上也有些模糊的地方，但我能夠主動提出自己的想法，同時也了解他人的需求後共同產出符合所有人想像的成果。",
+        "實驗": "在新的兼職入職後，給予他們方向與目標的指示，其他時候根據他們個人的理解讓他們自行發揮，而並非要求所有事情按照我制定的規則來。而後我會給予最低限度的建議與方向修正，這對我而言是一種接納多元工作方法的表現。",
+        "可持續": "因懷孕不適，有不出門辦公的需求，也因此會產生許多仰賴同事的狀況。過往習慣自己把事情都做好，今年則是把自己能夠處理的部分以及能在其他方面彌補他人工作量的地方先規劃好，再學著如何請同事協助。與喻翔曾經有因為請求他協助而有一些摩擦的狀況，但是在彼此溝通後發現彼此之間都有一些沒溝通清楚的地方，經過溝通後最後也讓任務順利完成。"
+      },
+      "competencies": [
+        {
+          "title": "品牌定位與外部溝通一致性",
+          "answer": "在招募（SL／CGL）期間，頻繁與PM和設計確認過往說法與調整，同時也針對尋找合適TA提出新的內容整合，以及對齊各部門品牌精神與視覺故事性的一致性。最終結果體現於招募網站、社群的製作，以及所有後續製作物（包含但不限：教材、場佈物件），也成功透過營造的視覺氛圍與文案使服務對象印象深刻、感到共鳴進而前往報名。"
+        },
+        {
+          "title": "行銷策略與議題倡議",
+          "answer": "與其說是活動的部分，除了最主要的招募外（數據於過往週會皆有記載，此處不詳提，但最終都有根據數據結果達成設定數字，也製作了兩個招募網站），年初主要負責成果報告潤飾、編制、與排版，讓部門之間的成果以更統一與清楚的架構得以完整呈現。最終產出近 200 頁的書冊，相較去年不僅頁數增加，排版與視覺也更細緻。"
+        },
+        {
+          "title": "品牌活動策劃與策展敘事",
+          "answer": "年初運用了TFT的經驗，協助接洽與籌辦初期的KIST展。後來原本預定參加雜學校展，各種原因之下雖然趕不上變化，但已召集新加入的夥伴著手討論自辦展覽的流程；目前已初步有流程與架構的畫面，接下來將以線上展去做規劃，同時提前佈署明年的展覽，希望將基金會的理念與成果展示給新的客群，同時也串連服務對象更多對外曝光的機會。"
+        },
+        {
+          "title": "內部品牌管理與雇主品牌",
+          "answer": "從年初開始準備了跨品牌部門聊聊，整理了基金會部門之間的共同議題，將全部門的人首度聚集在一起，傾聽不同部門之間的考量與看法，從中找出符合基金會整體的共享工作原則，也提供上級最直接的參考，對齊上下層級之間目標與執行間的期待。於會議之中，把控會議時程外，也確保每個人都有發言的機會。即使成果可能不是即刻可以量化的，但相信在所有人的工作之間都會淺移默化的影響彼此的認知，讓大家朝基金會的目標更進一步前進。"
+        },
+        {
+          "title": "品牌危機與聲譽風險處理",
+          "answer": "對外的風險管理與內容本就在說法上曝光前會與所有人反覆確認，因此一直以來都沒有出過什麼會影響聲譽的事件。更多是與更動了組織內部架構有關；從與前任設計爆發衝突後，便向導師 Winnie 請益應該如何處理同儕衝突與職務分配的問題。在吸收了 Winnie 的經驗分享與建議後，提出了以整體基金會效益為最大考量的調整提案，同時在產生臨時的職務空缺時協助牽線，找到合適的人選，避免專案開天窗，後續也為基金會的所有人解決了非常多的問題。"
+        },
+        {
+          "title": "其他創造的好事與預防的壞事",
+          "answer": "（覺得其實已經說很多了就這樣吧）"
+        }
+      ],
+      "reflection": {
+        "未來一年想創造的價值": "讓新加入的夥伴能夠感受到在這裡工作的價值，能夠發自內心的認同基金會的議題與獨特性，進而產生內在動力主動讓更多有趣與益於基金會發展的事情發生。同時也想要試試看開發新的業務，用更有創意的方式讓大眾知道基金會的存在。（最近的感想是開發新 IP 與商品參加文博會？？）",
+        "最常感到卡關/掙扎的階段": "三個月內",
+        "卡關具體原因描述": "大概完成一個專案左右會很需要停下來喘息跟反思的空間，雖然最終產出結果看起來都很具體（ex.招募官網），但其實產出一個成果之前會牽涉到非常多的思考、策畫、與溝通。執行專案的期間可能沒有空去想休息之類的事情，但結束之後大腦就會運作得很慢，如果兩個專案之間銜接得很近就會很痛苦，覺得要硬拖著自己去完成。",
+        "希望組織當時提供的幫助": "其實今年已經算是好很多了，因為在人事調動後溝通成本降低許多，架設網站的技術性問題也由新來的夥伴協助COVER，現階段對於已經有些疲乏的執行性事務也找了新的夥伴加入，接下來的難題應該是要如何讓夥伴們能夠順利吸收過往的經驗並且持續運行。",
+        "對願景使命理解與實踐的最大轉變": "同步。覺得從剛加入一盤散沙，偶爾還會聽見夥伴說自己不知道自己為什麼要做這個開始，到現在已經沒有聽到這樣的聲音，大家似乎對於議題的想像與組織方向越來越清晰就覺得很欣慰（應該可以驕傲的說這是我努力了兩年半的成果吧哈哈哈哈）"
+      }
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 3:22:15",
+    "email": "jerry@wellplanet.org.tw",
+    "target": "張希慈",
+    "relation": "主管",
+    "job_role": "執行長",
+    "supervisor_eval": {
+      "q_scores": {
+        "當你有需要時，向這名主管尋求協助是否容易？ ": 6.0,
+        "當工作表現有需要改善的地方時，這名主管有多常給你具體的引導或作法?": 3.0,
+        "當這名主管給予你工作上的意見之後，你的工作表現改善了多少？ ": 6.0,
+        "這位主管是否常主動跨部門協助推動任務？": 10.0,
+        "這名主管利用公司資源時是否總是有多方評估？": 9.0,
+        "當你在工作上有失誤時，這名主管多常做出有建設性的回應？ ": 6.0,
+        "當有人把某個任務做得特別好時，這名主管有多常表示認可？": 8.0,
+        "整體而言，這名主管的工作成效如何？ ": 7.0,
+        "在與這位主管合作時，我有多放心地表達真實的想法與需求？": 3.0,
+        "這名主管在做決策前有多常聆聽你的意見？ ": 4.0,
+        "這位主管是否常主動嘗試新的工作方式，即使不確定結果，也願意承擔風險並從中學習？": 9.0,
+        "在提出新想法或嘗試新做法時，你有多頻繁能感受到主管的理解與支持，能感到有試錯的空間而不擔心被批評？": 7.0,
+        "這名主管有多持續而一致地讚美、肯定優秀的夥伴？ ": 6.0,
+        "這名主管對待你的界線有多尊重？ ": 8.0,
+        "你向其他同事在工作上，推薦這名主管的可能性有多大？ ": 7.0,
+        "整體而言，你對這名主管是滿意、普通，還是不滿意？ ": 2.0
+      },
+      "q4_help_easy": 6.0,
+      "q5_guidance_freq": 3.0,
+      "q6_improve_degree": 6.0,
+      "q7_cross_dept": 10.0,
+      "q8_resource_eval": 9.0,
+      "q9_constructive_mistake": 6.0,
+      "q10_recognition": 8.0,
+      "q11_overall_performance": 7.0,
+      "q12_trust_express": 3.0,
+      "q13_diversity_listen": 4.0,
+      "q14_experiment_try": 9.0,
+      "q15_experiment_psych_safety": 7.0,
+      "q16_sustain_praise": 6.0,
+      "q17_sustain_boundary": 8.0,
+      "q18_nps_recommend": 7.0,
+      "q19_satisfaction": 2.0,
+      "q20_vision_mission": "陪我討論改變理論，和我解釋改變理論的設計、釐清專案＆部門可以前進的方向",
+      "q21_improvement_advice": "",
+      "q22_other_comments": "",
+      "q23_starlight_thanks": ""
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 4:17:54",
+    "email": "roo@wellplanet.org.tw",
+    "target": "何維安",
+    "relation": "主管",
+    "job_role": "品牌經理",
+    "supervisor_eval": {
+      "q_scores": {
+        "當你有需要時，向這名主管尋求協助是否容易？ ": 10.0,
+        "當工作表現有需要改善的地方時，這名主管有多常給你具體的引導或作法?": 10.0,
+        "當這名主管給予你工作上的意見之後，你的工作表現改善了多少？ ": 8.0,
+        "這位主管是否常主動跨部門協助推動任務？": 10.0,
+        "這名主管利用公司資源時是否總是有多方評估？": 10.0,
+        "當你在工作上有失誤時，這名主管多常做出有建設性的回應？ ": 10.0,
+        "當有人把某個任務做得特別好時，這名主管有多常表示認可？": 10.0,
+        "整體而言，這名主管的工作成效如何？ ": 10.0,
+        "在與這位主管合作時，我有多放心地表達真實的想法與需求？": 10.0,
+        "這名主管在做決策前有多常聆聽你的意見？ ": 10.0,
+        "這位主管是否常主動嘗試新的工作方式，即使不確定結果，也願意承擔風險並從中學習？": 8.0,
+        "在提出新想法或嘗試新做法時，你有多頻繁能感受到主管的理解與支持，能感到有試錯的空間而不擔心被批評？": 10.0,
+        "這名主管有多持續而一致地讚美、肯定優秀的夥伴？ ": 10.0,
+        "這名主管對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名主管的可能性有多大？ ": 10.0,
+        "整體而言，你對這名主管是滿意、普通，還是不滿意？ ": 10.0
+      },
+      "q4_help_easy": 10.0,
+      "q5_guidance_freq": 10.0,
+      "q6_improve_degree": 8.0,
+      "q7_cross_dept": 10.0,
+      "q8_resource_eval": 10.0,
+      "q9_constructive_mistake": 10.0,
+      "q10_recognition": 10.0,
+      "q11_overall_performance": 10.0,
+      "q12_trust_express": 10.0,
+      "q13_diversity_listen": 10.0,
+      "q14_experiment_try": 8.0,
+      "q15_experiment_psych_safety": 10.0,
+      "q16_sustain_praise": 10.0,
+      "q17_sustain_boundary": 10.0,
+      "q18_nps_recommend": 10.0,
+      "q19_satisfaction": 10.0,
+      "q20_vision_mission": "我們通常會在1on1時間、或者設計工作執行過程中陸續談到基金會的成長過程和願景，同時也會透過各種參考資料的收集，協助我理解與應用在工作上。",
+      "q21_improvement_advice": "",
+      "q22_other_comments": "VVN工作上擅於也喜歡執行邏輯、分析等內容，同時也反映在她的蓋洛普測驗結果上XD\n這項特質很明顯地表現在每次她和我的溝通，總是可以把我有點抽象或很憑感覺表達的敘述內容彙整成一個有條理的狀態。我覺得這是特別棒的主管技能。讓我可以轉而用客觀的角度來檢視自己的工作狀態，把自己從情緒干擾中拉出來一點。",
+      "q23_starlight_thanks": "謝謝VVN總是當我的表達通靈大師！"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 4:43:35",
+    "email": "roo@wellplanet.org.tw",
+    "target": "戴佑珍",
+    "relation": "同事",
+    "job_role": "專案經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 10.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 10.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "佑珍是好好星球的可愛指標！"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 4:45:36",
+    "email": "roo@wellplanet.org.tw",
+    "target": "張芳媐",
+    "relation": "同事",
+    "job_role": "營運經理兼執行長特助",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 10.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 10.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "謝謝你總是給好好星球施加好日子魔法儀式 ٩(｡・ω・｡)و"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 4:46:46",
+    "email": "sandy@wellplanet.org.tw",
+    "target": "張希慈",
+    "relation": "主管",
+    "job_role": "執行長",
+    "supervisor_eval": {
+      "q_scores": {
+        "當你有需要時，向這名主管尋求協助是否容易？ ": 10.0,
+        "當工作表現有需要改善的地方時，這名主管有多常給你具體的引導或作法?": 9.0,
+        "當這名主管給予你工作上的意見之後，你的工作表現改善了多少？ ": 9.0,
+        "這位主管是否常主動跨部門協助推動任務？": 10.0,
+        "這名主管利用公司資源時是否總是有多方評估？": 10.0,
+        "當你在工作上有失誤時，這名主管多常做出有建設性的回應？ ": 9.0,
+        "當有人把某個任務做得特別好時，這名主管有多常表示認可？": 9.0,
+        "整體而言，這名主管的工作成效如何？ ": 10.0,
+        "在與這位主管合作時，我有多放心地表達真實的想法與需求？": 9.0,
+        "這名主管在做決策前有多常聆聽你的意見？ ": 9.0,
+        "這位主管是否常主動嘗試新的工作方式，即使不確定結果，也願意承擔風險並從中學習？": 9.0,
+        "在提出新想法或嘗試新做法時，你有多頻繁能感受到主管的理解與支持，能感到有試錯的空間而不擔心被批評？": 9.0,
+        "這名主管有多持續而一致地讚美、肯定優秀的夥伴？ ": 9.0,
+        "這名主管對待你的界線有多尊重？ ": 9.0,
+        "你向其他同事在工作上，推薦這名主管的可能性有多大？ ": 10.0,
+        "整體而言，你對這名主管是滿意、普通，還是不滿意？ ": 9.0
+      },
+      "q4_help_easy": 10.0,
+      "q5_guidance_freq": 9.0,
+      "q6_improve_degree": 9.0,
+      "q7_cross_dept": 10.0,
+      "q8_resource_eval": 10.0,
+      "q9_constructive_mistake": 9.0,
+      "q10_recognition": 9.0,
+      "q11_overall_performance": 10.0,
+      "q12_trust_express": 9.0,
+      "q13_diversity_listen": 9.0,
+      "q14_experiment_try": 9.0,
+      "q15_experiment_psych_safety": 9.0,
+      "q16_sustain_praise": 9.0,
+      "q17_sustain_boundary": 9.0,
+      "q18_nps_recommend": 10.0,
+      "q19_satisfaction": 9.0,
+      "q20_vision_mission": "近期針對改變理論，希慈都願意花時間跟每個夥伴說明，同時也了解我們對於組織願景、使命的想法、問題並做紀錄及解釋說明，非常用心！在過程中，也會針對不同的工作職位對應組織願景及使命說明，讓我更加理解這個部分！",
+      "q21_improvement_advice": "",
+      "q22_other_comments": "希慈很常分享不同的資源與活動資訊給大家，有跟基金會業務相關，也有跟夥伴成長相關，讓夥伴們都能夠接觸或選擇進修、參與不同的活動或課程！",
+      "q23_starlight_thanks": "希慈是一個工作效率非常高的人，可能今天提到某個東西，明天就已經著手進行或完成了！同時他很樂於研究使用各種AI工具，也會和大家分享！非常佩服他的高效率~~"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 4:54:53",
+    "email": "vivian@wellplanet.org.tw",
+    "target": "張希慈",
+    "relation": "主管",
+    "job_role": "執行長",
+    "supervisor_eval": {
+      "q_scores": {
+        "當你有需要時，向這名主管尋求協助是否容易？ ": 7.0,
+        "當工作表現有需要改善的地方時，這名主管有多常給你具體的引導或作法?": 8.0,
+        "當這名主管給予你工作上的意見之後，你的工作表現改善了多少？ ": 8.0,
+        "這位主管是否常主動跨部門協助推動任務？": 8.0,
+        "這名主管利用公司資源時是否總是有多方評估？": 9.0,
+        "當你在工作上有失誤時，這名主管多常做出有建設性的回應？ ": 9.0,
+        "當有人把某個任務做得特別好時，這名主管有多常表示認可？": 8.0,
+        "整體而言，這名主管的工作成效如何？ ": 9.0,
+        "在與這位主管合作時，我有多放心地表達真實的想法與需求？": 8.0,
+        "這名主管在做決策前有多常聆聽你的意見？ ": 9.0,
+        "這位主管是否常主動嘗試新的工作方式，即使不確定結果，也願意承擔風險並從中學習？": 10.0,
+        "在提出新想法或嘗試新做法時，你有多頻繁能感受到主管的理解與支持，能感到有試錯的空間而不擔心被批評？": 10.0,
+        "這名主管有多持續而一致地讚美、肯定優秀的夥伴？ ": 8.0,
+        "這名主管對待你的界線有多尊重？ ": 9.0,
+        "你向其他同事在工作上，推薦這名主管的可能性有多大？ ": 8.0,
+        "整體而言，你對這名主管是滿意、普通，還是不滿意？ ": 8.0
+      },
+      "q4_help_easy": 7.0,
+      "q5_guidance_freq": 8.0,
+      "q6_improve_degree": 8.0,
+      "q7_cross_dept": 8.0,
+      "q8_resource_eval": 9.0,
+      "q9_constructive_mistake": 9.0,
+      "q10_recognition": 8.0,
+      "q11_overall_performance": 9.0,
+      "q12_trust_express": 8.0,
+      "q13_diversity_listen": 9.0,
+      "q14_experiment_try": 10.0,
+      "q15_experiment_psych_safety": 10.0,
+      "q16_sustain_praise": 8.0,
+      "q17_sustain_boundary": 9.0,
+      "q18_nps_recommend": 8.0,
+      "q19_satisfaction": 8.0,
+      "q20_vision_mission": "整理了改變理論，與每位員工都有確實過",
+      "q21_improvement_advice": "覺得今年跟希慈討論事情時有一點阻力，感受上很像是她的事情很多，很忙，或是急於推動不同的事項，所以對話的時候有點難空出時間一起好好思考一件事情的做法。然後滿多時候好像也有外務不在台灣，相較於過往的合作經驗，覺得要找到他有一點小困難，不確定是否本來就期待可以先把資訊交給助理過濾，才能把決策與討論留給更重要的事情上？\n\n另外也不太確定是否是董事方有給予壓力，還是希慈個人對組織有加速成長的期待，其實有很多事情很像被趕火車，可能隔一陣子就會有新的指示跟資訊進來，但後續又會變動或是變成沒有這回事，這也是感覺沒有很充分討論跟評估的結果；今年給人一種很急於達成什麼、變得很效率導向的感受，對話其實覺得對我而言有點壓力，好像沒有什麼時間可以好好去想跟評估什麼是大家都想做也能做的事，只是馬不停蹄地要完成交辦下來的事項或期待。\n\n如果說要怎麼做才能更實踐基金會精神，可能就是慢下來（？）。但若基金會的目標就是要加速擴張，可能這就反過來是員工自己要調適的。",
+      "q22_other_comments": "",
+      "q23_starlight_thanks": "很謝謝希慈在帶領人的方式與溝通技巧上給了很多實用而具體的建議，讓我在後續跟他人溝通時能夠有明確的句型跟方法可以使用！在提出一些疑問或不確定該怎麼做的地方，也總是可以很快速地給出不同的方案。"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 4:59:21",
+    "email": "vivian@wellplanet.org.tw",
+    "target": "陳泳璇",
+    "relation": "同事",
+    "job_role": "行政經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 8.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 10.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 8.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 10.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "Sandy 辦事總是讓人很放心與專業，有不懂的事情問他他都很樂意協助，來自各部門有各式各樣的單據與請款需求，Sandy 都不會漏掉，超厲害！即使平常工作的事項沒什麼機會跟 Sandy 討論或共事，但跨部門品牌聊聊時 Sandy 也都很踴躍的給出想法，不會因為跟負責的事務無關就表現得置身事外，覺得是很能夠好好分享想法與接納他人的存在！"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 5:02:47",
+    "email": "vivian@wellplanet.org.tw",
+    "target": "姚品瑄",
+    "relation": "同事",
+    "job_role": "部門儲備主管",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 9.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 9.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 9.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 10.0
+      },
+      "q24_cooperation": 9.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 9.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 9.0,
+      "q36_nps_recommend": 10.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "聽品瑄與其他人開會的方式總是讓我學習很多，從如何關心部屬再銜接到工作討論，或是有各種很有趣的想法，都覺得品瑄是很豐富的人。如果有活動環節發想的環節常常會第一個想到品瑄，因為品瑄一下子就會有各式各樣的點子！"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 5:05:13",
+    "email": "vivian@wellplanet.org.tw",
+    "target": "胡喻翔",
+    "relation": "同事",
+    "job_role": "專案經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 9.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 9.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 9.0,
+        "這名同事對待你的界線有多尊重？ ": 9.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 9.0
+      },
+      "q24_cooperation": 9.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 9.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 9.0,
+      "q35_boundary_respect": 9.0,
+      "q36_nps_recommend": 9.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "從以前到現在覺得喻翔就是細節控，會把很多事情的前因後果與後續可能發生的狀況全部都先預想一遍然後事先規劃好。在工作對接上總是準備得很完整，是風險管理大師。"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 5:12:44",
+    "email": "vivian@wellplanet.org.tw",
+    "target": "薛筑瑄",
+    "relation": "同事",
+    "job_role": "專案經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 8.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 8.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 9.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 8.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 8.0,
+      "q27_flexibility": 8.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 9.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 8.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "（是個有點具體且可能與工作沒有這麼有關的小故事但我覺得還是可以悄悄的讓誰知道）剛流產的那段時間，筑瑄有特別買了一包雞精與寫小紙條給我，這並不是同事必須做的事情，但筑瑄還是經常私下關心我的身體狀況，真的很貼心",
+      "q39_starlight_thanks": "筑瑄很像基金會的小太陽，總是第一時間注意到大家的各種變化，總是會給予很暖心的關心與回饋。在對於人的部分的觀察與覺察（不論是工作夥伴還是服務對象）也很敏銳，能夠記住他人的需求並給予協助！"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 5:14:48",
+    "email": "sandy@wellplanet.org.tw",
+    "target": "何維安",
+    "relation": "同事",
+    "job_role": "品牌經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 9.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 10.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 9.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 10.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "VVN對於品牌行銷很專業，給予基金會許多很好的建議！當夥伴們提出詢問時，也會根據專業跟大家說明並提出不同的選擇方案！VVN工作效率非常高，業務工作交給他完全不用擔心，是位非常可靠、值得信賴的夥伴！"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 5:21:25",
+    "email": "sandy@wellplanet.org.tw",
+    "target": "張芳媐",
+    "relation": "同事",
+    "job_role": "營運經理兼執行長特助",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 9.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 10.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 9.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 10.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "芳媐做各項業務都很認真，每次跟他討論相關業務時，他都會做足準備，也會事先查找相關資料，是位非常認真、可靠的夥伴！當有需要芳媐協助的事物時，他也很願意協助並分享自身經驗及相關資源！"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 5:31:49",
+    "email": "sandy@wellplanet.org.tw",
+    "target": "姚品瑄",
+    "relation": "同事",
+    "job_role": "部門儲備主管",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 9.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 10.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 9.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 10.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "品瑄在課程中對孩子們很用心，聽到酷童活動分享時都能感覺到品瑄是位很溫暖、善於引導孩子們的老師。平時也會聽到他關心其他夥伴，是位用心、貼心的夥伴/主管！對於工作業務也常常提出自己的想法，若是夥伴詢問，也會說明其決策的思考脈絡。"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 5:32:46",
+    "email": "roo@wellplanet.org.tw",
+    "target": "陳泳璇",
+    "relation": "同事",
+    "job_role": "行政經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 10.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 10.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "Sandy處理代墊款申請總是迅速又清楚，讓以前在公司有代墊陰影的我在事先支付各種款項的時候很放心",
+      "q39_starlight_thanks": ""
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 5:50:02",
+    "email": "sandy@wellplanet.org.tw",
+    "target": "薛筑瑄",
+    "relation": "同事",
+    "job_role": "專案經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 9.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 9.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 9.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 9.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 9.0,
+      "q27_flexibility": 9.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 9.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 9.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "筑瑄在工作上很認真，平時也很為夥伴們著想，常常會注意到夥伴們的不同，並給予關心及協助，是位敏銳、貼心的夥伴！"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 6:10:02",
+    "email": "sandy@wellplanet.org.tw",
+    "target": "林文琇",
+    "relation": "同事",
+    "job_role": "美感設計師",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 9.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 9.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 9.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 9.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 9.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 9.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 9.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 9.0,
+      "q34_praise_peers": 9.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 9.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "Roo剛來好好星球時很害羞，但還是很願意跟大家分享自己的生活及經驗，現在Roo跟大家有更多的交流及互動。Roo工作很認真有效率，上次請他協助修改東西，馬上就協助修改完成了！Roo對於設計也很有自己的想法，聽他說明設計理念都覺得非常棒！"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 6:15:54",
+    "email": "sandy@wellplanet.org.tw",
+    "target": "胡喻翔",
+    "relation": "同事",
+    "job_role": "專案經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 9.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 9.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 9.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 9.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 9.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 9.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 9.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 9.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "喻翔在工作上非常細心，會將活動前後的流程規劃的非常完善，也會注意到各種細節的部分，是位非常細心且認真的夥伴！"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 6:29:41",
+    "email": "sandy@wellplanet.org.tw",
+    "target": "戴佑珍",
+    "relation": "同事",
+    "job_role": "專案經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 9.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 9.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 9.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 9.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 9.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 9.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 9.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 9.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "佑珍在工作上很認真，對於活動規劃也很細心。遇到不明白的事物都會仔細詢問並弄懂它，是位願意學習、很認真的夥伴！"
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 10:18:51",
+    "email": "roo@wellplanet.org.tw",
+    "target": "林文琇",
+    "relation": "自評",
+    "job_role": "美感設計師",
+    "self_eval": {
+      "job_role": "美感設計師",
+      "top3_stable": [
+        "準時、認真、當責",
+        "發揮專業、解決問題",
+        "開放心態、實驗精神"
+      ],
+      "top3_practice": [
+        "工作細心、鮮少出錯",
+        "人際溝通、人際相處",
+        "面向目標、適應變動"
+      ],
+      "values": {
+        "信任": "在購買教具、道具或各種印刷時，我會先徵詢同事過往的製作經驗作為參考，並評估當下的需求與預算，在不過度煩死同事的情況下獨立採購合理的品項。",
+        "多元": "在設計各種視覺的時候經常會遇到眾人的需求與喜好往四面八方發展(?)的情況。\n例如在製作酷童覺察班主視覺的時候，要面對喬喜好的風格與色彩、酷童夥伴想要傳達給孩子的理念、以及能讓人感受到安心溫暖的視覺方向，統合出一個風格。\n我嘗試在每一個設計階段分享成品、同時向大家詳述畫面中分別運用了哪些需要的元素，最後逐步修整成大家可以接受的設計。",
+        "實驗": "近期製作的酷童眼界班入學通知教材，第一次嘗試了用彩色透光片搭配解謎。\n我們收到透光片教具並實際測試之後，發現想像與實務操作有很大的差距XD \n因為無法使用針對兒童教材專業的校色印刷，顏色過濾程度不是很理想，因此來回調整試印了很多顏色，並在「謎題可以被解開」的標準下和酷童夥伴確認成品可接受度，也準備了「萬一有家庭無法透過預設操作方式解謎」的備案，完成了這次的教材。",
+        "可持續": "我盡可能不在工作以外的事項上打擾大家(?)"
+      },
+      "competencies": [
+        {
+          "title": "品牌識別系統設計與維護",
+          "answer": "我做了Soul LAB第五屆靈魂修煉學院和酷童覺察班的新視覺。兩種截然不同的風格讓我在不同的時間點分別感受到挑戰性。\n在Soul LAB的視覺中，我嘗試使用AI工具輔助獲得大量素材關鍵字，用來收集參考資料的同時，也繪製平面插圖並搭配AI工具運算出符合Soul LAB風格的立體手燈與相關素材，最終成品也獲得TA的正向回饋。\n酷童覺察班的視覺則嘗試在酷又可愛以及想像力之間平衡，同時也要顧及未來在教材中大量的運用。我同樣透過同仁需求與喜好的關鍵字，在眾多參考資料中取得平衡，同時在圖像設計中也融入自己對酷童的想像與期待。"
+        },
+        {
+          "title": "視覺設計實務",
+          "answer": "印象深刻的是最近一次的酷童教材送印，固定的印刷用色與材質在同一間印刷廠商突然印出了極大的色差。我收集過往的印刷成品與廠商詢問溝通，了解造成色差的原因（機器故障），廠商也積極測試、排除障礙，最後達成共識會在期限內補償印色正確的教材。"
+        },
+        {
+          "title": "需求釐清與創意提案",
+          "answer": "這半年沒有相關情境"
+        },
+        {
+          "title": "其他創造的好事與預防的壞事",
+          "answer": "想要和大家一起創造Work Life Balance，並且避免大家有超出自己職務與專業範圍的工作產生。"
+        }
+      ],
+      "reflection": {
+        "未來一年想創造的價值": "對我來說，「信任感」是公益組織與民眾拉近距離的一個指標。\n希望未來可以讓基金會的各種視覺設計，人人一見便覺得容易親近、可以信任。\n讓視覺觀感的升級也成為利他、公益行為的眾多引力之一。讓網站、教材、文宣、各種設計物，成為組織與受眾溝通的橋樑。",
+        "最常感到卡關/掙扎的階段": "好像沒有？",
+        "卡關具體原因描述": "我的卡住與煎熬通常只發生在每次需要設計新的圖像/畫面的發想（通靈）時期。目前公司人事、環境與工作狀況一切都還好。",
+        "希望組織當時提供的幫助": "VVN通常會給我一些圖源靈感IDEA！或者我就乾脆去拜拜",
+        "對願景使命理解與實踐的最大轉變": "好好星球讓我覺得每個人微小的善意可以連結、擴大成公益的引力。以前總覺得善事要盛大才令人尊敬，現在則是切勿以善小而不為。"
+      }
+    }
+  },
+  {
+    "timestamp": "2026/8/13 下午 10:29:34",
+    "email": "roo@wellplanet.org.tw",
+    "target": "胡喻翔",
+    "relation": "同事",
+    "job_role": "專案經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 10.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 10.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "喻翔在我心目中是個工作中獨立又細心的一個指標(?)\n第一次知道公司唯一男性同胞反而是Soul LAB的主要擔當時覺得非常新奇，但看了一陣子非常可以了解喻翔真的是一個很有Soul LAB細膩氛圍的人。\n特別是工作之餘也堅持完成朝聖之旅這種充滿挑戰的夢想，讓我非常尊敬（因為我會習慣把自己想做但特別需要花心力的事排到很後面的順位，只怕工作兼顧不來）",
+      "q39_starlight_thanks": ""
+    }
+  },
+  {
+    "timestamp": "2026/8/14 上午 2:08:38",
+    "email": "roo@wellplanet.org.tw",
+    "target": "薛筑瑄",
+    "relation": "同事",
+    "job_role": "專案經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 10.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 10.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "筑瑄每次交代工作都非常地清楚，會提出完整詳細的需求內容，不曾有東缺西缺需要反覆詢問的情況。在酷童的教材與課程規劃也都很為小朋友著想，有著很溫暖的想法。我也很喜歡看筑瑄在班級中與小朋友的互動，有種「會想要放心把小孩交給她帶」的感覺。",
+      "q39_starlight_thanks": ""
+    }
+  },
+  {
+    "timestamp": "2026/8/14 上午 2:12:16",
+    "email": "roo@wellplanet.org.tw",
+    "target": "姚品瑄",
+    "relation": "同事",
+    "job_role": "部門儲備主管",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 10.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 10.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "品瑄在酷童班級中給我的印象比較偏向嚴格老師（但不是恐怖威嚇型XD）\n對教材的規劃與工作交代也都非常有條理。\n我很喜歡聽品瑄在提出設計需求時向我介紹教材的使用方式，並在課程後會和我分享小朋友如何使用了那些教材（例如火箭拼圖、優勢披薩）\n酷童夥伴彷彿都是渾然天成的酷童夥伴。",
+      "q39_starlight_thanks": ""
+    }
+  },
+  {
+    "timestamp": "2026/8/14 上午 9:30:08",
+    "email": "ivy@wellplanet.org.tw",
+    "target": "林文琇",
+    "relation": "同事",
+    "job_role": "美感設計師",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 9.0,
+        "這名同事在工作上有多注重細節？": 8.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 8.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 7.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 9.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 7.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 8.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": null,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": null,
+        "這名同事對待你的界線有多尊重？ ": null,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 9.0
+      },
+      "q24_cooperation": 9.0,
+      "q25_detail_oriented": 8.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 8.0,
+      "q29_transparency": 7.0,
+      "q30_open_to_opposing": 9.0,
+      "q31_constructive_opinions": 7.0,
+      "q32_growth_mindset": 8.0,
+      "q33_share_knowledge": null,
+      "q34_praise_peers": null,
+      "q35_boundary_respect": null,
+      "q36_nps_recommend": 9.0,
+      "q37_improvement_advice": "有感覺 Roo 需要時間思考與消化。或者是說，腦力消耗殆盡的時候，可能就不一定有辦法積極參與討論、說出自己的想法！在一開始沒這麼認識 Roo 的時候，會不太清楚什麼時間點需要讓 Roo 暖機一下。若 Roo 可以更主動跟我們分享這方面的資訊，或許我們也可以調整開會的節奏，讓 Roo 可以更舒適、消化資訊～也希望 Roo 也可以跟我們分享會期待他人可以怎麼做",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "非常謝謝 Roo 的加入！真的很幸運～專案部門因為有你的加入，讓我們輕鬆不少，Roo 總是能幫我們多想一些，以「讓我們能達成目標、減輕負擔為原則」思考，是我很欣賞的夥伴。在創意發想、場佈現場也非常積極主動。把事情交辦給你非常安心可靠！"
+    }
+  },
+  {
+    "timestamp": "2026/8/14 上午 9:45:09",
+    "email": "ivy@wellplanet.org.tw",
+    "target": "胡喻翔",
+    "relation": "同事",
+    "job_role": "專案經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 9.0,
+        "這名同事在工作上有多注重細節？": 9.0,
+        "這名同事有多常在期限內完成工作？ ": 9.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 9.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 9.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 7.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 8.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 9.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 9.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": null,
+        "這名同事對待你的界線有多尊重？ ": null,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": null
+      },
+      "q24_cooperation": 9.0,
+      "q25_detail_oriented": 9.0,
+      "q26_on_time": 9.0,
+      "q27_flexibility": 9.0,
+      "q28_follow_up": 9.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 7.0,
+      "q31_constructive_opinions": 8.0,
+      "q32_growth_mindset": 9.0,
+      "q33_share_knowledge": 9.0,
+      "q34_praise_peers": null,
+      "q35_boundary_respect": null,
+      "q36_nps_recommend": null,
+      "q37_improvement_advice": "在今年有比較多與喻翔協作、開會的機會，有留意到有時再討論基金會議題的題目或承接工作任務時，喻翔有時候會較以「自己」的角度來分享看法（具體情境：聯合勸募），可能是表示：「要思考自己對於這件事情的感覺，或是這件事情帶給自己的價值」。我認為這些思考是重要的，也都可以討論，但我會期待能聽見更多，所以這些事情對於基金會的價值（專案上的價值）是什麼，那他是否有所看見，針對這些價值又能給予什麼回應。",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "喻翔的穩重，較具有框架的思考方式，在團隊中我認為算是非常互補的存在～也很謝謝你在整併期間，都會時刻提醒我們要記得一開始的目標、主動思考自己工作日常可能可以達成協作的地方。這樣橫向思考的能力，是非常不錯的！也有留意到喻翔在今年更能夠接受許多彈性與創新，開放地接受了許多新的任務（例如：酷童的營隊暖身活動、邀請酷童夥伴擔任講師），也在某次聊聊聽見喻翔對於 SL 的一些策略看見。綜合上述，我觀察到今年的小變化，我相信過程中一定經歷不少波折與努力，才能達到現在的狀態。辛苦啦！"
+    }
+  },
+  {
+    "timestamp": "2026/8/14 上午 9:49:54",
+    "email": "ivy@wellplanet.org.tw",
+    "target": "張芳媐",
+    "relation": "同事",
+    "job_role": "營運經理兼執行長特助",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 9.0,
+        "這名同事在工作上有多注重細節？": 6.0,
+        "這名同事有多常在期限內完成工作？ ": 9.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 9.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 9.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 7.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 9.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 9.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 9.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 9.0,
+        "這名同事對待你的界線有多尊重？ ": 9.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": null
+      },
+      "q24_cooperation": 9.0,
+      "q25_detail_oriented": 6.0,
+      "q26_on_time": 9.0,
+      "q27_flexibility": 9.0,
+      "q28_follow_up": 9.0,
+      "q29_transparency": 7.0,
+      "q30_open_to_opposing": 9.0,
+      "q31_constructive_opinions": 9.0,
+      "q32_growth_mindset": 9.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 9.0,
+      "q35_boundary_respect": 9.0,
+      "q36_nps_recommend": null,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "我很欣賞芳媐總是很積極主動、願意承擔許多團隊任務（不一定與營運職能這麼直接相關），是我非常喜歡＆期待的團隊氛圍，有因為芳媐的存在與出現，也讓我重新反思我自己對於工作、團隊的態度。也謝謝芳媐在蒐集到任何資訊時，都會想到可能需要的人，主動分享給大家，我覺得很溫暖！在許多時候都有留意到芳媐鬼靈精怪、充滿創意的想法，希望有機會能夠看見這些想法不只在我們基金會內部實踐，也可以運用在對外上！應該會蠻有趣的～"
+    }
+  },
+  {
+    "timestamp": "2026/8/14 上午 10:17:42",
+    "email": "ivy@wellplanet.org.tw",
+    "target": "何維安",
+    "relation": "同事",
+    "job_role": "品牌經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 8.0,
+        "這名同事在工作上有多注重細節？": 7.0,
+        "這名同事有多常在期限內完成工作？ ": 10.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 8.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 9.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 7.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 7.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 10.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": null,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 9.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 9.0,
+        "這名同事對待你的界線有多尊重？ ": 7.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 9.0
+      },
+      "q24_cooperation": 8.0,
+      "q25_detail_oriented": 7.0,
+      "q26_on_time": 10.0,
+      "q27_flexibility": 8.0,
+      "q28_follow_up": 9.0,
+      "q29_transparency": 7.0,
+      "q30_open_to_opposing": 7.0,
+      "q31_constructive_opinions": 10.0,
+      "q32_growth_mindset": null,
+      "q33_share_knowledge": 9.0,
+      "q34_praise_peers": 9.0,
+      "q35_boundary_respect": 7.0,
+      "q36_nps_recommend": 9.0,
+      "q37_improvement_advice": "品牌的事情很雜、多元，似乎也與全部人有關，但目前許多事情的權責劃分可能還沒很清楚。所以在一起協作的時候，有時會遇到我認為是專案部門決議的事情即可，但 VVN 有品牌介入的考量，有時候又會有我認為品牌應該要處理的範疇，但彼此尚無法達成共識等等情境.......希望在下個年度，可以慢慢把這些事情都盤點清楚，讓之後的合作更順暢\n也會希望 VVN 在邀請其他人一起給建議時，能夠把先備資訊說明得更完整（例如：品牌展地區的選擇），這樣可以讓我更知道怎麼協助、給想法，也能真正給予 VVN 需要的支持",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "VVN 在今年多了許多小夥伴！覺得很替你開心。過去一個人要承擔兒童、女性（新加入了NPO），TA 如此不同的服務對象，想必須要花許多時間消化梳理，才能把招募、對外文字處理的一致清楚。而 VVN 都做得好讚！非常厲害，是我完全無法做到的境界。在夥伴管理上，也能看見 VVN 是個帶人帶心的主管，會主動思考怎麼建立可以讓夥伴們工作地更順暢，怎麼安排需求，不會讓夥伴工作量爆炸等等，非常站在他人的角度思考，非常貼心唷！"
+    }
+  },
+  {
+    "timestamp": "2026/8/14 下午 12:38:30",
+    "email": "karina@wellplanet.org.tw",
+    "target": "戴佑珍",
+    "relation": "自評",
+    "job_role": "專案經理",
+    "self_eval": {
+      "job_role": "專案經理",
+      "top3_stable": [
+        "工作細心、鮮少出錯",
+        "準時、認真、當責",
+        "人際溝通、人際相處"
+      ],
+      "top3_practice": [
+        "向上管理、建立信任",
+        "面向目標、適應變動",
+        "開放心態、實驗精神"
+      ],
+      "values": {
+        "信任": "近期「信任」上的展現，我覺得是在品瑄與自身的期待中，我可以依循過去的框架，彈性長出這屆覺察班稍微不太一樣的樣貌，而當我有一些小卡點時，我也能自在地和主管、同儕討論交流，請教他們的觀點，詳細的事件分享如下幾題所述。",
+        "多元": "近期的在「多元」上的展現，我覺得很多是在跨部門或與工讀夥伴協作時，練習根據對方的工作習慣與風格，調整我們之間的協作或溝通方式。像是在和品瑄協作時，因為品瑄相對非常熟悉酷童進程與工作項目，所以僅需提供品瑄大框架，再交由其彈性發揮～而如果是和文倩、采妘協作時，我會盡可能提供詳細明確的任務指引與提前對焦。",
+        "實驗": "近期「實驗」面向的展現是從規劃覺察班導師面談、決定招募網站框架、家庭書審表單製作、說明會等過程中，一些細微但有根據去年觀察到的狀況而持續迭代、調整的內容。\n\n包括在設計導師面談題目時，根據今年期待的導師樣貌以及我當時對於導師人選特質的觀察，而增加 / 刪減的一些情境題（觀察導師在教育現場中的界線＆原則）、及讓提問的方式變得更為柔軟、循序漸進。\n\n以及與品牌夥伴討論覺察班的招募網站框架，今年仍以介紹覺察班為主軸，但是加入了更多整體計畫、對於招募家庭樣貌的描述，在招募資訊比去年更為具體詳細的情況下，我們一起觀察今年的招募報名軌跡，我覺得是很有趣的一次嘗試！（雖然初期報名人數少＆停滯，會讓人感到緊張～～）",
+        "可持續": "1. 內在韌性：最近一次讓我感到較有壓力的是規劃七月的覺察班線上說明會，感受到自己能夠展現韌性的表現是我會尋找自己需要的資源，參考 SL 也剛結束不久的說明會流程敘事及簡報架構；並向主管快速針對流程細節討論＆獲取反饋。同時也為自己正在做的事情創造意義感，我心裡會想著所做的事能夠幫助我自己更好地理解覺察班、也讓他人更理解覺察班在做什麼。\n\n2. 彈性的人際與工作邊界：我覺得自己的展現是不會過度好奇、介入同事夥伴的私人領域，但我願意在感受到對方（因公 / 私的原因）較忙碌疲憊時，適時關心並詢問我能為其做些什麼。最近一次有印象的故事是筑瑄前陣子病假，向品瑄詢問後與品牌夥伴協助眼界班入學通知的包裝與郵寄。"
+      },
+      "competencies": [
+        {
+          "title": "專案企劃與現場執行",
+          "answer": "1. 目前完整規劃課程的近一次經驗是第三屆覺察班 1 月份的『自我管理』課程，主要邀約該講師進行對焦會議、規劃細流、設計孩子回家任務、家庭行前對接，以及課後有和講師開了一次復盤會議。 這堂課中因為會有髒髒畫創作環節，所以事前印象中有比較詳細確認＆準備的是孩子的防護設備，我們有準備兒童手套和鞋套讓孩子自由選擇是否穿戴，畫室則有護目鏡、防護衣等必要設備。希望讓孩子同時兼顧安全與體驗感。整體而言，課程是順利結束的，不過我們與講師夥伴們的角色分工在現場出現了一些突發狀況，當下和現場的酷童夥伴有確認彼此感受與評估對孩子造成的影響後，課程結束後才與講師開了復盤會議，交流當天情況與下次可以如何更好。\n\n2. 目前完整規劃活動的近一次經驗是（1.） 第三屆覺察班 5 月份的『結業典禮』，擔任場控的角色，活動前進行內外部夥伴角色分工、撰寫細流、桌椅設置表、來賓邀約......，作為這個角色有盡可能做到的是事前完整預備各區域的媒材物資、讓工作夥伴都清楚自己在每個環節的任務、盤點可能會超時 / 可挪移的環節時間，當天確保夥伴有在工作位置上進行任務，順利的完成典禮流程，讓參與者體驗是舒服的。（2.）第四屆覺察班 7 月份的『線上招生說明會』規劃活動流程、製作簡報、邀請家長參與見證分享、撰寫 FQA......，因為是第一次嘗試使用 youtube 直播，對此我非常不熟悉，所以和文倩事前花了較多時間進行操作測試、設備架設，讓當天整體直播狀況是順暢的。另也希望讓參與家長的當場詢問能獲得即時回覆，所以事前整理了家長的（過往）常見提問，撰寫了十幾題的 FQA 訊息，讓家庭能在申請前更理解覺察班。"
+        },
+        {
+          "title": "專案時程與預算規劃管理",
+          "answer": "最近一次係針對第四屆覺察班進行時程和預算規劃，主要根據今年覺察班整體時程的提前和過往經驗（哪些項目會花比想像中還要長的時間）進行各節點的規劃。其中在規劃隔年度的預算時（因覺察班為跨年度課程）「公益組織參訪」課程的預期支出與平均能帶給每位孩子的效益（成本-效益評估）需要再重新協調，最終考量該堂課程性質與眼界班參訪課程相似，比照基金會對於參訪課程的預算基準，整併了該堂課的費用（以一整筆外包費用計算）"
+        },
+        {
+          "title": "需求研究與方案迭代",
+          "answer": "近期的經驗展開是在 4 - 5 月，本屆覺察班即將對外招募前，從過往的家庭申請資料爬梳、彙整了家庭的需求＆期待，而整理出的覺察班孩童學習路徑：從社會情緒學習五大面向出發，酷童期待孩子循序漸進養成的各項核心能力（e.g. 自我覺察、社會覺察、人際溝通技巧......）以及結業後期待孩子展現的樣貌（希望孩子能帶著哪些能力的養成，繼續前往下一階段的眼界班）。學習路徑的再梳理，接續影響的是覺察班每一堂課程的核心目標、課程與課程間的銜接，帶著對於課程核心目標的想像，與每堂課程的講師對焦課程大方向的維持＆變動。"
+        },
+        {
+          "title": "外部夥伴關係經營",
+          "answer": "近期的一次經驗是第三屆覺察班 5 月份的『結業典禮』，作為場控的角色，活動前為外部工讀夥伴們（小朱、橘子、珊珊）進行角色任務分工＆對接，他們在典禮前後協助分擔了場地佈置 / 復原、報到指引、燈光控制、導覽關卡協同帶領等任務，結束後夥伴分享很開心能有這樣的合作機會，與我們合作過程中也感到安心與被耐心回應。如果之後還有機會，我也希望能給予公外部夥伴們現場更具體清楚的指引（e.g. 場地復原時大家各自要做些什麼）"
+        },
+        {
+          "title": "多元教學設計與現場引導",
+          "answer": "今年中剛成為覺察班的負責夥伴，因此目前較無親自設計過一整堂課程的經驗。近期正為即將到來的覺察班家庭面談，設計孩子的團體遊戲。在進入正式遊戲前的小暖身活動，參考過往課堂的觀察經驗，設計了【情緒小怪獸】小孩個人創作活動，孩子將挑選喜歡的小怪獸（沒有表情、空白的），選出 3 個最能代表現在心情的顏色，為怪獸畫上表情，並加上任何想畫的東西。期待孩子們能藉由創作快速表達自我，同時也藉顏色選擇與創作過程，觀察孩子的情緒覺察與表達能力。進入第一個遊戲「物件排序任務」奠基在去年的框架上，我嘗試調整了題目的題型，第一輪為相對客觀的題目（讓孩子將五張圖案卡，從「最長」排到「最短」。）第二輪則為相對主觀的題目（從『最容易讓人放鬆』排到『最容易讓人緊張』）希望可以更多觀察到孩子們如何從自身生活經驗出發，表達＆傾聽不同經驗想法、換位思考能力的展現。"
+        },
+        {
+          "title": "其他創造的好事與預防的壞事",
+          "answer": ""
+        }
+      ],
+      "reflection": {
+        "未來一年想創造的價值": "",
+        "最常感到卡關/掙扎的階段": "三個月內",
+        "卡關具體原因描述": "回憶當時的感受，我認為是剛入職時對於自己的工作較沒有成就感，較無法感受到自己能對於團隊或組織的貢獻，同時也正在適應與主管 / 同事的協作方式。",
+        "希望組織當時提供的幫助": "",
+        "對願景使命理解與實踐的最大轉變": "我想應該會是我對於實踐「利他」有更廣闊的想像，孩子成為小助教支持下一屆眼界班的學員、孩子透過覺察班長成內在更穩定、可以在團體中更勇於表達自身感受＆想法、孩子參加完人生百味參訪課程後主動報名下一場為無家者送餐的活動......身為陪伴在孩子身邊的大人，我也更相信自己＆孩子能創造的影響力（就算很小、很隱微的轉變 / 行動，對我來說都非常有意義。）"
+      }
+    }
+  },
+  {
+    "timestamp": "2026/8/14 下午 1:49:21",
+    "email": "vivian@wellplanet.org.tw",
+    "target": "張芳媐",
+    "relation": "同事",
+    "job_role": "營運經理兼執行長特助",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 8.0,
+        "這名同事有多常在期限內完成工作？ ": 9.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 10.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 8.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 10.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 10.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 8.0,
+      "q26_on_time": 9.0,
+      "q27_flexibility": 10.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 8.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 10.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 10.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "覺得芳HSI遇到問題都很願意發問與討論，感受的到想要認真把工作做好的決心，提出方向建議也都樂於採納與傾聽，不怕麻煩的調整自己的工作事項，心態很正向！"
+    }
+  },
+  {
+    "timestamp": "2026/8/14 下午 2:46:42",
+    "email": "vivian@wellplanet.org.tw",
+    "target": "戴佑珍",
+    "relation": "同事",
+    "job_role": "專案經理",
+    "peer_eval": {
+      "q_scores": {
+        "這名同事與你的合作狀況如何？": 10.0,
+        "這名同事在工作上有多注重細節？": 10.0,
+        "這名同事有多常在期限內完成工作？ ": 8.0,
+        "當任務方向調整或目標變動時，這位同事是否能靈活調整，並主動與他人協調？": 9.0,
+        "這位同事是否能主動持續追蹤已承諾的事項，展現對工作的承擔？": 10.0,
+        "當這位同事提出想法或決策時，他有多常說明其想法/決策依據，幫助你理解他為什麼選這個做法？": 10.0,
+        "這名同事與其他人的溝通，有多願意接受反對或不同的意見？": 10.0,
+        "這名同事與其他人的溝通過程，有多常表達有建設性的觀點？": 9.0,
+        "當面對工作上的建議或批評時，這位同事是否能展現開放心態並調整行動？": 10.0,
+        "這位同事是否曾主動分享自己的工作經驗或資源，以幫助他人或提升團隊表現？": 8.0,
+        "這名同事有多持續而一致地讚美、肯定優秀的同事？": 10.0,
+        "這名同事對待你的界線有多尊重？ ": 10.0,
+        "你向其他同事在工作上，推薦這名同事的可能性有多大？ ": 8.0
+      },
+      "q24_cooperation": 10.0,
+      "q25_detail_oriented": 10.0,
+      "q26_on_time": 8.0,
+      "q27_flexibility": 9.0,
+      "q28_follow_up": 10.0,
+      "q29_transparency": 10.0,
+      "q30_open_to_opposing": 10.0,
+      "q31_constructive_opinions": 9.0,
+      "q32_growth_mindset": 10.0,
+      "q33_share_knowledge": 8.0,
+      "q34_praise_peers": 10.0,
+      "q35_boundary_respect": 10.0,
+      "q36_nps_recommend": 8.0,
+      "q37_improvement_advice": "",
+      "q38_other_comments": "",
+      "q39_starlight_thanks": "佑珍很像基金會的開心果，只要有佑珍在氣氛就會很好！"
+    }
+  },
+  {
+    "timestamp": "2026/8/14 下午 4:04:33",
+    "email": "anny@wellplanet.org.tw",
+    "target": "張希慈",
+    "relation": "自評",
+    "job_role": "執行長",
+    "self_eval": {
+      "job_role": "執行長",
+      "top3_stable": [
+        "向下管理、帶人帶心",
+        "向上管理、建立信任",
+        "情緒穩定、尊重界線"
+      ],
+      "top3_practice": [
+        "接受批評、有過就改",
+        "開放心態、實驗精神"
+      ],
+      "values": {
+        "信任": "在任務交付時完整說明背景脈絡後，交由部屬做出最終決定的主導權，像是在決定策展時，會清楚說明目的以後，讓品牌部門決定哪樣的方案最適合。",
+        "多元": "會保持意識自己的位置與個性都比較容易主動表達不同觀點，因此會特意請主管協助我讓比較難表達意見的成員更有機會表達意見與想法，比如特意在討論改變理論的會議中加入「邀請尚未發言的成員」可以發言的角色（VVN）。",
+        "實驗": "整個NPO EAP的方案即是一種嘗試、修正與反思的過程，過程會有一些錯誤的判斷（比如高估NPO成員對於心理諮商服務的使用率），但有立刻發現後討論修正的方法（比如讓單一使用者從三次使用額度補助調高到六次）。以及積極從方案中獲取使用者的意見，比如當了解有人比較不會使用牌卡，立刻討論明年的規劃是否要拿掉免費贈送的模式，改成補助的模式，減少捐贈資源的浪費。",
+        "可持續": "當知道 VVN 懷孕時，第一時間選擇讓她改成全遠端，減少懷孕風險，儘管在新人上任時期，也仍選擇尋找兼顧新兵上任的指導需求與讓主管可以安心懷孕的平衡（透過VVN主動有意識與ROO協作共同擔負指導責任）。"
+      },
+      "competencies": [
+        {
+          "title": "策略決策與組織方向設定",
+          "answer": "在這半年，我直接透過大量的對話，去制定出越來越明確且好理解的改變理論模型，並且協助工作夥伴都逐漸開始用自己的話進行敘述、開始逐步可以長出自己對於改變理論的理解與畫面。\n\n在來回討論、修正、請益的過程中，會消耗不少夥伴的時間，但會從夥伴的回饋中得知，這樣的討論對大家還說都是重要且有意義的，因此仍能有效推進這個改變理論的出現並維持工作方案的推進。"
+        },
+        {
+          "title": "組織治理與財務風險管理",
+          "answer": "明確增設「公共關係補助金」、「工讀生合作費用標準」，並且積極促成「標準講師費」的規則出現，讓不同方案得以有明確的規則制度去遵循，而不依賴人際關係、模糊的一次性標準去推動。\n\n不過度快速推動薪資調動與獎金調動，避免因制度思考不佳，而導致調薪反而造成反效果（比如認為不公平、或認為理所當然）的情形。\n\n另外，也因為過往有推動良民證的設計，讓這次酷童得以提前預防「講師的公關議題」延燒到主辦單位的風險。"
+        },
+        {
+          "title": "關鍵利害關係人關係建立與維繫",
+          "answer": "1.今年成功與大涵發展出NPO EAP的捐贈洽談（成功接洽到學籽與Hahow，雖然Hahow後續的捐贈不是太順利），以及完成與 Vivien 的基金會的簡報，進而確認了 20 萬元的 NPO EAP 捐贈。\n\n2.此外，百億計畫有成功順利幫基金會帶入三到五萬元的回捐收入。"
+        },
+        {
+          "title": "公關、演講與媒體關係",
+          "answer": "1.參與婦女權益促進基金會的長期培訓方案，協助好好星球成為政府培訓婦女團體更有經營治理概念的講師團隊成員，協助他們撰寫出版書寫NPO的良好治理策略，並且促成芳媐成為他們的助教之一。\n\n2.以英文作國際串連，協助串連好好星球在越南與相關專業人士的串連與提高相關人士對好好星球基金會的認知。\n\n3.曾經寫的親子天下專欄，以及該策略有成功觸及到彰師大學生，讓基金會能被動觸及更多有相似理念的行動者。\n\n4.參與 NPO Hub 的社群活動，加深與其他NPO的串連（包括特公盟、台灣友誼協會等），讓該單位對好好星球有正面印象\n\n5. 協助董事參與的世界和平婦女會尋找女力培訓營的講師、協助他們發布人才招募資訊等，讓該單位對好好星球有正面印象。\n\n6. 協助政府單位（青年署）執行百億計畫，幫助累積穩定的青年署與基金會的友好關係與實際合作實績。"
+        },
+        {
+          "title": "核心團隊培養與組織文化建立",
+          "answer": "由於現在的工作夥伴都相對資深，對於組織的影響力也會越來越舉足輕重，因此確認組織成員的穩定性成為對於組織是否能有效服務的相對重要策略。也就是說，一個正職成員的離開對於組織來說的傷害會比過往越來育高。\n\n也因此，組織架構重整（整合品牌部門、整合專案部門）都是因此而生的策略。儘管專案部門整合耗時較為巨大、複雜相當多，但目前為止，從旁觀察，有看到組織成員離去的風險有下降（比較不會感到未來的工作是無趣的）。此外，品牌部門的整合則是明顯看到更有效率、以及產出的結果，品牌經理VVN的責任感（資方觀點）則明顯提高（比如自己從自己的經驗出發，會理解資方聘用懷孕者是不容易的選擇）。"
+        },
+        {
+          "title": "其他創造的好事與預防的壞事",
+          "answer": ""
+        }
+      ],
+      "reflection": {
+        "未來一年想創造的價值": "包括執行長在內，讓代理人系統得以正式出現在組織當中，讓組織有足夠強大的韌性與自主性，避免組織因為過度依賴單一人才，得以更永續的解決問題。\n\n代理系統不只是補人，而是要同時思考不同人的職能在非代理時期的關係，以及是否會造成「人才過度培育卻缺乏舞台」的反效果。培育速度、人選、代理制度的設計目前都還是空白的，很期待這部份能推進。",
+        "最常感到卡關/掙扎的階段": "三個月內",
+        "卡關具體原因描述": "組織的策略、願景仍相對不清楚，很難確定行動是必要的。",
+        "希望組織當時提供的幫助": "更早提出關於改變理論的對話！",
+        "對願景使命理解與實踐的最大轉變": "越來越明確且得以打動大部分工作夥伴"
+      }
+    }
+  },
+  {
+    "timestamp": "2026/8/14 下午 5:04:50",
+    "email": "sandy@wellplanet.org.tw",
+    "target": "陳泳璇",
+    "relation": "自評",
+    "job_role": "行政經理",
+    "self_eval": {
+      "job_role": "行政經理",
+      "top3_stable": [
+        "工作細心、鮮少出錯",
+        "準時、認真、當責",
+        "情緒穩定、尊重界線"
+      ],
+      "top3_practice": [
+        "人際溝通、人際相處",
+        "開放心態、實驗精神",
+        "勇於表達，但不固執"
+      ],
+      "values": {
+        "信任": "我的工作比較屬於獨立作業，在請款方面的業務都能夠獨立行動完成。但因為所有業務，夥伴們都會需要請款、提供發票給我，我也需要了解各業務請款的內容跟費用等細節，會同時跟夥伴保持雙向溝通。\n\n遇到我不理解的問題(可能是請款、法規或業務工作等等)，我自己會主動先搜尋相關資料，若是無法有明確的答案，會與相關夥伴或會計詢問。",
+        "多元": "當討論事情(像是週會討論事項或是品牌跨部門會議)，我也會表達自己的觀點及建議給夥伴們參考，也接納不同的建議及想法，尊重每位夥伴的觀點。",
+        "實驗": "今年有更多的使用AI來協作工作，像是董事會會議紀錄有先請AI幫我整理，我再做整體調整！請款部分目前還在嘗試有沒有AI可以讓工作流程更順暢的部分。",
+        "可持續": "平時我很尊重每位夥伴的工作及個人邊界，同時他們需要幫忙時也會給予相關協助，像是VVN近期因為孕期不適在家工作，相關發票及單據他上傳後，表單他整個填寫一筆，後續我來協助他分開填寫(10張單據)。\n\n我自己平時就會平衡工作與生活，今年也開始做瑜珈運動，做好自我照顧！"
+      },
+      "competencies": [
+        {
+          "title": "人事薪資與人資系統管理",
+          "answer": "每月的人事薪資結算，我都會於月底時先提醒夥伴們補卡及申請請假、加班等，月初時盡量在2-3號前就將簽核完成的薪資傳票傳給會計請款，預留多一點時間給會計那邊進行撥款作業。\n\n人資系統部分，過往是由希慈這邊開設新進夥伴的帳號及資料建置，今年開始由我這邊進行相關作業，將相關資料都建置上去時，也同時檢查是否有需要更新的資料。夥伴們的勞健保退資料，都會於調薪時就馬上進行人資系統資料更新，同時也會將資料更新至勞健保退系統，避免遺漏。"
+        },
+        {
+          "title": "法規與政府公文管理",
+          "answer": "政府部門的函文，會以資料夾歸檔，若是夥伴們申請補助的函文，也會提醒他們要將文件放到資料夾中。目前我這邊大多是每年年度業務工作及預算跟年度工作報告及經費決算要向新北市政府文化局呈報相關資料，我自己都是直接在行事曆中設提醒，同時提前進行相關資料整理給希慈先看過，再提供給會計用印，盡量提前完成相關資料作業。\n\n有收到政府部門的文件或來電，會先跟希慈呈報，再進行後續相關的應對及作業流程。像上次新北市政府文化局來電通知我們要建置內控制度，我這邊先查詢了相關資料後，同時跟文化局詢問做完整後續建置流程的確認後，再跟希慈說明，節省後續一來一往的問答時間。"
+        },
+        {
+          "title": "董事會與治理作業執行",
+          "answer": "董事會的部分，目前因為都是使用研華會議室開會，我會於會議前一個月請喬和Tony協助預約研華VIP會議室，再發提醒信件給各位董事們，同時再請研華夥伴協助預約停車位的部分。後續就會與喬確認董事餐敘餐廳的部分，並於會議前一周將會議、停車位及餐廳等資訊mail給董事們。會後會議紀錄及內容紀要的部分，會盡量於1週內整理給大家。\n會議當天因為董事有可能臨時變動，會特別注意是否有收到相關訊息，再立即應對。像是餅哥當天早上變更車輛前往研華，就趕快通知研華夥伴協助變更車號，或是當天直接於櫃檯請他們協助變更車號。"
+        },
+        {
+          "title": "財務核銷與內控執行",
+          "answer": "財務核銷的部分，都沒有出錯。平時零用金代墊款請款不會每月只請款一次，我會每週確認金額是否太多，太多時當週就趕快進行請款。\n目前請款作業都是週五要mail給會計，我會盡量在週三時完成相關資料給希慈審核，也預留時間給喬簽核，才不會耽誤到請款時程。\n\n收到夥伴們提供的發票時，我會先檢查抬頭、統編及金額等內容，有錯誤就直接先退給夥伴們協助更正，避免我將單據帶走後才發現需要修正，會花費更多時間。\n\n遇到金額較大的款項時，會先跟夥伴確認費用是否有跟主管確認過，沒問題的話才會進行請款作業。"
+        },
+        {
+          "title": "總務採購與行政庶務管理",
+          "answer": "採購物品通常都是有需要時才會採購，也會多比較幾家價格再進行採購。\n\n公司用手機因為是需要儲值的，我會1-2週就確認手機訊息的剩餘金額，確保手機餘額充足。\n辦公室用衛生紙、垃圾袋、清潔用品也會定時做確認是否需要採購，不會等夥伴們告知用完了才進行採購。\n\n辦公室物資區的部分，預計等城浪將東西搬走之後，會請夥伴們一起進行大整理，將不要的東西都清掉。"
+        },
+        {
+          "title": "其他創造的好事與預防的壞事",
+          "answer": "5月要繳交去年度工作報告及經費決算時，我有請會計協助填寫相關年度財報金額及資料，過去他會先寄檔案給我，我這邊確認完後才會請他用印，但此次會計填寫完後直接印出用印寄給我，原本要直接繳交出去，結果我心血來潮想說對一下數字，就發現了數字有誤，趕緊修正後再請會計用印，也因為我平常作業都會預留時間，所以不會因為臨時發現錯誤需要多幾天作業時間而導致時程延誤。"
+        }
+      ],
+      "reflection": {
+        "未來一年想創造的價值": "上個月跟喬與夥伴們一起去參加了富邦X亞洲公益指數行動論壇，除了遇到我過去的同事，也遇到許多不同組織的人，在跟其他人交流的過程中，他們聽到基金會在做的事都非常認同且支持，只是完全沒有聽過我們基金會。過往大多是希慈去參加相關活動，當天參加的感想是未來夥伴們可以也多參與，時間允許我也可以一起參加，能夠串聯不同的資源，不只是合作，也可能是交流、請益等等(過往我們需要請益時都沒有太多相關人及組織可以請益)。\n\n目前專案部們因為夥伴人數比較多，他們可以彼此cover或代理相關的工作，但目前基金會在職務代理人部分沒有相對應的制度及方式，會希望在未來能夠將制度建立起來，對於每位夥伴來說都會是好事！(我之前都有陸續將工作的一些檔案文件整理歸檔，目前也將一些行政請款SOP流程、年度時程等等陸續記錄。)\n\n目前人資部分，我跟芳媐有各自分工的內容，目前大家可能是依據當下遇到的情況或需求決定要詢問我還是芳媐，後續會想整理細部分工的部分，讓夥伴們能夠更清楚知道哪些事務是詢問我，哪些是詢問芳媐。(但基本上目前我若是能夠解答的話，我都是先直接回覆~~)",
+        "最常感到卡關/掙扎的階段": "三個月內",
+        "卡關具體原因描述": "因為我本身不是會計專業，剛加入基金會時有很多會計相關的業務/專有名詞都不太理解，加上對接的會計是研華的夥伴，沒辦法在辦公室就能夠見面討論、詢問，當時也有一段時間需要熟悉業務進行相關學習，也很感謝研華的會計很有耐心地教我。\n\n要成立基金會時，因為是從零開始申請基金會的成立，我也沒有相關經驗，很多東西都是第一次，也沒有什麼人可以詢問，只能自己上網查找資料、準備相關資料，也跟新北市文化局詳細詢問不了解的事項，一步一步慢慢完成。\n\n後續基金會申報的業務，因為我都是第一次接觸，當時怡如也有教我很多東西，也有提供很多進修的資源給我，後續網路申報時，研華會計也提供我許多申報流程範例，我準備好資料後，他也手把手帶我操作進行。",
+        "希望組織當時提供的幫助": "因為我是屬於會先查找資料，不懂就詢問、尋找協助的人，所以當時都有收到許多人的協助，也很感謝大家！",
+        "對願景使命理解與實踐的最大轉變": "對於後勤工作的我來說，這份工作雖然一樣是行政工作，但我很清楚基金會的願景跟使命，且今年基金會在改變理論上也有更明確且完整的論述，這讓我更加明白這不只是一份工作，也是在做對於社會有幫助、有意義且有正向影響力的事！"
+      }
+    }
+  }
+];
+
+    // UPDATED OFFICIAL ORG & TITLES
+    const SUPERVISOR_TEAMS = {
+      "張希慈": ["何維安", "陳泳璇", "張芳媐", "姚品瑄", "胡喻翔"],
+      "何維安": ["林文琇"],
+      "姚品瑄": ["薛筑瑄", "戴佑珍"],
+      "張希慈_執行長": ["張希慈"],
+      "ALL": ["何維安", "陳泳璇", "張芳媐", "姚品瑄", "胡喻翔", "林文琇", "薛筑瑄", "戴佑珍", "張希慈"]
+    };
+
+    const MEMBER_SUPERVISOR_MAP = {
+      "何維安": "張希慈",
+      "陳泳璇": "張希慈",
+      "張芳媐": "張希慈",
+      "姚品瑄": "張希慈",
+      "胡喻翔": "張希慈",
+      "林文琇": "何維安",
+      "薛筑瑄": "姚品瑄",
+      "戴佑珍": "姚品瑄",
+      "張希慈": "董事會"
+    };
+
+    const ALL_MEMBERS = ["何維安", "陳泳璇", "張芳媐", "姚品瑄", "胡喻翔", "林文琇", "薛筑瑄", "戴佑珍", "張希慈"];
+
+    const JOB_ROLES_MAP = {
+      "張希慈": "執行長",
+      "陳泳璇": "行政經理",
+      "林文琇": "美感設計師",
+      "胡喻翔": "專案經理",
+      "張芳媐": "營運經理兼執行長特助",
+      "何維安": "品牌經理",
+      "姚品瑄": "部門儲備主管",
+      "薛筑瑄": "專案經理",
+      "戴佑珍": "專案經理"
+    };
+
+    const ROLE_COMPETENCIES = {
+      "執行長": ["策略決策與組織方向設定", "組織治理與財務風險管理", "關鍵利害關係人關係建立與維繫", "公關、演講與媒體關係", "核心團隊培養與組織文化建立", "其他創造的好事與預防的壞事"],
+      "行政經理": ["人事薪資與人資系統管理", "法規與政府公文管理", "董事會與治理作業執行", "財務核銷與內控執行", "總務採購與行政庶務管理", "其他創造的好事與預防的壞事"],
+      "美感設計師": ["品牌識別系統設計與維護", "視覺與美感設計實務", "需求釐清與創意提案", "其他創造的好事與預防的壞事"],
+      "專案經理": ["專案企劃與現場執行", "專案時程與預算規劃管理", "需求研究與方案迭代", "外部夥伴關係經營", "多元教學設計與現場引導", "其他創造的好事與預防的壞事"],
+      "營運經理兼執行長特助": ["組織營運流程設計與優化", "制度文件與 SOP 建置", "人力資源策略與選用育留", "執行長幕僚協調與跨部門推動", "總務採購與行政庶務管理", "其他創造的好事與預防的壞事"],
+      "品牌經理": ["品牌定位與外部溝通一致性", "行銷策略與議題倡議", "品牌活動策劃與策展敘事", "內部品牌管理與雇主品牌", "品牌危機與聲譽風險處理", "其他創造的好事與預防的壞事"],
+      "部門儲備主管": ["部門策略規劃與專案組合管理", "專案經理管理與培育", "部門預算與資源配置管理", "跨領域專業掌握與推進", "利害關係人管理與衝突協調", "其他創造的好事與預防的壞事"]
+    };
+
+    const SUPERVISOR_QUESTIONS = [
+      ["Q4", "日常賦能", "尋求協助（遇到困難時主動向主管尋求協助的容易度）", "q4_help_easy"],
+      ["Q5", "指導指引", "具體引導（主管給予具體指引與改善方向的頻率與清晰度）", "q5_guidance_freq"],
+      ["Q6", "個人成長", "改善幅度（主管回饋後個人能力與工作成果的改善幅度）", "q6_improve_degree"],
+      ["Q7", "推動協作", "跨部門推動（協助排除跨部門障礙與推動專案的領導力）", "q7_cross_dept"],
+      ["Q8", "資源配置", "資源評估（評估工作量與資源配置之合理性與同理心）", "q8_resource_eval"],
+      ["Q9", "心理安全", "失誤回應（面對失誤時以建設性方式回應與引導）", "q9_constructive_mistake"],
+      ["Q10", "肯定激勵", "肯定認可（看見並肯定部屬的努力與成果表現）", "q10_recognition"],
+      ["Q11", "交付成果", "工作成效（整體工作交付與專案目標推動之成效）", "q11_overall_performance"],
+      ["Q12", "信任文化", "【信任】表達想法（敢於向主管提出真實想法與疑慮）", "q12_trust_express"],
+      ["Q13", "多元文化", "【多元】聆聽意見（能接納不同觀點與多元做事方法）", "q13_diversity_listen"],
+      ["Q14", "實驗文化", "【實驗】嘗試創新（鼓勵嘗試新做法並給予實驗空間）", "q14_experiment_try"],
+      ["Q15", "實驗文化", "【實驗】試錯空間（具備足夠的心理安全感與試錯包容）", "q15_experiment_psych_safety"],
+      ["Q16", "可持續文化", "【可持續】讚美肯定（經常給予夥伴正向回饋與肯定）", "q16_sustain_praise"],
+      ["Q17", "可持續文化", "【可持續】尊重界線（尊重下班生活與身心自我照顧邊界）", "q17_sustain_boundary"],
+      ["Q18", "總體推薦", "NPS 推薦度（向他人推薦此主管領導的意願）", "q18_nps_recommend"],
+      ["Q19", "滿意程度", "整體滿意度（對主管領導管理方式之整體滿意程度）", "q19_satisfaction"],
+    ];
+
+    const PEER_QUESTIONS = [
+      ["Q24", "合作狀況", "合作狀況（溝通順暢度、資訊透明度、承諾事項達成率）", "q24_cooperation"],
+      ["Q25", "工作品質", "注重細節（工作成果之品質與細緻度）", "q25_detail_oriented"],
+      ["Q26", "專案進度", "準時完成（專案進度與時程掌控）", "q26_on_time"],
+      ["Q27", "變動彈性", "靈活調整（面對臨時變動與突發狀況的彈性）", "q27_flexibility"],
+      ["Q28", "追蹤承諾", "追蹤承諾（主動回報進度與承諾事項追蹤）", "q28_follow_up"],
+      ["Q29", "透明溝通", "說明決策依據（決策與工作方法透明度）", "q29_transparency"],
+      ["Q30", "多元文化", "【多元】接受不同意見（能開放聆聽反對觀點）", "q30_open_to_opposing"],
+      ["Q31", "多元文化", "【多元】提出建設性觀點（在討論中給予實質建議）", "q31_constructive_opinions"],
+      ["Q32", "實驗文化", "【實驗】開放調整（透過回饋持續迭代優化）", "q32_growth_mindset"],
+      ["Q33", "信任文化", "【信任】分享經驗與資源（主動協助夥伴）", "q33_share_knowledge"],
+      ["Q34", "可持續文化", "【可持續】讚美與肯定同儕（經常給予夥伴正向激勵）", "q34_praise_peers"],
+      ["Q35", "可持續文化", "【可持續】尊重工作界線（維護彼此身心健康與邊界）", "q35_boundary_respect"],
+      ["Q36", "NPS推薦", "NPS 推薦度（向他人推薦與此夥伴共事的意願）", "q36_nps_recommend"],
+    ];
+
+    // Local in-memory supervisor ratings state
+    let SUPERVISOR_EVAL_STATE = {};
+
+    let currentSubReviewTeam = '張希慈';
+    let currentSubReviewMember = '何維安';
+    let currentSupervisorFilter = '張希慈';
+    let currentSelfSupervisor = '張希慈';
+    let currentPeerFilter = 'ALL';
+    let currentPeerAnonMember = '何維安';
+
+    let supervisorRadar = null;
+    let supervisorBar = null;
+    let peerRadar = null;
+    let peerBar = null;
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      document.getElementById('toast-msg').innerText = msg;
+      toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+      }, 3500);
+    }
+
+    function toggleDropdown() {
+      const menu = document.getElementById('dropdownMenu');
+      if (menu) menu.classList.toggle('hidden');
+    }
+
+    window.onclick = function(e) {
+      if (!e.target.closest('#exportDropdown')) {
+        const menu = document.getElementById('dropdownMenu');
+        if (menu && !menu.classList.contains('hidden')) menu.classList.add('hidden');
+      }
+    };
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-[#557A61]', 'text-[#2D5239]', 'bg-[#E4ECD3]/30', 'font-semibold');
+        btn.classList.add('border-transparent', 'text-[#6E6662]', 'font-medium');
+      });
+      const activeBtn = document.getElementById('tab-btn-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.add('border-[#557A61]', 'text-[#2D5239]', 'bg-[#E4ECD3]/30', 'font-semibold');
+        activeBtn.classList.remove('border-transparent', 'text-[#6E6662]');
+      }
+
+      document.querySelectorAll('.tab-content').forEach(sec => sec.classList.add('hidden'));
+      const activeSec = document.getElementById('tab-section-' + tabId);
+      if (activeSec) activeSec.classList.remove('hidden');
+
+      if (tabId === 'subReview') renderSubReviewSection();
+      else if (tabId === 'supervisor') renderSupervisorSection();
+      else if (tabId === 'self') renderSelfSection();
+      else if (tabId === 'peerAnon') renderPeerAnonSection();
+      else if (tabId === 'peer') renderPeerSection();
+    }
+
+    // =========================================================================
+    // TAB: 自評 vs 主管評對照（主管填核回傳）
+    // =========================================================================
+    function filterSubReviewTeam(supKey) {
+      currentSubReviewTeam = supKey;
+      document.querySelectorAll('.sub-team-btn').forEach(btn => {
+        btn.classList.remove('bg-[#557A61]', 'text-white', 'font-semibold');
+        btn.classList.add('bg-[#F2EEE6]', 'text-[#4A433E]', 'font-medium');
+      });
+      const activeBtn = document.getElementById('sub-team-btn-' + supKey);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-[#557A61]', 'text-white', 'font-semibold');
+        activeBtn.classList.remove('bg-[#F2EEE6]', 'text-[#4A433E]', 'font-medium');
+      }
+
+      const memberList = SUPERVISOR_TEAMS[supKey] || [];
+      if (!memberList.includes(currentSubReviewMember)) {
+        currentSubReviewMember = memberList[0] || '何維安';
+      }
+      renderSubReviewSection();
+    }
+
+    function selectSubReviewMember(memName) {
+      currentSubReviewMember = memName;
+      document.querySelectorAll('.sub-review-pill-btn').forEach(btn => {
+        btn.classList.remove('bg-[#557A61]', 'text-white', 'font-semibold');
+        btn.classList.add('bg-[#F2EEE6]', 'text-[#4A433E]', 'font-medium');
+      });
+      const activeBtn = document.getElementById('sub-mem-btn-' + memName);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-[#557A61]', 'text-white', 'font-semibold');
+        activeBtn.classList.remove('bg-[#F2EEE6]', 'text-[#4A433E]', 'font-medium');
+      }
+      renderSubReviewSection();
+    }
+
+    function updateSupervisorRating(memName, compTitle, lvl) {
+      if (!SUPERVISOR_EVAL_STATE[memName]) SUPERVISOR_EVAL_STATE[memName] = {};
+      if (!SUPERVISOR_EVAL_STATE[memName][compTitle]) SUPERVISOR_EVAL_STATE[memName][compTitle] = {};
+      SUPERVISOR_EVAL_STATE[memName][compTitle].level = lvl;
+      renderSubReviewSection();
+    }
+
+    function updateSupervisorFeedback(memName, compTitle, text) {
+      if (!SUPERVISOR_EVAL_STATE[memName]) SUPERVISOR_EVAL_STATE[memName] = {};
+      if (!SUPERVISOR_EVAL_STATE[memName][compTitle]) SUPERVISOR_EVAL_STATE[memName][compTitle] = {};
+      SUPERVISOR_EVAL_STATE[memName][compTitle].feedback = text;
+    }
+
+    function renderSubReviewSection() {
+      const memberList = SUPERVISOR_TEAMS[currentSubReviewTeam] || [];
+      const pillsContainer = document.getElementById('sub-review-member-pills');
+      if (pillsContainer) {
+        let phtml = `
+          <span class="text-xs font-bold text-[#8C837C] mr-1 flex items-center gap-1.5 uppercase tracking-wider">
+            <i data-lucide="user-check" class="w-3.5 h-3.5 text-[#557A61]"></i> 選擇部屬報告：
+          </span>
+        `;
+        memberList.forEach(m => {
+          const isAct = m === currentSubReviewMember;
+          phtml += `
+            <button onclick="selectSubReviewMember('${m}')" id="sub-mem-btn-${m}" class="sub-review-pill-btn px-5 py-2 rounded-xl text-xs sm:text-sm transition ${isAct ? 'bg-[#557A61] text-white font-semibold shadow-xs' : 'bg-[#F2EEE6] text-[#4A433E] font-medium hover:bg-[#EBE4D8]'}">
+              ${m} (${JOB_ROLES_MAP[m] || '職位'})
+            </button>
+          `;
+        });
+        pillsContainer.innerHTML = phtml;
+      }
+
+      const expContainer = document.getElementById('sub-review-export-btn-container');
+      if (expContainer) {
+        expContainer.innerHTML = `
+          <button onclick="exportSingleSubordinateComprehensiveExcelClientSide('${currentSubReviewMember}')" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition border border-[#E0D7CA]">
+            <i data-lucide="download" class="w-4 h-4 text-[#557A61]"></i> 下載【${currentSubReviewMember}】自評vs主管評 XLSX
+          </button>
+        `;
+      }
+
+      const memName = currentSubReviewMember;
+      const jobRole = JOB_ROLES_MAP[memName] || "專案經理";
+      const supName = MEMBER_SUPERVISOR_MAP[memName] || "主管";
+
+      const peerRecords = RAW_DATA.filter(e => e.relation === "同事" && e.target === memName);
+      const numPeers = peerRecords.length;
+
+      const selfEntry = RAW_DATA.find(e => e.relation === "自評" && e.target === memName);
+      const hasSelf = Boolean(selfEntry && selfEntry.self_eval);
+      const se = hasSelf ? selfEntry.self_eval : null;
+
+      let allPeerScores = [];
+      let itemStats = [];
+
+      PEER_QUESTIONS.forEach(([qNo, qCat, qDesc, qKey]) => {
+        const scores = peerRecords.map(r => r.peer_eval ? r.peer_eval[qKey] : null).filter(v => v !== null && v !== undefined);
+        if (scores.length > 0) {
+          const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+          const best = Math.max(...scores);
+          const worst = Math.min(...scores);
+          allPeerScores.push(...scores);
+          itemStats.push({ qNo, qCat, qDesc, qKey, avg, best, worst, scores });
+        } else {
+          itemStats.push({ qNo, qCat, qDesc, qKey, avg: null, best: null, worst: null, scores: [] });
+        }
+      });
+
+      const overallPeerAvg = allPeerScores.length ? (allPeerScores.reduce((a, b) => a + b, 0) / allPeerScores.length).toFixed(2) : "-";
+      const validItems = itemStats.filter(it => it.avg !== null);
+      const sortedItems = [...validItems].sort((a, b) => b.avg - a.avg);
+      const topStrengths = sortedItems.slice(0, 3);
+      const bottomGrowth = [...sortedItems].reverse().slice(0, 3);
+
+      const npsVals = peerRecords.map(r => r.peer_eval?.q36_nps_recommend).filter(v => v !== null && v !== undefined);
+      const npsAvg = npsVals.length ? (npsVals.reduce((a, b) => a + b, 0) / npsVals.length).toFixed(2) : "-";
+
+      const compList = ROLE_COMPETENCIES[jobRole] || [];
+
+      // 1. SCREEN VIEW
+      const screenContainer = document.getElementById('sub-review-report-container');
+      if (screenContainer) {
+        screenContainer.innerHTML = `
+          <!-- REPORT HEADER BANNER -->
+          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 sm:p-8 soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-[#557A61] text-white font-bold flex items-center justify-center text-xl font-serif-tc shadow-xs">
+                ${memName.slice(0, 1)}
+              </div>
+              <div>
+                <div class="flex items-center gap-2.5 flex-wrap">
+                  <h2 class="text-xl sm:text-2xl font-bold text-[#2E2827] font-serif-tc">${memName} 自評 vs 主管評估對照表</h2>
+                  <span class="px-3 py-1 text-xs font-semibold rounded-lg bg-[#FCE5CD] text-[#783E16] border border-[#F3D1B0]">${jobRole}</span>
+                  ${hasSelf ? `
+                    <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[#E4ECD3] text-[#2D5239] border border-[#CDE0BC] flex items-center gap-1">
+                      <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> 部屬已自評
+                    </span>
+                  ` : `
+                    <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[#FFF4CD] text-[#7A5E12] border border-[#FCE299] flex items-center gap-1">
+                      <i data-lucide="clock" class="w-3.5 h-3.5"></i> 部屬尚未自評
+                    </span>
+                  `}
+                </div>
+                <p class="text-xs text-[#7A726D] mt-1">直屬主管：<b>${supName}</b> ｜ 同儕填答：<b>${numPeers}</b> 份 ｜ 評估週期：2026 年中評估</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 text-xs sm:text-sm">
+              <div class="px-4 py-2 rounded-xl bg-[#E4ECD3] text-[#2D5239] font-bold">
+                同儕平均：${overallPeerAvg} / 10分
+              </div>
+              <div class="px-4 py-2 rounded-xl bg-[#FCE5CD] text-[#8C4B1E] font-bold">
+                NPS 推薦：${npsAvg} 分
+              </div>
+            </div>
+          </div>
+
+          <!-- PART 1: 頂部同儕統計摘要卡片 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+              <div class="flex items-center justify-between pb-2">
+                <span class="text-xs font-bold text-[#8C837C] uppercase tracking-wider">同儕評分總平均</span>
+                <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="award" class="w-4 h-4"></i></div>
+              </div>
+              <div class="my-3">
+                <div class="text-3xl sm:text-4xl font-bold text-[#2E2827] font-serif-tc">${overallPeerAvg} <span class="text-xs text-[#8C837C] font-normal">/ 10分</span></div>
+              </div>
+              <div class="text-xs text-[#7A726D] flex items-center justify-between pt-3 border-t border-[#EFEAE1]">
+                <span>NPS 推薦：<b>${npsAvg}</b> 分</span>
+                <span>有效樣本：<b>${numPeers}</b> 份</span>
+              </div>
+            </div>
+
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+              <div class="flex items-center justify-between pb-2">
+                <span class="text-xs font-bold text-[#8C837C] uppercase tracking-wider">部屬工作特質</span>
+                <div class="p-2 bg-[#FCE5CD] text-[#783E16] rounded-xl"><i data-lucide="tag" class="w-4 h-4"></i></div>
+              </div>
+              <div class="my-2 space-y-1">
+                <div class="text-xs text-[#2D5239] font-medium truncate">最穩定：${(se?.top3_stable || []).join('、') || '（未填）'}</div>
+                <div class="text-xs text-[#8C4B1E] font-medium truncate">練習中：${(se?.top3_practice || []).join('、') || '（未填）'}</div>
+              </div>
+              <div class="text-xs text-[#7A726D] pt-3 border-t border-[#EFEAE1]">
+                部屬自評特質盤點
+              </div>
+            </div>
+
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+              <div class="flex items-center justify-between pb-2">
+                <span class="text-xs font-bold text-[#2D5239] uppercase tracking-wider flex items-center gap-1.5">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#557A61]"></i> 同儕評分最高 Top 3
+                </span>
+                <span class="badge-best px-2 py-0.5 text-[11px] font-bold rounded-md">亮點</span>
+              </div>
+              <div class="space-y-1.5 my-2">
+                ${topStrengths.length > 0 ? topStrengths.map(it => `
+                  <div class="text-xs flex items-center justify-between">
+                    <span class="truncate text-[#2E2827] font-medium mr-2">${it.qNo}. ${it.qDesc.split('（')[0]}</span>
+                    <span class="badge-best px-2 py-0.5 rounded font-bold shrink-0">${it.avg.toFixed(1)}分</span>
+                  </div>
+                `).join('') : '<div class="text-xs text-[#8C837C]">尚無同儕評分</div>'}
+              </div>
+              <div class="text-[11px] text-[#7A726D] pt-2 border-t border-[#EFEAE1]">最高給分達 ${topStrengths[0] ? topStrengths[0].best : '-'} 分</div>
+            </div>
+
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+              <div class="flex items-center justify-between pb-2">
+                <span class="text-xs font-bold text-[#8C4B1E] uppercase tracking-wider flex items-center gap-1.5">
+                  <i data-lucide="trending-up" class="w-3.5 h-3.5 text-[#C27D38]"></i> 相對待提升 Top 3
+                </span>
+                <span class="badge-worst px-2 py-0.5 text-[11px] font-bold rounded-md">成長</span>
+              </div>
+              <div class="space-y-1.5 my-2">
+                ${bottomGrowth.length > 0 ? bottomGrowth.map(it => `
+                  <div class="text-xs flex items-center justify-between">
+                    <span class="truncate text-[#2E2827] font-medium mr-2">${it.qNo}. ${it.qDesc.split('（')[0]}</span>
+                    <span class="badge-worst px-2 py-0.5 rounded font-bold shrink-0">${it.avg.toFixed(1)}分</span>
+                  </div>
+                `).join('') : '<div class="text-xs text-[#8C837C]">尚無同儕評分</div>'}
+              </div>
+              <div class="text-[11px] text-[#7A726D] pt-2 border-t border-[#EFEAE1]">最低給分落點 ${bottomGrowth[0] ? bottomGrowth[0].worst : '-'} 分</div>
+            </div>
+          </div>
+
+          <!-- PART 2: 組織文化實踐：部屬自評 vs 主管評核回饋 (一列一個面向) -->
+          <div class="space-y-5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="p-2 bg-[#F4CCCC] text-[#4A2426] rounded-xl"><i data-lucide="heart" class="w-5 h-5"></i></div>
+                <div>
+                  <h3 class="text-base sm:text-lg font-bold text-[#2E2827] font-serif-tc">一、組織文化實踐：部屬自評實例 vs 主管評核回饋</h3>
+                  <p class="text-xs text-[#7A726D]">四大文化面向一列一項，對照部屬自評 STAR 描述與主管回饋</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-[#E8E2D8] bg-[#FFFDF9] soft-card-shadow">
+              <table class="w-full text-xs sm:text-sm text-left border-collapse">
+                <thead class="bg-[#FCE5CD] text-[#4A2E1C]">
+                  <tr>
+                    <th class="py-3 px-4 font-bold text-center w-28 border-r border-[#E8E2D8]">文化面向</th>
+                    <th class="py-3 px-4 font-bold border-r border-[#E8E2D8] w-72">文化定義與行為指引</th>
+                    <th class="py-3 px-4 font-bold border-r border-[#E8E2D8]">部屬自評實例 (STAR)</th>
+                    <th class="py-3 px-4 font-bold w-80 bg-[#FFF2D6] text-[#B45309]">主管評核回饋與觀察</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#EFEAE1] bg-white">
+                  ${[
+                    ["信任", "【信任】獨立行動與決策、主動協作、雙向溝通，在高彈性下給予彼此信任", se?.values?.['信任']],
+                    ["多元", "【多元】尊重差異、多元工作方法、主動表達不同觀點與想法", se?.values?.['多元']],
+                    ["實驗", "【實驗】透過開放心態嘗試修正與反思，勇於檢討及給予回饋", se?.values?.['實驗']],
+                    ["可持續", "【可持續】內在韌性、自我照顧、彈性的人際與工作邊界", se?.values?.['可持續']],
+                  ].map(([cTitle, cDesc, cSelf]) => `
+                    <tr class="hover:bg-[#FAF7F2] transition">
+                      <td class="py-3.5 px-4 font-bold text-center text-[#2E2827] border-r border-[#E8E2D8] bg-[#FAF7F2]">${cTitle}</td>
+                      <td class="py-3.5 px-4 text-[#4A433E] border-r border-[#E8E2D8] text-xs leading-relaxed">${cDesc}</td>
+                      <td class="py-3.5 px-4 text-[#2E2827] border-r border-[#E8E2D8] leading-relaxed">
+                        ${cSelf || '<span class="text-[#B45309] italic">（部屬未填寫）</span>'}
+                      </td>
+                      <td class="py-3.5 px-4 bg-[#FFFDF9]">
+                        <textarea onblur="updateSupervisorFeedback('${memName}', '文化_${cTitle}', this.value)" placeholder="請輸入主管針對【${cTitle}】的回饋與觀察..." class="w-full text-xs p-2.5 rounded-xl border border-[#FCE299] bg-[#FFF2D6]/30 focus:bg-white transition focus:outline-[#557A61] resize-y" rows="2">${SUPERVISOR_EVAL_STATE[memName]?.[`文化_${cTitle}`]?.feedback || ''}</textarea>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PART 3: 專業職能：自評 vs 主管評分並列對照 (一列一個面向) -->
+          <div class="space-y-5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="briefcase" class="w-5 h-5"></i></div>
+                <div>
+                  <h3 class="text-base sm:text-lg font-bold text-[#2E2827] font-serif-tc">二、專業職能：自評 vs 主管評分並列對照（逐項比對認知差異）</h3>
+                  <p class="text-xs text-[#7A726D]">職能項目一列一項，並列呈現部屬自評實例、自評分數/等級與主管評核等級</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-[#E8E2D8] bg-[#FFFDF9] soft-card-shadow">
+              <table class="w-full text-xs sm:text-sm text-left border-collapse">
+                <thead class="bg-[#FCE5CD] text-[#4A2E1C]">
+                  <tr>
+                    <th class="py-3 px-3.5 font-bold text-center w-40 border-r border-[#E8E2D8]">職能項目</th>
+                    <th class="py-3 px-4 font-bold border-r border-[#E8E2D8]">部屬自評實例 (STAR)</th>
+                    <th class="py-3 px-3 font-bold text-center w-24 border-r border-[#E8E2D8] bg-[#FFF4CD] text-[#7A5E12]">部屬自評</th>
+                    <th class="py-3 px-3 font-bold text-center w-28 border-r border-[#E8E2D8] bg-[#FFF2D6] text-[#B45309]">主管評定</th>
+                    <th class="py-3 px-3 font-bold text-center w-24 border-r border-[#E8E2D8]">落差分析</th>
+                    <th class="py-3 px-4 font-bold w-68 bg-[#FFF2D6] text-[#B45309]">主管回饋與具體事證</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#EFEAE1] bg-white">
+                  ${compList.map(cTitle => {
+                    let selfAns = null;
+                    if (hasSelf && se.competencies) {
+                      const item = se.competencies.find(x => x.title === cTitle);
+                      if (item) selfAns = item.answer;
+                    }
+                    const supRating = SUPERVISOR_EVAL_STATE[memName]?.[cTitle]?.level || '';
+                    const supFb = SUPERVISOR_EVAL_STATE[memName]?.[cTitle]?.feedback || '';
+                    
+                    let gapBadge = '<span class="text-[#8C837C] text-xs">待主管評</span>';
+                    if (supRating) {
+                      gapBadge = '<span class="badge-best px-2 py-0.5 rounded text-xs font-bold">主管已評</span>';
+                    }
+
+                    return `
+                      <tr class="hover:bg-[#FAF7F2] transition">
+                        <td class="py-3.5 px-3.5 font-bold text-[#2E2827] border-r border-[#E8E2D8] bg-[#FAF7F2]">${cTitle}</td>
+                        <td class="py-3.5 px-4 text-[#2E2827] border-r border-[#E8E2D8] leading-relaxed">
+                          ${selfAns || '<span class="text-[#B45309] italic">（部屬未填寫自評實例）</span>'}
+                        </td>
+                        <td class="py-3.5 px-3 text-center border-r border-[#E8E2D8] bg-[#FFFDF9]">
+                          <span class="badge-missing px-2 py-0.5 rounded text-xs font-semibold">待問卷補齊</span>
+                        </td>
+                        <td class="py-3.5 px-3 text-center border-r border-[#E8E2D8] bg-[#FFF2D6]/40">
+                          <select onchange="updateSupervisorRating('${memName}', '${cTitle}', this.value)" class="text-xs font-bold p-1.5 rounded-lg border border-[#FCE299] bg-white focus:outline-[#557A61]">
+                            <option value="">選取</option>
+                            <option value="L5" ${supRating==='L5'?'selected':''}>L5 (Amazing!)</option>
+                            <option value="L4" ${supRating==='L4'?'selected':''}>L4 (Good)</option>
+                            <option value="L3" ${supRating==='L3'?'selected':''}>L3 (Keep)</option>
+                            <option value="L2" ${supRating==='L2'?'selected':''}>L2 (Grow)</option>
+                            <option value="L1" ${supRating==='L1'?'selected':''}>L1 (Start)</option>
+                          </select>
+                        </td>
+                        <td class="py-3.5 px-3 text-center border-r border-[#E8E2D8]">${gapBadge}</td>
+                        <td class="py-3.5 px-4 bg-[#FFFDF9]">
+                          <textarea onblur="updateSupervisorFeedback('${memName}', '${cTitle}', this.value)" placeholder="輸入主管針對此職能的評語與建議..." class="w-full text-xs p-2 rounded-xl border border-[#FCE299] bg-[#FFF2D6]/30 focus:bg-white transition focus:outline-[#557A61] resize-y" rows="2">${supFb}</textarea>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PART 4: 同儕質化文字回饋 -->
+          <div class="space-y-5">
+            <div class="flex items-center gap-2.5">
+              <div class="p-2 bg-[#FCE5CD] text-[#783E16] rounded-xl"><i data-lucide="message-square" class="w-5 h-5"></i></div>
+              <div>
+                <h3 class="text-base sm:text-lg font-bold text-[#2E2827] font-serif-tc">三、同儕質化文字回饋彙整</h3>
+                <p class="text-xs text-[#7A726D]">彙整同儕針對工作提升建議、其他補充觀察與星光感謝詞</p>
+              </div>
+            </div>
+
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 sm:p-8 soft-card-shadow space-y-6">
+              <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                <div class="text-xs sm:text-sm font-bold text-[#557A61] flex items-center gap-2">
+                  <i data-lucide="trending-up" class="w-4 h-4"></i> Q37. 工作與文化提升建議
+                </div>
+                <div class="space-y-2.5">
+                  ${numPeers > 0 ? peerRecords.map((r, i) => `
+                    <div class="bg-white rounded-xl p-4 border border-[#E8E2D8] shadow-2xs">
+                      <span class="text-xs font-bold text-[#8C837C] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
+                      <p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${r.peer_eval?.q37_improvement_advice || '（無填寫）'}</p>
+                    </div>
+                  `).join('') : '<p class="text-xs text-[#8C837C]">目前尚無同儕填答回饋</p>'}
+                </div>
+              </div>
+
+              <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2">
+                  <i data-lucide="message-circle" class="w-4 h-4 text-[#557A61]"></i> Q38. 其他補充評價與觀察
+                </div>
+                <div class="space-y-2.5">
+                  ${numPeers > 0 ? peerRecords.map((r, i) => `
+                    <div class="bg-white rounded-xl p-4 border border-[#E8E2D8] shadow-2xs">
+                      <span class="text-xs font-bold text-[#8C837C] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
+                      <p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${r.peer_eval?.q38_other_comments || '（無填寫）'}</p>
+                    </div>
+                  `).join('') : '<p class="text-xs text-[#8C837C]">目前尚無同儕填答回饋</p>'}
+                </div>
+              </div>
+
+              <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                <div class="text-xs sm:text-sm font-bold text-[#7A363A] flex items-center gap-2">
+                  <i data-lucide="award" class="w-4 h-4 text-[#D48B7B]"></i> Q39. 肯定與感謝的話（好好星光大賞）
+                </div>
+                <div class="space-y-2.5">
+                  ${numPeers > 0 ? peerRecords.map((r, i) => `
+                    <div class="bg-white rounded-xl p-4 border border-[#F4CCCC] shadow-2xs">
+                      <span class="text-xs font-bold text-[#8C5558] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
+                      <p class="text-xs sm:text-sm text-[#592629] font-medium leading-relaxed">${r.peer_eval?.q39_starlight_thanks || '（無填寫）'}</p>
+                    </div>
+                  `).join('') : '<p class="text-xs text-[#8C837C]">目前尚無同儕填答回饋</p>'}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // 2. PRINT VIEW
+      const printContainer = document.getElementById('sub-review-print-container');
+      if (printContainer) {
+        printContainer.innerHTML = `
+          <div style="text-align: center; margin-bottom: 14px;">
+            <div style="font-size: 10.5pt; letter-spacing: 2px; color: #555; margin-bottom: 3px;">財團法人好好星球文化基金會</div>
+            <div style="font-size: 16pt; font-weight: bold; color: #000; letter-spacing: 1px;">2026 年中 360 度組織成長評估報告</div>
+            <div style="font-size: 12pt; font-weight: bold; color: #2D5239; margin-top: 3px;">【自評 vs 主管評對照】${memName}（${jobRole}）綜合報告書</div>
+          </div>
+
+          <div class="word-doc-divider"></div>
+
+          <table class="word-doc-table">
+            <tbody>
+              <tr>
+                <th style="width: 18%; background-color: #E4ECD3;">部屬姓名</th>
+                <td style="width: 32%; font-weight: bold; font-size: 11pt;">${memName}</td>
+                <th style="width: 18%; background-color: #FCE5CD;">職位 / 職稱</th>
+                <td style="width: 32%; font-weight: bold;">${jobRole}</td>
+              </tr>
+              <tr>
+                <th>直屬主管</th>
+                <td style="font-weight: bold;">${supName}</td>
+                <th>評估週期</th>
+                <td>2026 年中評估 (H1)</td>
+              </tr>
+              <tr>
+                <th>同儕平均得分</th>
+                <td style="font-weight: bold; font-size: 11pt; color: #2D5239; background-color: #F8FAF6;">${overallPeerAvg} / 10.0 分</td>
+                <th>同儕樣本 / NPS</th>
+                <td>共 ${numPeers} 位同儕 ｜ NPS：${npsAvg} 分</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="word-doc-section">
+            <div class="word-sec-title">壹、組織文化實踐：部屬自評實例 vs 主管評核回饋</div>
+            <table class="word-doc-table">
+              <thead>
+                <tr style="background-color: #FCE5CD;">
+                  <th style="width: 12%;">文化面向</th>
+                  <th style="width: 28%;">定義說明</th>
+                  <th style="width: 32%;">部屬自評實例 (STAR)</th>
+                  <th style="width: 28%; background-color: #FFF2D6;">主管評核回饋</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${[
+                  ["【信任】", "獨立行動與決策、主動協作、雙向溝通", se?.values?.['信任']],
+                  ["【多元】", "尊重差異、多元工作方法、主動表達不同觀點", se?.values?.['多元']],
+                  ["【實驗】", "透過開放心態嘗試修正與反思，勇於檢討及給予回饋", se?.values?.['實驗']],
+                  ["【可持續】", "內在韌性、自我照顧、彈性的人際與工作邊界", se?.values?.['可持續']],
+                ].map(([cTitle, cDesc, cSelf]) => `
+                  <tr>
+                    <td style="text-align: center; font-weight: bold;">${cTitle}</td>
+                    <td>${cDesc}</td>
+                    <td>${cSelf || '（未填寫）'}</td>
+                    <td>${SUPERVISOR_EVAL_STATE[memName]?.[`文化_${cTitle.replace(/[【】]/g,'')}`]?.feedback || '【待主管填寫回饋】'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="word-doc-section">
+            <div class="word-sec-title">貳、專業職能：自評 vs 主管評分並列對照（逐項比對）</div>
+            <table class="word-doc-table">
+              <thead>
+                <tr style="background-color: #FCE5CD;">
+                  <th style="width: 20%;">職能項目</th>
+                  <th style="width: 32%;">部屬自評實例 (STAR)</th>
+                  <th style="width: 10%; background-color: #FFF4CD;">自評</th>
+                  <th style="width: 10%; background-color: #FFF2D6;">主管評</th>
+                  <th style="width: 28%; background-color: #FFF2D6;">主管回饋與具體事證</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${compList.map(cTitle => {
+                  let selfAns = null;
+                  if (hasSelf && se.competencies) {
+                    const item = se.competencies.find(x => x.title === cTitle);
+                    if (item) selfAns = item.answer;
+                  }
+                  const supLvl = SUPERVISOR_EVAL_STATE[memName]?.[cTitle]?.level || '【待評】';
+                  const supFb = SUPERVISOR_EVAL_STATE[memName]?.[cTitle]?.feedback || '【待主管填寫】';
+                  return `
+                    <tr>
+                      <td style="font-weight: bold; background-color: #FAFAFA;">${cTitle}</td>
+                      <td>${selfAns || '（部屬未填寫自評實例）'}</td>
+                      <td style="text-align: center;">待補</td>
+                      <td style="text-align: center; font-weight: bold; color: #B45309;">${supLvl}</td>
+                      <td>${supFb}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="word-doc-section">
+            <div class="word-sec-title">參、同儕質化具體文字回饋紀錄（全匿名整理）</div>
+            ${numPeers > 0 ? peerRecords.map((r, i) => `
+              <div class="word-feedback-block" style="margin-top: 8px; margin-bottom: 12px;">
+                <table class="word-doc-table">
+                  <thead>
+                    <tr>
+                      <th colspan="2" style="text-align: left; background-color: #EAE6DF; font-size: 9pt; padding: 5px 8px;">
+                        【同儕回饋 ${String.fromCharCode(65 + i)}】 ｜ NPS 推薦：${r.peer_eval?.q36_nps_recommend || '-'} 分 ｜ 合作評分：${r.peer_eval?.q24_cooperation || '-'} 分
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th style="width: 28%; text-align: left; vertical-align: top; background-color: #FAFAFA;">一、工作提升建議</th>
+                      <td style="width: 72%;">${r.peer_eval?.q37_improvement_advice || '（無填寫）'}</td>
+                    </tr>
+                    <tr>
+                      <th style="text-align: left; vertical-align: top; background-color: #FAFAFA;">二、其他補充評價</th>
+                      <td>${r.peer_eval?.q38_other_comments || '（無填寫）'}</td>
+                    </tr>
+                    <tr>
+                      <th style="text-align: left; vertical-align: top; background-color: #FAFAFA;">三、星光感謝詞</th>
+                      <td style="background-color: #FFFDF9; font-weight: 500;">${r.peer_eval?.q39_starlight_thanks || '（無填寫）'}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            `).join('') : '<div style="padding: 10px; font-style: italic; color: #888;">（目前尚無同儕填答回覆）</div>'}
+          </div>
+
+          <div class="print-footer">
+            財團法人好好星球文化基金會 · 2026 年中 360 度組織成長評估 · 【機密文件 供主管管理輔導專用】
+          </div>
+        `;
+      }
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    // ==========================================
+    // TAB: 評主管
+    // ==========================================
+    function filterSupervisor(name) {
+      currentSupervisorFilter = name;
+      document.querySelectorAll('.sup-filter-btn').forEach(btn => {
+        btn.classList.remove('bg-[#557A61]', 'text-white', 'font-semibold');
+        btn.classList.add('bg-[#F2EEE6]', 'text-[#4A433E]', 'font-medium');
+      });
+      const activeBtn = document.getElementById('sup-filter-btn-' + name);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-[#557A61]', 'text-white', 'font-semibold');
+        activeBtn.classList.remove('bg-[#F2EEE6]', 'text-[#4A433E]', 'font-medium');
+      }
+      renderSupervisorSection();
+    }
+
+    function renderSupervisorSection() {
+      let filtered = RAW_DATA.filter(e => e.relation === "主管");
+      if (currentSupervisorFilter !== 'ALL') {
+        filtered = filtered.filter(e => e.target === currentSupervisorFilter);
+      }
+
+      const supTitle = currentSupervisorFilter === 'ALL' ? '全體主管彙整' : currentSupervisorFilter;
+      const roleTitle = JOB_ROLES_MAP[currentSupervisorFilter] || '主管';
+
+      let allScoreValues = [];
+      let itemStatResults = [];
+
+      SUPERVISOR_QUESTIONS.forEach(([qNo, qCat, qDesc, qKey]) => {
+        const scores = filtered.map(e => e.supervisor_eval ? e.supervisor_eval[qKey] : null).filter(v => v !== null && v !== undefined);
+        if (scores.length > 0) {
+          const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+          const best = Math.max(...scores);
+          const worst = Math.min(...scores);
+          allScoreValues.push(...scores);
+          itemStatResults.push({ qNo, qCat, qDesc, qKey, avg, best, worst, scores });
+        } else {
+          itemStatResults.push({ qNo, qCat, qDesc, qKey, avg: null, best: null, worst: null, scores: [] });
+        }
+      });
+
+      const overallAvg = allScoreValues.length ? (allScoreValues.reduce((a, b) => a + b, 0) / allScoreValues.length).toFixed(2) : "-";
+      const validItems = itemStatResults.filter(it => it.avg !== null);
+      const sortedByAvg = [...validItems].sort((a, b) => b.avg - a.avg);
+      const topStrengths = sortedByAvg.slice(0, 3);
+      const bottomOpportunities = [...sortedByAvg].reverse().slice(0, 3);
+
+      const npsVals = filtered.map(e => e.supervisor_eval?.q18_nps_recommend).filter(v => v !== null && v !== undefined);
+      const npsScore = npsVals.length ? (npsVals.reduce((a,b)=>a+b, 0) / npsVals.length).toFixed(2) : "-";
+      const satVals = filtered.map(e => e.supervisor_eval?.q19_satisfaction).filter(v => v !== null && v !== undefined);
+      const satScore = satVals.length ? (satVals.reduce((a,b)=>a+b, 0) / satVals.length).toFixed(2) : "-";
+
+      const summaryCardsContainer = document.getElementById('sup-stat-summary-cards');
+      if (summaryCardsContainer) {
+        summaryCardsContainer.innerHTML = `
+          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+            <div class="flex items-center justify-between pb-2">
+              <span class="text-xs font-bold text-[#8C837C] uppercase tracking-wider">整體評分平均</span>
+              <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="award" class="w-4 h-4"></i></div>
+            </div>
+            <div class="my-3">
+              <div class="text-3xl sm:text-4xl font-bold text-[#2E2827] font-serif-tc">${overallAvg} <span class="text-xs text-[#8C837C] font-normal">/ 10分</span></div>
+            </div>
+            <div class="text-xs text-[#7A726D] flex items-center justify-between pt-3 border-t border-[#EFEAE1]">
+              <span>NPS 推薦：<b>${npsScore}</b> 分</span>
+              <span>整體滿意：<b>${satScore}</b> 分</span>
+            </div>
+          </div>
+
+          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+            <div class="flex items-center justify-between pb-2">
+              <span class="text-xs font-bold text-[#8C837C] uppercase tracking-wider">受評樣本數量</span>
+              <div class="p-2 bg-[#FCE5CD] text-[#783E16] rounded-xl"><i data-lucide="users" class="w-4 h-4"></i></div>
+            </div>
+            <div class="my-3">
+              <div class="text-3xl sm:text-4xl font-bold text-[#2E2827] font-serif-tc">${filtered.length} <span class="text-xs text-[#8C837C] font-normal">份回覆</span></div>
+            </div>
+            <div class="text-xs text-[#7A726D] pt-3 border-t border-[#EFEAE1]">受評對象：<b>${supTitle}</b></div>
+          </div>
+
+          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+            <div class="flex items-center justify-between pb-2">
+              <span class="text-xs font-bold text-[#2D5239] uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#557A61]"></i> 表現最好項目 (Top 3)
+              </span>
+              <span class="badge-best px-2 py-0.5 text-[11px] font-bold rounded-md">亮點</span>
+            </div>
+            <div class="space-y-1.5 my-2">
+              ${topStrengths.map(it => `
+                <div class="text-xs flex items-center justify-between">
+                  <span class="truncate text-[#2E2827] font-medium mr-2">${it.qNo}. ${it.qDesc.split('（')[0]}</span>
+                  <span class="badge-best px-2 py-0.5 rounded font-bold shrink-0">${it.avg.toFixed(1)}分</span>
+                </div>
+              `).join('')}
+            </div>
+            <div class="text-[11px] text-[#7A726D] pt-2 border-t border-[#EFEAE1]">最高給分達 ${topStrengths[0] ? topStrengths[0].best : 10} 分</div>
+          </div>
+
+          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+            <div class="flex items-center justify-between pb-2">
+              <span class="text-xs font-bold text-[#8C4B1E] uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5 text-[#C27D38]"></i> 相對待提升項目
+              </span>
+              <span class="badge-worst px-2 py-0.5 text-[11px] font-bold rounded-md">成長</span>
+            </div>
+            <div class="space-y-1.5 my-2">
+              ${bottomOpportunities.map(it => `
+                <div class="text-xs flex items-center justify-between">
+                  <span class="truncate text-[#2E2827] font-medium mr-2">${it.qNo}. ${it.qDesc.split('（')[0]}</span>
+                  <span class="badge-worst px-2 py-0.5 rounded font-bold shrink-0">${it.avg.toFixed(1)}分</span>
+                </div>
+              `).join('')}
+            </div>
+            <div class="text-[11px] text-[#7A726D] pt-2 border-t border-[#EFEAE1]">最低給分落點 ${bottomOpportunities[0] ? bottomOpportunities[0].worst : '-'} 分</div>
+          </div>
+        `;
+      }
+
+      const tbody = document.getElementById('sup-item-stats-tbody');
+      if (tbody) {
+        tbody.innerHTML = itemStatResults.map(it => {
+          const avgDisplay = it.avg !== null ? it.avg.toFixed(2) : "-";
+          const bestDisplay = it.best !== null ? it.best : "-";
+          const worstDisplay = it.worst !== null ? it.worst : "-";
+          const scoresDisplay = it.scores.length ? it.scores.join(", ") : "-";
+
+          let avgBadgeClass = "text-[#2E2827]";
+          if (it.avg !== null) {
+            if (it.avg >= 9.0) avgBadgeClass = "bg-[#E4ECD3] text-[#2D5239] font-bold px-2 py-0.5 rounded-md";
+            else if (it.avg <= 7.0) avgBadgeClass = "bg-[#FCE5CD] text-[#8C4B1E] font-bold px-2 py-0.5 rounded-md";
+          }
+
+          return `
+            <tr class="hover:bg-[#FAF7F2] transition">
+              <td class="py-3 px-3.5 text-center font-bold text-[#8C837C] border-r border-[#E8E2D8]">${it.qNo}</td>
+              <td class="py-3 px-3.5 text-center text-[#4A433E] border-r border-[#E8E2D8]">${it.qCat}</td>
+              <td class="py-3 px-4 text-[#2E2827] border-r border-[#E8E2D8] font-medium">${it.qDesc}</td>
+              <td class="py-3 px-3.5 text-center border-r border-[#E8E2D8]"><span class="${avgBadgeClass}">${avgDisplay}</span></td>
+              <td class="py-3 px-3.5 text-center font-bold text-[#2D5239] border-r border-[#E8E2D8]">${bestDisplay}</td>
+              <td class="py-3 px-3.5 text-center font-bold text-[#8C4B1E] border-r border-[#E8E2D8]">${worstDisplay}</td>
+              <td class="py-3 px-4 text-center text-xs text-[#7A726D]">${scoresDisplay}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      const avgOf = (k) => {
+        const it = itemStatResults.find(x => x.qKey === k);
+        return it && it.avg !== null ? it.avg.toFixed(1) : 0;
+      };
+
+      const cultureLabels = ["信任 (真實表達)", "多元 (聆聽意見)", "實驗 (嘗試創新)", "心理安全 (試錯空間)", "肯定 (讚美認可)", "可持續 (尊重界線)"];
+      const cultureData = [
+        avgOf('q12_trust_express'), avgOf('q13_diversity_listen'), avgOf('q14_experiment_try'),
+        avgOf('q15_experiment_psych_safety'), avgOf('q16_sustain_praise'), avgOf('q17_sustain_boundary')
+      ];
+
+      const mgmtLabels = ["尋求協助", "具體引導", "改善幅度", "跨部門推動", "資源評估", "失誤回應", "認可表現", "工作成效", "NPS推薦", "整體滿意"];
+      const mgmtData = [
+        avgOf('q4_help_easy'), avgOf('q5_guidance_freq'), avgOf('q6_improve_degree'),
+        avgOf('q7_cross_dept'), avgOf('q8_resource_eval'), avgOf('q9_constructive_mistake'),
+        avgOf('q10_recognition'), avgOf('q11_overall_performance'), avgOf('q18_nps_recommend'), avgOf('q19_satisfaction')
+      ];
+
+      const radarEl = document.getElementById('supervisorRadarChart');
+      if (radarEl && typeof Chart !== 'undefined') {
+        if (supervisorRadar) supervisorRadar.destroy();
+        supervisorRadar = new Chart(radarEl.getContext('2d'), {
+          type: 'radar',
+          data: {
+            labels: cultureLabels,
+            datasets: [{
+              label: supTitle,
+              data: cultureData,
+              backgroundColor: 'rgba(85, 122, 97, 0.2)',
+              borderColor: '#557A61',
+              pointBackgroundColor: '#557A61'
+            }]
+          },
+          options: { scales: { r: { min: 0, max: 10, ticks: { stepSize: 2 } } }, plugins: { legend: { display: false } } }
+        });
+      }
+
+      const barEl = document.getElementById('supervisorBarChart');
+      if (barEl && typeof Chart !== 'undefined') {
+        if (supervisorBar) supervisorBar.destroy();
+        supervisorBar = new Chart(barEl.getContext('2d'), {
+          type: 'bar',
+          data: { labels: mgmtLabels, datasets: [{ data: mgmtData, backgroundColor: '#557A61', borderRadius: 6 }] },
+          options: { scales: { y: { min: 0, max: 10 } }, plugins: { legend: { display: false } } }
+        });
+      }
+
+      const feedbackContainer = document.getElementById('supervisor-feedback-list');
+      if (feedbackContainer) {
+        feedbackContainer.innerHTML = filtered.map(e => {
+          const se = e.supervisor_eval || {};
+          return `
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 sm:p-8 soft-card-shadow space-y-6">
+              <div class="flex items-center justify-between border-b border-[#E8E2D8] pb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-[#557A61] text-white font-bold flex items-center justify-center text-sm font-serif-tc shadow-2xs">${e.target.slice(0, 1)}</div>
+                  <div>
+                    <span class="font-bold text-[#2E2827] text-base font-serif-tc">受評主管：${e.target}</span>
+                    <span class="text-xs text-[#8C837C] ml-2">（填答者：${e.email}）</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 text-xs sm:text-sm">
+                  <span class="px-3.5 py-1.5 rounded-xl bg-[#E4ECD3] text-[#2D5239] font-bold">NPS 推薦：${se.q18_nps_recommend || '-'} 分</span>
+                  <span class="px-3.5 py-1.5 rounded-xl bg-[#FCE5CD] text-[#8C4B1E] font-bold">滿意度：${se.q19_satisfaction || '-'} 分</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#557A61] flex items-center gap-2"><i data-lucide="compass" class="w-4 h-4"></i> Q20. 願景使命理解之引導</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.q20_vision_mission || '（無）'}</p></div>
+                </div>
+                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#783E16] flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-[#C27D38]"></i> Q21. 管理與文化精神建議</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.q21_improvement_advice || '（無）'}</p></div>
+                </div>
+                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="message-square" class="w-4 h-4 text-[#557A61]"></i> Q22. 其他補充評價</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.q22_other_comments || '（無）'}</p></div>
+                </div>
+                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#7A363A] flex items-center gap-2"><i data-lucide="award" class="w-4 h-4 text-[#D48B7B]"></i> Q23. 肯定與感謝詞（好好星光大賞）</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#F4CCCC] shadow-2xs"><p class="text-xs sm:text-sm text-[#592629] font-medium leading-relaxed">${se.q23_starlight_thanks || '（無）'}</p></div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    // ==========================================
+    // TAB: 自評 (依主管分流)
+    // ==========================================
+    function filterSelfSupervisor(supKey) {
+      currentSelfSupervisor = supKey;
+      document.querySelectorAll('.self-sup-btn').forEach(btn => {
+        btn.classList.remove('bg-[#557A61]', 'text-white', 'font-semibold');
+        btn.classList.add('bg-[#F2EEE6]', 'text-[#4A433E]', 'font-medium');
+      });
+      const activeBtn = document.getElementById('self-sup-btn-' + supKey);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-[#557A61]', 'text-white', 'font-semibold');
+        activeBtn.classList.remove('bg-[#F2EEE6]', 'text-[#4A433E]', 'font-medium');
+      }
+      renderSelfSection();
+    }
+
+    function renderSelfSection() {
+      const memberNames = SUPERVISOR_TEAMS[currentSelfSupervisor] || [];
+      const container = document.getElementById('self-eval-cards-container');
+      const bannerTitle = document.getElementById('self-team-title');
+      const bannerSub = document.getElementById('self-team-subtitle');
+      const compStatus = document.getElementById('self-completion-status');
+      const exportContainer = document.getElementById('self-export-btn-container');
+
+      if (bannerTitle && bannerSub) {
+        if (currentSelfSupervisor === '張希慈') {
+          bannerTitle.innerText = "【張希慈】部屬自評彙整";
+          bannerSub.innerText = "涵蓋部屬：何維安（品牌經理）、陳泳璇（行政經理）、張芳媐（營運經理兼執行長特助）、姚品瑄（部門儲備主管）、胡喻翔（專案經理）";
+        } else if (currentSelfSupervisor === '何維安') {
+          bannerTitle.innerText = "【何維安】部屬自評彙整";
+          bannerSub.innerText = "涵蓋部屬：林文琇（美感設計師）";
+        } else if (currentSelfSupervisor === '姚品瑄') {
+          bannerTitle.innerText = "【姚品瑄】部屬自評彙整";
+          bannerSub.innerText = "涵蓋部屬：薛筑瑄（專案經理）、戴佑珍（專案經理）";
+        } else if (currentSelfSupervisor === '張希慈_執行長') {
+          bannerTitle.innerText = "【張希慈】執行長個人自評";
+          bannerSub.innerText = "評估職位：執行長";
+        } else {
+          bannerTitle.innerText = "全組織自評總覽";
+          bannerSub.innerText = "查看基金會所有已填寫之自評紀錄";
+        }
+      }
+
+      if (exportContainer) {
+        exportContainer.innerHTML = `
+          <button onclick="exportSupervisorExcelClientSide('${currentSelfSupervisor}')" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+            下載本組主管專用 XLSX 表格 (Chunk 格式＋配色)
+          </button>
+        `;
+      }
+
+      let completedCount = 0;
+      let html = "";
+
+      memberNames.forEach(memName => {
+        const entry = RAW_DATA.find(e => e.target === memName && e.relation === "自評");
+        if (entry && entry.self_eval) {
+          completedCount++;
+          const se = entry.self_eval;
+          html += `
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] soft-card-shadow overflow-hidden">
+              <div class="chunk-header-banner px-6 py-5 flex flex-col md:flex-row md:items-center justify-between gap-3.5">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-2xl bg-[#3E2426] text-white font-bold flex items-center justify-center text-lg font-serif-tc shadow-2xs">${memName.slice(0, 1)}</div>
+                  <div>
+                    <div class="flex items-center gap-2.5">
+                      <h3 class="text-base sm:text-lg font-bold text-[#3E2426] font-serif-tc">${memName}</h3>
+                      <span class="px-3 py-1 text-xs font-semibold rounded-lg bg-[#FFFDF9] text-[#4A2E1C] border border-[#EED1B4]">${JOB_ROLES_MAP[memName] || se.job_role || '自評'}</span>
+                      <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[#E4ECD3] text-[#2D5239] border border-[#CDE0BC] flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> 已填寫自評</span>
+                    </div>
+                    <p class="text-xs text-[#7A4822] mt-1">${entry.email} · 填答時間：${entry.timestamp}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-6 sm:p-8 space-y-7">
+                <div>
+                  <div class="text-xs sm:text-sm font-bold text-[#8C837C] uppercase tracking-wider mb-3.5 flex items-center gap-2 font-serif-tc"><i data-lucide="tag" class="w-4 h-4 text-[#557A61]"></i> 一、工作特質盤點</div>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                      <div class="text-xs sm:text-sm font-bold text-[#2D5239] flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-[#557A61]"></i> 最穩定、最具代表性 Top 3</div>
+                      <div class="flex flex-wrap gap-2.5 pt-1">${(se.top3_stable || []).map(t => `<span class="badge-stable px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-xl shadow-2xs">${t}</span>`).join('')}</div>
+                    </div>
+                    <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                      <div class="text-xs sm:text-sm font-bold text-[#783E16] flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-[#C27D38]"></i> 目前在練習 / 期望發展 3 項</div>
+                      <div class="flex flex-wrap gap-2.5 pt-1">${(se.top3_practice || []).map(t => `<span class="badge-practice px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-xl shadow-2xs">${t}</span>`).join('')}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-xs sm:text-sm font-bold text-[#8C837C] uppercase tracking-wider mb-3.5 flex items-center gap-2 font-serif-tc"><i data-lucide="heart" class="w-4 h-4 text-[#557A61]"></i> 二、四大文化實踐實例 (STAR 敘述)</div>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                      <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> 信任 (Trust)</div>
+                      <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.values?.['信任'] || '（未填寫）'}</p></div>
+                    </div>
+                    <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                      <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> 多元 (Diversity)</div>
+                      <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.values?.['多元'] || '（未填寫）'}</p></div>
+                    </div>
+                    <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                      <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> 實驗 (Experiment)</div>
+                      <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.values?.['實驗'] || '（未填寫）'}</p></div>
+                    </div>
+                    <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                      <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> 可持續 (Sustainability)</div>
+                      <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.values?.['可持續'] || '（未填寫）'}</p></div>
+                    </div>
+                  </div>
+                </div>
+
+                ${se.competencies && se.competencies.length > 0 ? `
+                  <div>
+                    <div class="text-xs sm:text-sm font-bold text-[#8C837C] uppercase tracking-wider mb-3.5 flex items-center gap-2 font-serif-tc"><i data-lucide="briefcase" class="w-4 h-4 text-[#557A61]"></i> 三、${JOB_ROLES_MAP[memName] || se.job_role} 專屬職能展現實例</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      ${se.competencies.map(c => `
+                        <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                          <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2 font-serif-tc"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> ${c.title}</div>
+                          <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed whitespace-pre-line">${c.answer || '（未填寫）'}</p></div>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+                ` : ''}
+
+                ${se.reflection && Object.keys(se.reflection).length > 0 ? `
+                  <div>
+                    <div class="text-xs sm:text-sm font-bold text-[#8C837C] uppercase tracking-wider mb-3.5 flex items-center gap-2 font-serif-tc"><i data-lucide="help-circle" class="w-4 h-4 text-[#557A61]"></i> 四、組織卡關點反思與未來價值展望</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      ${Object.entries(se.reflection).map(([k, v]) => `
+                        <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                          <div class="text-xs sm:text-sm font-bold text-[#783E16] flex items-center gap-2 font-serif-tc"><i data-lucide="sparkle" class="w-3.5 h-3.5 text-[#C27D38]"></i> ${k}</div>
+                          <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#4A433E] leading-relaxed">${v || '（未填寫）'}</p></div>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          `;
+        } else {
+          html += `
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] soft-card-shadow p-7 flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-[#F2EEE6] text-[#8C837C] font-bold flex items-center justify-center text-lg font-serif-tc">${memName.slice(0, 1)}</div>
+                <div>
+                  <div class="flex items-center gap-2.5">
+                    <h3 class="text-base sm:text-lg font-bold text-[#2E2827] font-serif-tc">${memName}</h3>
+                    <span class="px-3 py-1 text-xs font-semibold rounded-lg bg-[#FCE5CD] text-[#783E16] border border-[#F3D1B0]">${JOB_ROLES_MAP[memName] || '職位'}</span>
+                    <span class="px-3 py-1 text-xs font-medium rounded-full bg-[#FFF4CD] text-[#7A5E12] border border-[#FCE299] flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5"></i> 尚未收到自評資料</span>
+                  </div>
+                  <p class="text-xs sm:text-sm text-[#8C837C] mt-1">此成員尚未於表單中送出自評紀錄，收到後上傳新 CSV 即可同步更新。</p>
+                </div>
+              </div>
+              <div class="text-xs font-semibold text-[#8C837C] px-3.5 py-1.5 bg-[#F2EEE6] rounded-xl">待填寫</div>
+            </div>
+          `;
+        }
+      });
+
+      if (compStatus) compStatus.innerText = `已填答 ${completedCount} / 應填 ${memberNames.length} 人`;
+      if (container) container.innerHTML = html;
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    // ==========================================
+    // TAB: 員工同儕匿名表 (逐題明細)
+    // ==========================================
+    function initPeerAnonPills() {
+      const container = document.getElementById('peer-anon-member-pills');
+      if (!container) return;
+      let html = `
+        <span class="text-xs font-bold text-[#8C837C] mr-1 flex items-center gap-1.5 uppercase tracking-wider">
+          <i data-lucide="user" class="w-3.5 h-3.5 text-[#557A61]"></i> 選擇員工報告：
+        </span>
+      `;
+      ALL_MEMBERS.forEach(m => {
+        html += `
+          <button onclick="selectPeerAnonMember('${m}')" id="peer-anon-btn-${m}" class="peer-anon-pill-btn px-5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
+            ${m} (${JOB_ROLES_MAP[m] || ''})
+          </button>
+        `;
+      });
+      container.innerHTML = html;
+      selectPeerAnonMember(currentPeerAnonMember);
+    }
+
+    function selectPeerAnonMember(name) {
+      currentPeerAnonMember = name;
+      document.querySelectorAll('.peer-anon-pill-btn').forEach(btn => {
+        btn.classList.remove('bg-[#557A61]', 'text-white', 'font-semibold');
+        btn.classList.add('bg-[#F2EEE6]', 'text-[#4A433E]', 'font-medium');
+      });
+      const activeBtn = document.getElementById('peer-anon-btn-' + name);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-[#557A61]', 'text-white', 'font-semibold');
+        activeBtn.classList.remove('bg-[#F2EEE6]', 'text-[#4A433E]', 'font-medium');
+      }
+      renderPeerAnonSection();
+    }
+
+    function renderPeerAnonSection() {
+      const name = currentPeerAnonMember;
+      const peerRecords = RAW_DATA.filter(e => e.relation === "同事" && e.target === name);
+      const container = document.getElementById('peer-anon-report-container');
+      const exportContainer = document.getElementById('peer-anon-export-btn-container');
+
+      if (exportContainer) {
+        exportContainer.innerHTML = `
+          <button onclick="exportSinglePeerAnonymousExcelClientSide('${name}')" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> 下載【${name}】同儕匿名報告 (XLSX)
+          </button>
+        `;
+      }
+
+      let numPeers = peerRecords.length;
+
+      let html = `
+        <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 sm:p-8 soft-card-shadow space-y-7">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E8E2D8] pb-5">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-[#557A61] text-white font-bold flex items-center justify-center text-xl font-serif-tc shadow-xs">${name.slice(0, 1)}</div>
+              <div>
+                <div class="flex items-center gap-2.5">
+                  <h2 class="text-xl sm:text-2xl font-bold text-[#2E2827] font-serif-tc">${name} 同儕匿名評估回饋表</h2>
+                  <span class="px-3 py-1 text-xs font-semibold rounded-lg bg-[#FCE5CD] text-[#783E16] border border-[#F3D1B0]">${JOB_ROLES_MAP[name] || '好好團隊夥伴'}</span>
+                </div>
+                <p class="text-xs text-[#8C837C] mt-1">共收到 <b>${numPeers}</b> 位同儕夥伴填答（已進行全匿名化去識別處理）</p>
+              </div>
+            </div>
+            <div class="text-xs sm:text-sm px-4 py-2 rounded-xl bg-[#E4ECD3] text-[#2D5239] font-bold">
+              同儕填答份數：${numPeers} 份
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-[#2E2827] mb-3.5 flex items-center gap-2 font-serif-tc"><i data-lucide="list-checks" class="w-4 h-4 text-[#557A61]"></i> 一、各評估題目同儕評分明細（滿分 10 分）</h3>
+            <div class="overflow-x-auto rounded-xl border border-[#E8E2D8]">
+              <table class="w-full text-xs sm:text-sm text-left border-collapse">
+                <thead class="bg-[#FCE5CD] text-[#4A2E1C]">
+                  <tr>
+                    <th class="py-3 px-3.5 font-bold text-center w-14 border-r border-[#E8E2D8]">題號</th>
+                    <th class="py-3 px-3.5 font-bold text-center w-24 border-r border-[#E8E2D8]">面向</th>
+                    <th class="py-3 px-4 font-bold border-r border-[#E8E2D8]">題目說明</th>
+                    <th class="py-3 px-3.5 font-bold text-center w-28 border-r border-[#E8E2D8] bg-[#E4ECD3]/60 text-[#2D5239]">同儕平均</th>
+                    ${Array.from({ length: Math.max(numPeers, 1) }).map((_, i) => `<th class="py-3 px-3 font-bold text-center w-16 border-r border-[#E8E2D8]">同儕 ${String.fromCharCode(65+i)}</th>`).join('')}
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#EFEAE1] bg-white">
+                  ${PEER_QUESTIONS.map(([qNo, qCat, qDesc, qKey]) => {
+                    const scores = peerRecords.map(r => r.peer_eval ? r.peer_eval[qKey] : null);
+                    const validScores = scores.filter(s => s !== null && s !== undefined);
+                    const avg = validScores.length ? (validScores.reduce((a, b) => a + b, 0) / validScores.length).toFixed(1) : "-";
+                    return `
+                      <tr class="hover:bg-[#FAF7F2] transition">
+                        <td class="py-3 px-3.5 text-center font-bold text-[#8C837C] border-r border-[#E8E2D8]">${qNo}</td>
+                        <td class="py-3 px-3.5 text-center text-[#4A433E] border-r border-[#E8E2D8]">${qCat}</td>
+                        <td class="py-3 px-4 text-[#2E2827] border-r border-[#E8E2D8]">${qDesc}</td>
+                        <td class="py-3 px-3.5 text-center font-bold text-[#2D5239] bg-[#E4ECD3]/20 border-r border-[#E8E2D8]">${avg}</td>
+                        ${numPeers > 0 ? scores.map(s => `<td class="py-3 px-3 text-center text-[#4A433E] border-r border-[#E8E2D8]">${s !== null && s !== undefined ? s : '-'}</td>`).join('') : '<td class="py-3 px-3 text-center text-[#8C837C]">-</td>'}
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-[#2E2827] mb-3.5 flex items-center gap-2 font-serif-tc"><i data-lucide="message-square" class="w-4 h-4 text-[#557A61]"></i> 二、同儕質化匿名回饋彙整</h3>
+            <div class="space-y-6">
+              <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                <div class="text-xs sm:text-sm font-bold text-[#557A61] flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4"></i> Q37. 工作與文化提升建議</div>
+                <div class="space-y-2.5">
+                  ${numPeers > 0 ? peerRecords.map((r, i) => `
+                    <div class="bg-white rounded-xl p-4 border border-[#E8E2D8] shadow-2xs">
+                      <span class="text-xs font-bold text-[#8C837C] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
+                      <p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${r.peer_eval?.q37_improvement_advice || '（無填寫）'}</p>
+                    </div>
+                  `).join('') : '<p class="text-xs text-[#8C837C]">目前尚無同儕回饋</p>'}
+                </div>
+              </div>
+              <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="message-circle" class="w-4 h-4 text-[#557A61]"></i> Q38. 其他補充評價與觀察</div>
+                <div class="space-y-2.5">
+                  ${numPeers > 0 ? peerRecords.map((r, i) => `
+                    <div class="bg-white rounded-xl p-4 border border-[#E8E2D8] shadow-2xs">
+                      <span class="text-xs font-bold text-[#8C837C] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
+                      <p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${r.peer_eval?.q38_other_comments || '（無填寫）'}</p>
+                    </div>
+                  `).join('') : '<p class="text-xs text-[#8C837C]">目前尚無同儕回饋</p>'}
+                </div>
+              </div>
+              <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                <div class="text-xs sm:text-sm font-bold text-[#7A363A] flex items-center gap-2"><i data-lucide="award" class="w-4 h-4 text-[#D48B7B]"></i> Q39. 肯定與感謝的話（好好星光大賞）</div>
+                <div class="space-y-2.5">
+                  ${numPeers > 0 ? peerRecords.map((r, i) => `
+                    <div class="bg-white rounded-xl p-4 border border-[#F4CCCC] shadow-2xs">
+                      <span class="text-xs font-bold text-[#8C5558] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
+                      <p class="text-xs sm:text-sm text-[#592629] font-medium leading-relaxed">${r.peer_eval?.q39_starlight_thanks || '（無填寫）'}</p>
+                    </div>
+                  `).join('') : '<p class="text-xs text-[#8C837C]">目前尚無同儕回饋</p>'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (container) container.innerHTML = html;
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    // ==========================================
+    // TAB: 評同事
+    // ==========================================
+    function initPeerPills() {
+      const peers = Array.from(new Set(RAW_DATA.filter(e => e.relation === "同事").map(e => e.target)));
+      const container = document.getElementById('peer-pills-container');
+      if (!container) return;
+      let html = `
+        <span class="text-xs font-bold text-[#8C837C] mr-1 flex items-center gap-1.5 uppercase tracking-wider"><i data-lucide="user" class="w-3.5 h-3.5 text-[#557A61]"></i> 受評同事：</span>
+        <button onclick="filterPeer('ALL')" id="peer-btn-ALL" class="peer-pill-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#557A61] text-white shadow-xs transition">全部 (${RAW_DATA.filter(e => e.relation === "同事").length}筆)</button>
+      `;
+      peers.forEach(p => {
+        const count = RAW_DATA.filter(e => e.relation === "同事" && e.target === p).length;
+        html += `
+          <button onclick="filterPeer('${p}')" id="peer-btn-${p}" class="peer-pill-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
+            ${p} (${count})
+          </button>
+        `;
+      });
+      container.innerHTML = html;
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function filterPeer(name) {
+      currentPeerFilter = name;
+      document.querySelectorAll('.peer-pill-btn').forEach(btn => {
+        btn.classList.remove('bg-[#557A61]', 'text-white', 'font-semibold');
+        btn.classList.add('bg-[#F2EEE6]', 'text-[#4A433E]', 'font-medium');
+      });
+      const activeBtn = document.getElementById('peer-btn-' + name);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-[#557A61]', 'text-white', 'font-semibold');
+        activeBtn.classList.remove('bg-[#F2EEE6]', 'text-[#4A433E]', 'font-medium');
+      }
+      renderPeerSection();
+    }
+
+    function renderPeerSection() {
+      let filtered = RAW_DATA.filter(e => e.relation === "同事");
+      if (currentPeerFilter !== 'ALL') filtered = filtered.filter(e => e.target === currentPeerFilter);
+
+      const avg = (key) => {
+        const vals = filtered.map(e => e.peer_eval && e.peer_eval[key]).filter(v => v !== null && v !== undefined);
+        return vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : 0;
+      };
+
+      const cultureLabels = ["多元 (接受意見)", "多元 (建設性觀點)", "實驗 (開放調整)", "信任 (分享經驗)", "肯定 (讚美同事)", "可持續 (尊重界線)"];
+      const cultureData = [avg('q30_open_to_opposing'), avg('q31_constructive_opinions'), avg('q32_growth_mindset'), avg('q33_share_knowledge'), avg('q34_praise_peers'), avg('q35_boundary_respect')];
+
+      const workLabels = ["合作狀況", "注重細節", "準時完成", "靈活調整", "追蹤承諾", "說明決策依據", "NPS推薦"];
+      const workData = [avg('q24_cooperation'), avg('q25_detail_oriented'), avg('q26_on_time'), avg('q27_flexibility'), avg('q28_follow_up'), avg('q29_transparency'), avg('q36_nps_recommend')];
+
+      const radarEl = document.getElementById('peerRadarChart');
+      if (radarEl && typeof Chart !== 'undefined') {
+        if (peerRadar) peerRadar.destroy();
+        peerRadar = new Chart(radarEl.getContext('2d'), {
+          type: 'radar',
+          data: {
+            labels: cultureLabels,
+            datasets: [{
+              label: currentPeerFilter === 'ALL' ? '全體同事平均' : currentPeerFilter,
+              data: cultureData,
+              backgroundColor: 'rgba(85, 122, 97, 0.2)',
+              borderColor: '#557A61',
+              pointBackgroundColor: '#557A61'
+            }]
+          },
+          options: { scales: { r: { min: 0, max: 10, ticks: { stepSize: 2 } } }, plugins: { legend: { display: false } } }
+        });
+      }
+
+      const barEl = document.getElementById('peerBarChart');
+      if (barEl && typeof Chart !== 'undefined') {
+        if (peerBar) peerBar.destroy();
+        peerBar = new Chart(barEl.getContext('2d'), {
+          type: 'bar',
+          data: { labels: workLabels, datasets: [{ data: workData, backgroundColor: '#557A61', borderRadius: 6 }] },
+          options: { scales: { y: { min: 0, max: 10 } }, plugins: { legend: { display: false } } }
+        });
+      }
+
+      const feedbackContainer = document.getElementById('peer-feedback-list');
+      if (feedbackContainer) {
+        feedbackContainer.innerHTML = filtered.map(e => {
+          const pe = e.peer_eval || {};
+          return `
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 sm:p-8 soft-card-shadow space-y-6">
+              <div class="flex items-center justify-between border-b border-[#E8E2D8] pb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-[#557A61] text-white font-bold flex items-center justify-center text-sm font-serif-tc shadow-2xs">${e.target.slice(0, 1)}</div>
+                  <div>
+                    <span class="font-bold text-[#2E2827] text-base font-serif-tc">受評同事：${e.target}</span>
+                    <span class="text-xs text-[#8C837C] ml-2">（填答者：${e.email}）</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 text-xs sm:text-sm">
+                  <span class="px-3.5 py-1.5 rounded-xl bg-[#E4ECD3] text-[#2D5239] font-bold">NPS 推薦：${pe.q36_nps_recommend || '-'} 分</span>
+                  <span class="px-3.5 py-1.5 rounded-xl bg-[#F2EEE6] text-[#4A433E] font-medium">合作評分：${pe.q24_cooperation || '-'} 分</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-[#557A61]"></i> Q37. 工作與文化提升建議</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${pe.q37_improvement_advice || '（無）'}</p></div>
+                </div>
+                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="message-square" class="w-4 h-4 text-[#557A61]"></i> Q38. 其他補充評價</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${pe.q38_other_comments || '（無）'}</p></div>
+                </div>
+                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#7A363A] flex items-center gap-2"><i data-lucide="award" class="w-4 h-4 text-[#D48B7B]"></i> Q39. 肯定與感謝詞</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#F4CCCC] shadow-2xs"><p class="text-xs sm:text-sm text-[#592629] font-medium leading-relaxed">${pe.q39_starlight_thanks || '（無）'}</p></div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    // ==========================================
+    // CLIENT-SIDE CSV PARSING
+    // ==========================================
+    function handleFileUpload(e) {
+      if (e.target.files && e.target.files.length > 0) parseCSVFile(e.target.files[0]);
+    }
+
+    function parseCSVFile(file) {
+      Papa.parse(file, {
+        header: false,
+        skipEmptyLines: true,
+        complete: function(results) {
+          if (!results.data || results.data.length < 2) {
+            alert("CSV 內容為空或格式不正確！");
+            return;
+          }
+          const rawRows = results.data.slice(1);
+          const header = results.data[0];
+
+          const newEntries = [];
+          rawRows.forEach(row => {
+            if (row.length < 4) return;
+            const timestamp = (row[0] || "").trim();
+            const email = (row[1] || "").trim();
+            const target = (row[2] || "").trim();
+            const relation = (row[3] || "").trim();
+            const job_role = JOB_ROLES_MAP[target] || (row[58] || "").trim();
+
+            const entry = { timestamp, email, target, relation, job_role };
+
+            if (relation === "主管") {
+              const scores = {};
+              for (let c = 4; c <= 19; c++) {
+                const val = (row[c] || "").trim();
+                scores[header[c]] = val ? parseFloat(val) : null;
+              }
+              entry.supervisor_eval = {
+                q_scores: scores,
+                q4_help_easy: scores[header[4]],
+                q5_guidance_freq: scores[header[5]],
+                q6_improve_degree: scores[header[6]],
+                q7_cross_dept: scores[header[7]],
+                q8_resource_eval: scores[header[8]],
+                q9_constructive_mistake: scores[header[9]],
+                q10_recognition: scores[header[10]],
+                q11_overall_performance: scores[header[11]],
+                q12_trust_express: scores[header[12]],
+                q13_diversity_listen: scores[header[13]],
+                q14_experiment_try: scores[header[14]],
+                q15_experiment_psych_safety: scores[header[15]],
+                q16_sustain_praise: scores[header[16]],
+                q17_sustain_boundary: scores[header[17]],
+                q18_nps_recommend: scores[header[18]],
+                q19_satisfaction: scores[header[19]],
+                q20_vision_mission: (row[20] || "").trim(),
+                q21_improvement_advice: (row[21] || "").trim(),
+                q22_other_comments: (row[22] || "").trim(),
+                q23_starlight_thanks: (row[23] || "").trim()
+              };
+            } else if (relation === "同事") {
+              const scores = {};
+              for (let c = 24; c <= 36; c++) {
+                const val = (row[c] || "").trim();
+                scores[header[c]] = val ? parseFloat(val) : null;
+              }
+              entry.peer_eval = {
+                q_scores: scores,
+                q24_cooperation: scores[header[24]],
+                q25_detail_oriented: scores[header[25]],
+                q26_on_time: scores[header[26]],
+                q27_flexibility: scores[header[27]],
+                q28_follow_up: scores[header[28]],
+                q29_transparency: scores[header[29]],
+                q30_open_to_opposing: scores[header[30]],
+                q31_constructive_opinions: scores[header[31]],
+                q32_growth_mindset: scores[header[32]],
+                q33_share_knowledge: scores[header[33]],
+                q34_praise_peers: scores[header[34]],
+                q35_boundary_respect: scores[header[35]],
+                q36_nps_recommend: scores[header[36]],
+                q37_improvement_advice: (row[37] || "").trim(),
+                q38_other_comments: (row[38] || "").trim(),
+                q39_starlight_thanks: (row[39] || "").trim()
+              };
+            } else if (relation === "自評") {
+              const top3_stable = (row[52] || "").split(",").map(s => s.trim()).filter(Boolean);
+              const top3_practice = (row[53] || "").split(",").map(s => s.trim()).filter(Boolean);
+              entry.self_eval = {
+                job_role,
+                top3_stable,
+                top3_practice,
+                values: {
+                  "信任": (row[54] || "").trim(),
+                  "多元": (row[55] || "").trim(),
+                  "實驗": (row[56] || "").trim(),
+                  "可持續": (row[57] || "").trim()
+                },
+                competencies: [],
+                reflection: {}
+              };
+            }
+            newEntries.push(entry);
+          });
+
+          RAW_DATA = newEntries;
+          renderSubReviewSection();
+          renderSupervisorSection();
+          renderSelfSection();
+          initPeerPills();
+          initPeerAnonPills();
+          showToast(`成功載入最新 CSV！共更新 ${newEntries.length} 筆填答紀錄。`);
+        }
+      });
+    }
+
+    // ==========================================
+    // CLIENT-SIDE XLSX EXPORT VIA EXCELJS
+    // ==========================================
+    const COLOR_PINK_BLUSH = "FFF4CCCC";
+    const COLOR_PEACH_CREAM = "FFFCE5CD";
+    const COLOR_WHITE = "FFFFFFFF";
+    const COLOR_WARN_BG = "FFFFF2D6";
+    const COLOR_SAGE_BG = "FFE4ECD3";
+
+    const thinBorder = {
+      top: { style: 'thin', color: { argb: 'FFD7CCC8' } },
+      left: { style: 'thin', color: { argb: 'FFD7CCC8' } },
+      bottom: { style: 'thin', color: { argb: 'FFD7CCC8' } },
+      right: { style: 'thin', color: { argb: 'FFD7CCC8' } }
+    };
+
+    const fontChunkTitle = { name: '微軟正黑體', size: 11, bold: true, color: { argb: 'FF3E2723' } };
+    const fontSubHeader = { name: '微軟正黑體', size: 10, bold: true, color: { argb: 'FF4E342E' } };
+    const fontBody = { name: '微軟正黑體', size: 9.5, color: { argb: 'FF2D2323' } };
+    const fontBodyBold = { name: '微軟正黑體', size: 9.5, bold: true, color: { argb: 'FF2D2323' } };
+    const fontWarnItalic = { name: '微軟正黑體', size: 9, italic: true, color: { argb: 'FFB45309' } };
+
+    const alignCenter = { horizontal: 'center', vertical: 'middle', wrapText: true };
+    const alignLeft = { horizontal: 'left', vertical: 'top', wrapText: true };
+    const alignHeader = { horizontal: 'center', vertical: 'middle', wrapText: true };
+
+    function styleRange(ws, startRow, startCol, endRow, endCol, font, fill, alignment) {
+      for (let r = startRow; r <= endRow; r++) {
+        for (let c = startCol; c <= endCol; c++) {
+          const cell = ws.getCell(r, c);
+          if (font) cell.font = font;
+          if (fill) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: fill } };
+          cell.border = thinBorder;
+          if (alignment) cell.alignment = alignment;
+        }
+      }
+    }
+
+    function buildSubordinateComprehensiveSheet(wb, memberName, allEntries) {
+      const ws = wb.addWorksheet(`【${memberName}】自評vs主管評`, { views: [{ showGridLines: true }] });
+      const jobRole = JOB_ROLES_MAP[memberName] || "專案經理";
+      const supName = MEMBER_SUPERVISOR_MAP[memberName] || "主管";
+      const peerRecords = allEntries.filter(e => e.relation === "同事" && e.target === memberName);
+      const numPeers = peerRecords.length;
+
+      const selfEntry = allEntries.find(e => e.relation === "自評" && e.target === memberName);
+      const hasSelf = Boolean(selfEntry && selfEntry.self_eval);
+      const se = hasSelf ? selfEntry.self_eval : null;
+
+      ws.columns = [{ width: 14 }, { width: 34 }, { width: 55 }, { width: 14 }, { width: 14 }, { width: 12 }, { width: 35 }];
+
+      ws.mergeCells(1, 1, 1, 7);
+      ws.getCell(1, 1).value = `好好星球文化基金會 360 年中成長評估 - 【${memberName}】部屬自評與主管評核對照表（主管專用）`;
+      styleRange(ws, 1, 1, 1, 7, { name: '微軟正黑體', size: 13, bold: true, color: { argb: 'FF3E2723' } }, COLOR_PINK_BLUSH, { horizontal: 'left', vertical: 'middle', indent: 1 });
+      ws.getRow(1).height = 30;
+
+      ws.mergeCells(2, 1, 2, 7);
+      ws.getCell(2, 1).value = `評估對象：${memberName}（${jobRole}） ｜ 直屬主管：${supName} ｜ 同儕樣本：${numPeers} 位 ｜ 自評狀態：${hasSelf ? '已完成自評' : '尚未自評'}`;
+      styleRange(ws, 2, 1, 2, 7, { name: '微軟正黑體', size: 10, bold: true, color: { argb: 'FF4E342E' } }, COLOR_PEACH_CREAM, { horizontal: 'left', vertical: 'middle', indent: 1 });
+      ws.getRow(2).height = 24;
+
+      let rIdx = 3;
+      // 1. 組織文化 (一列一個面向)
+      ws.mergeCells(rIdx, 1, rIdx, 7);
+      ws.getCell(rIdx, 1).value = "一、組織文化實踐：部屬自評實例 vs 主管評核回饋（一列一個面向）";
+      styleRange(ws, rIdx, 1, rIdx, 7, fontSubHeader, COLOR_PEACH_CREAM, { horizontal: 'left', vertical: 'middle', indent: 1 });
+      ws.getRow(rIdx).height = 24;
+      rIdx++;
+
+      const cultHeaders = ["文化面向", "文化定義與行為指引", "部屬自評實例 (STAR)", "自評等級", "主管評定", "落差分析", "主管評核回饋與觀察"];
+      cultHeaders.forEach((h, i) => ws.getCell(rIdx, i + 1).value = h);
+      styleRange(ws, rIdx, 1, rIdx, 7, fontSubHeader, COLOR_PEACH_CREAM, alignHeader);
+      ws.getRow(rIdx).height = 24;
+      rIdx++;
+
+      const cultRows = [
+        ["【信任】", "獨立行動與決策、主動協作、雙向溝通，在高彈性下給予彼此信任", se?.values?.['信任']],
+        ["【多元】", "尊重差異、多元工作方法、主動表達不同觀點與想法", se?.values?.['多元']],
+        ["【實驗】", "透過開放心態嘗試修正與反思，勇於檢討及給予回饋", se?.values?.['實驗']],
+        ["【可持續】", "內在韌性、自我照顧、彈性的人際與工作邊界", se?.values?.['可持續']],
+      ];
+
+      cultRows.forEach(([cTitle, cDesc, cSelf]) => {
+        ws.getCell(rIdx, 1).value = cTitle;
+        ws.getCell(rIdx, 2).value = cDesc;
+        ws.getCell(rIdx, 3).value = cSelf || "（部屬未填寫）";
+        ws.getCell(rIdx, 4).value = "不適用";
+        ws.getCell(rIdx, 5).value = "不適用";
+        ws.getCell(rIdx, 6).value = "質化對齊";
+        ws.getCell(rIdx, 7).value = SUPERVISOR_EVAL_STATE[memberName]?.[`文化_${cTitle.replace(/[【】]/g,'')}`]?.feedback || "【待主管填寫回饋】";
+
+        styleRange(ws, rIdx, 1, rIdx, 7, fontBody, COLOR_WHITE, alignLeft);
+        ws.getCell(rIdx, 1).alignment = alignCenter;
+        ws.getCell(rIdx, 1).font = fontBodyBold;
+        ws.getCell(rIdx, 4).alignment = alignCenter;
+        ws.getCell(rIdx, 5).alignment = alignCenter;
+        ws.getCell(rIdx, 6).alignment = alignCenter;
+        ws.getRow(rIdx).height = Math.max(26, Math.min(100, Math.floor((cSelf || "").length / 35 * 18) + 16));
+        rIdx++;
+      });
+
+      rIdx++;
+      // 2. 專業職能 (一列一個面向，自評 vs 主管評並列)
+      ws.mergeCells(rIdx, 1, rIdx, 7);
+      ws.getCell(rIdx, 1).value = `二、專業職能：自評 vs 主管評分並列對照【${jobRole}】（逐項比對認知差異）`;
+      styleRange(ws, rIdx, 1, rIdx, 7, fontSubHeader, COLOR_PEACH_CREAM, { horizontal: 'left', vertical: 'middle', indent: 1 });
+      ws.getRow(rIdx).height = 24;
+      rIdx++;
+
+      const compHeaders = ["職能項目", "職能定義與說明", "部屬自評實例 (STAR)", "部屬自評", "主管評定 (L1~L5)", "落差分析", "主管評語與回饋 (Feedback)"];
+      compHeaders.forEach((h, i) => ws.getCell(rIdx, i + 1).value = h);
+      styleRange(ws, rIdx, 1, rIdx, 7, fontSubHeader, COLOR_PEACH_CREAM, alignHeader);
+      ws.getRow(rIdx).height = 24;
+      rIdx++;
+
+      const compTitles = ROLE_COMPETENCIES[jobRole] || [];
+      compTitles.forEach(cT => {
+        let selfAns = null;
+        if (hasSelf && se.competencies) {
+          const item = se.competencies.find(x => x.title === cT);
+          if (item) selfAns = item.answer;
+        }
+
+        const supLvl = SUPERVISOR_EVAL_STATE[memberName]?.[cT]?.level || "";
+        const supFb = SUPERVISOR_EVAL_STATE[memberName]?.[cT]?.feedback || "【待主管填寫回饋】";
+
+        ws.getCell(rIdx, 1).value = cT;
+        ws.getCell(rIdx, 2).value = "核心專業職能";
+        ws.getCell(rIdx, 3).value = selfAns || "（部屬未填寫自評實例）";
+        ws.getCell(rIdx, 4).value = "待補齊";
+        ws.getCell(rIdx, 5).value = supLvl;
+        ws.getCell(rIdx, 6).value = supLvl ? "已評定" : "待主管評";
+        ws.getCell(rIdx, 7).value = supFb;
+
+        ws.getCell(rIdx, 5).dataValidation = {
+          type: 'list',
+          allowBlank: true,
+          formulae: ['"L1,L2,L3,L4,L5"'],
+          showErrorMessage: true,
+          errorTitle: '評分無效',
+          error: '請從下拉選單選取 L1 到 L5',
+          promptTitle: '等級選單',
+          prompt: '請選取：L1(Start), L2(Grow), L3(Keep), L4(Good), L5(Amazing!)'
+        };
+
+        styleRange(ws, rIdx, 1, rIdx, 7, fontBody, COLOR_WHITE, alignLeft);
+        ws.getCell(rIdx, 1).font = fontBodyBold;
+        ws.getCell(rIdx, 4).alignment = alignCenter;
+        ws.getCell(rIdx, 5).alignment = alignCenter;
+        ws.getCell(rIdx, 5).font = fontBodyBold;
+        ws.getCell(rIdx, 6).alignment = alignCenter;
+
+        ws.getRow(rIdx).height = Math.max(26, Math.min(100, Math.floor((selfAns || "").length / 35 * 18) + 16));
+        rIdx++;
+      });
+    }
+
+    async function exportSingleSubordinateComprehensiveExcelClientSide(memberName) {
+      const wb = new ExcelJS.Workbook();
+      buildSubordinateComprehensiveSheet(wb, memberName, RAW_DATA);
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      saveAs(blob, `部屬自評vs主管評對照表_【${memberName}】.xlsx`);
+      showToast(`已成功下載【${memberName}】自評vs主管評對照表 XLSX！`);
+    }
+
+    async function exportSupervisorTeamSubordinatesComprehensiveExcelClientSide(supName) {
+      const wb = new ExcelJS.Workbook();
+      const memberNames = SUPERVISOR_TEAMS[supName] || [];
+      memberNames.forEach(m => buildSubordinateComprehensiveSheet(wb, m, RAW_DATA));
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      saveAs(blob, `【${supName}主管專用】部屬自評vs主管評對照彙整包.xlsx`);
+      showToast(`已成功下載【${supName}】團隊部屬自評vs主管評對照 Excel 包！`);
+    }
+
+    async function exportSinglePeerAnonymousExcelClientSide(memberName) {
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet(`【${memberName}】同儕匿名回饋`);
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      saveAs(blob, `同儕匿名回饋_【${memberName}】.xlsx`);
+    }
+
+    async function exportFullWorkbookClientSide() {
+      const wb = new ExcelJS.Workbook();
+      ALL_MEMBERS.forEach(m => buildSubordinateComprehensiveSheet(wb, m, RAW_DATA));
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      saveAs(blob, "好好星球_360年中成長評估_主管分流與完整彙整表.xlsx");
+      showToast("已成功下載全組織 Master Excel 總表！");
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSubReviewSection();
+      renderSupervisorSection();
+      initPeerPills();
+      initPeerAnonPills();
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

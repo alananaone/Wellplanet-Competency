@@ -1,0 +1,449 @@
+import json
+import openpyxl
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.datavalidation import DataValidation
+
+with open("evaluation_data.json", "r", encoding="utf-8") as f:
+    entries = json.load(f)
+
+# Colors matching user's template (#F4CCCC, #FCE5CD) and warm unified aesthetic
+COLOR_PINK_BLUSH = "F4CCCC"   # Top chunk header (Soft coral blush)
+COLOR_PEACH_CREAM = "FCE5CD"  # Sub-table headers (Soft apricot cream)
+COLOR_WHITE = "FFFFFF"
+COLOR_LIGHT_ROW = "FAF7F5"    # Subtle zebra stripe
+COLOR_WARN_BG = "FFF2D6"      # Pending self-eval
+
+# Level Colors for rating table
+COLOR_L5_BG = "E4ECD3"        # Soft Sage (Amazing)
+COLOR_L4_BG = "E2F3F0"        # Soft Cyan (Good)
+COLOR_L3_BG = "FFF4CD"        # Soft Butter (Keep)
+COLOR_L2_BG = "FCE5CD"        # Soft Apricot (Grow)
+COLOR_L1_BG = "F4CCCC"        # Soft Coral (Start)
+
+fill_chunk_header = PatternFill(start_color=COLOR_PINK_BLUSH, end_color=COLOR_PINK_BLUSH, fill_type="solid")
+fill_sub_header = PatternFill(start_color=COLOR_PEACH_CREAM, end_color=COLOR_PEACH_CREAM, fill_type="solid")
+fill_light_row = PatternFill(start_color=COLOR_LIGHT_ROW, end_color=COLOR_LIGHT_ROW, fill_type="solid")
+fill_warn = PatternFill(start_color=COLOR_WARN_BG, end_color=COLOR_WARN_BG, fill_type="solid")
+fill_white = PatternFill(start_color=COLOR_WHITE, end_color=COLOR_WHITE, fill_type="solid")
+
+font_chunk_title = Font(name="微軟正黑體", size=11, bold=True, color="3E2723")
+font_sub_header = Font(name="微軟正黑體", size=10, bold=True, color="4E342E")
+font_body = Font(name="微軟正黑體", size=9.5, color="2D2323")
+font_body_bold = Font(name="微軟正黑體", size=9.5, bold=True, color="2D2323")
+font_sub_note = Font(name="微軟正黑體", size=9, italic=True, color="795548")
+font_warn = Font(name="微軟正黑體", size=9.5, bold=True, color="B45309")
+
+thin_border = Border(
+    left=Side(style='thin', color='D7CCC8'),
+    right=Side(style='thin', color='D7CCC8'),
+    top=Side(style='thin', color='D7CCC8'),
+    bottom=Side(style='thin', color='D7CCC8')
+)
+
+align_center = Alignment(horizontal="center", vertical="center", wrap_text=True)
+align_left = Alignment(horizontal="left", vertical="top", wrap_text=True)
+align_header = Alignment(horizontal="center", vertical="center", wrap_text=True)
+
+SUPERVISOR_TEAMS = {
+    "張希慈": ["何維安", "陳泳璇", "張芳媐", "姚品瑄", "胡喻翔"],
+    "何維安": ["林文琇"],
+    "姚品瑄": ["薛筑瑄", "戴佑珍"],
+    "張希慈_執行長": ["張希慈"]
+}
+
+RATING_GUIDE_ROWS = [
+    ("L5", "Amazing!", "遠超職位期待，表現為團隊之標竿與典範。", "讚賞其突出貢獻，探討經驗複製機制，在對話中轉為「帶其他人一起做」方向。", COLOR_L5_BG),
+    ("L4", "Good", "優於職位期待，持續展現高標準成果。", "肯定並具體指出哪些行為超出標準，設定具挑戰性的下一步目標。", COLOR_L4_BG),
+    ("L3", "Keep", "符合職位門檻，展現穩定的工作交付。", "確認穩定度，指出下一階可以往前之處，維持節奏並選一至兩項深化。", COLOR_L3_BG),
+    ("L2", "Grow", "部分符合，部分能力/行為仍在建立階段。", "說明落差所在，聚焦一項具體可練習的行為，納入下一期 IDP 設定指標。", COLOR_L2_BG),
+    ("L1", "Start", "目前的具體事證還看不到這項職能，或事證與職能要求落差明顯。", "明確對齊職位基本門檻與要求，提供即時支援與回饋引導。", COLOR_L1_BG),
+]
+
+def style_merged_range(ws, start_row, start_col, end_row, end_col, fill=None, border=thin_border):
+    for r in range(start_row, end_row + 1):
+        for c in range(start_col, end_col + 1):
+            cell = ws.cell(r, c)
+            if fill:
+                cell.fill = fill
+            if border:
+                cell.border = border
+
+def create_supervisor_chunk_sheet(ws, supervisor_name, member_names, all_entries):
+    ws.views.sheetView[0].showGridLines = True
+    
+    # 1. Title Banner (Merged A1:E1)
+    ws.merge_cells("A1:E1")
+    t_cell = ws.cell(1, 1, value=f"好好星球文化基金會 360 年中成長評估 - 【{supervisor_name}】部屬自評與主管評核表")
+    t_cell.font = Font(name="微軟正黑體", size=13, bold=True, color="3E2723")
+    t_cell.alignment = Alignment(horizontal="left", vertical="center", indent=1)
+    style_merged_range(ws, 1, 1, 1, 5, fill=fill_chunk_header, border=thin_border)
+    ws.row_dimensions[1].height = 32
+    
+    # 2. Rating Guide Section Header (Merged A2:E2)
+    ws.merge_cells("A2:E2")
+    guide_title = ws.cell(2, 1, value="職能評分標準與面向分數落點說明（不對員工公布分數與總分，只回饋落點）")
+    guide_title.font = Font(name="微軟正黑體", size=10.5, bold=True, color="3E2723")
+    guide_title.alignment = Alignment(horizontal="left", vertical="center", indent=1)
+    style_merged_range(ws, 2, 1, 2, 5, fill=fill_sub_header, border=thin_border)
+    ws.row_dimensions[2].height = 24
+
+    # 3. Rating Guide Table Headers
+    c_g1 = ws.cell(3, 1, value="等級 (Level)")
+    c_g2 = ws.cell(3, 2, value="落點名稱")
+    ws.merge_cells("C3:D3")
+    c_g3 = ws.cell(3, 3, value="定義說明")
+    c_g4 = ws.cell(3, 5, value="回饋語氣與後續動作")
+    
+    for c_cell in [c_g1, c_g2, c_g4]:
+        c_cell.font = font_sub_header
+        c_cell.fill = fill_sub_header
+        c_cell.alignment = align_header
+        c_cell.border = thin_border
+    c_g3.font = font_sub_header
+    c_g3.alignment = align_header
+    style_merged_range(ws, 3, 3, 3, 4, fill=fill_sub_header, border=thin_border)
+    ws.row_dimensions[3].height = 22
+
+    # 4. Rating Guide Rows (L5 to L1)
+    for idx, (lvl, name, definition, action, bg_color) in enumerate(RATING_GUIDE_ROWS, 4):
+        c1 = ws.cell(idx, 1, value=lvl)
+        c2 = ws.cell(idx, 2, value=name)
+        ws.merge_cells(start_row=idx, start_column=3, end_row=idx, end_column=4)
+        c3 = ws.cell(idx, 3, value=definition)
+        c4 = ws.cell(idx, 5, value=action)
+
+        row_fill = PatternFill(start_color=bg_color, end_color=bg_color, fill_type="solid")
+        for cell in [c1, c2, c4]:
+            cell.font = font_body
+            cell.border = thin_border
+            cell.fill = row_fill
+            cell.alignment = align_left
+        c1.alignment = align_center
+        c1.font = font_body_bold
+        c2.alignment = align_center
+        c2.font = font_body_bold
+        
+        c3.font = font_body
+        c3.alignment = align_left
+        style_merged_range(ws, idx, 3, idx, 4, fill=row_fill, border=thin_border)
+        ws.row_dimensions[idx].height = 26
+
+    # Setup Excel Data Validation for Competencies Lv. Column (L1 ~ L5 dropdown)
+    dv = DataValidation(type="list", formula1='"L1,L2,L3,L4,L5"', allow_blank=True)
+    dv.error = '請從下拉選單中選取 L1 到 L5'
+    dv.errorTitle = '評分無效'
+    dv.prompt = '請選取評核等級：L1(Start), L2(Grow), L3(Keep), L4(Good), L5(Amazing!)'
+    dv.promptTitle = '等級選單'
+    ws.add_data_validation(dv)
+
+    row_idx = 10
+    for member in member_names:
+        mem_entry = next((e for e in all_entries if e["target"] == member and e["relation"] == "自評"), None)
+        
+        # 1. Chunk Top Header Banner
+        ws.merge_cells(start_row=row_idx, start_column=1, end_row=row_idx, end_column=5)
+        role_str = mem_entry['self_eval']['job_role'] if mem_entry and mem_entry.get('self_eval') else "（尚未填寫自評）"
+        time_str = f" ｜ 填答時間：{mem_entry['timestamp']}" if mem_entry else ""
+        c = ws.cell(row_idx, 1, value=f"部屬姓名：{member}    ｜    職位：{role_str}{time_str}")
+        c.font = font_chunk_title
+        c.alignment = Alignment(horizontal="left", vertical="center", indent=1)
+        style_merged_range(ws, row_idx, 1, row_idx, 5, fill=fill_chunk_header, border=thin_border)
+        ws.row_dimensions[row_idx].height = 28
+        row_idx += 1
+        
+        if not mem_entry or not mem_entry.get("self_eval"):
+            ws.cell(row_idx, 1, value="自評狀態").font = font_body_bold
+            ws.cell(row_idx, 1).fill = fill_sub_header
+            ws.cell(row_idx, 1).border = thin_border
+            ws.cell(row_idx, 1).alignment = align_center
+            
+            ws.merge_cells(start_row=row_idx, start_column=2, end_row=row_idx, end_column=5)
+            c2 = ws.cell(row_idx, 2, value=f"目前表單中尚未收到 {member} 的自我評估回覆紀錄。收到新回覆後可重新載入。")
+            c2.font = font_warn
+            c2.alignment = Alignment(horizontal="left", vertical="center", indent=1)
+            style_merged_range(ws, row_idx, 2, row_idx, 5, fill=fill_warn, border=thin_border)
+            ws.row_dimensions[row_idx].height = 28
+            row_idx += 3
+            continue
+            
+        se = mem_entry["self_eval"]
+        
+        # 2. 工作特質盤點 Chunk (2-row structured table with merge & center)
+        ws.merge_cells(start_row=row_idx, start_column=1, end_row=row_idx+1, end_column=1)
+        c_trait_cat = ws.cell(row_idx, 1, value="工作特質盤點")
+        c_trait_cat.font = font_body_bold
+        c_trait_cat.alignment = align_center
+        style_merged_range(ws, row_idx, 1, row_idx+1, 1, fill=fill_sub_header, border=thin_border)
+        
+        # Row 1: Stable Top 3
+        c_t1_title = ws.cell(row_idx, 2, value="最穩定、最具代表性 Top 3")
+        c_t1_title.font = font_body_bold
+        c_t1_title.fill = fill_sub_header
+        c_t1_title.border = thin_border
+        c_t1_title.alignment = align_center
+        
+        ws.merge_cells(start_row=row_idx, start_column=3, end_row=row_idx, end_column=5)
+        c_t1_val = ws.cell(row_idx, 3, value="、".join(se.get("top3_stable", [])) or "（無）")
+        c_t1_val.font = font_body
+        c_t1_val.alignment = Alignment(horizontal="left", vertical="center", indent=1)
+        style_merged_range(ws, row_idx, 3, row_idx, 5, fill=fill_white, border=thin_border)
+        ws.row_dimensions[row_idx].height = 24
+        row_idx += 1
+        
+        # Row 2: Practice 3
+        c_t2_title = ws.cell(row_idx, 2, value="目前在練習 / 期望發展 3 項")
+        c_t2_title.font = font_body_bold
+        c_t2_title.fill = fill_sub_header
+        c_t2_title.border = thin_border
+        c_t2_title.alignment = align_center
+        
+        ws.merge_cells(start_row=row_idx, start_column=3, end_row=row_idx, end_column=5)
+        c_t2_val = ws.cell(row_idx, 3, value="、".join(se.get("top3_practice", [])) or "（無）")
+        c_t2_val.font = font_body
+        c_t2_val.alignment = Alignment(horizontal="left", vertical="center", indent=1)
+        style_merged_range(ws, row_idx, 3, row_idx, 5, fill=fill_white, border=thin_border)
+        ws.row_dimensions[row_idx].height = 24
+        row_idx += 1
+        
+        # 3. 四大文化實踐 Chunk Table (Merged Feedback for entire culture block; No Level)
+        ws.merge_cells(start_row=row_idx, start_column=1, end_row=row_idx, end_column=5)
+        c_sec2 = ws.cell(row_idx, 1, value="四大文化實踐實例（STAR 敘述）")
+        c_sec2.font = font_sub_header
+        c_sec2.alignment = Alignment(horizontal="left", vertical="center", indent=1)
+        style_merged_range(ws, row_idx, 1, row_idx, 5, fill=fill_sub_header, border=thin_border)
+        ws.row_dimensions[row_idx].height = 24
+        row_idx += 1
+        
+        headers_cult = ["評估面向", "四大文化定義與說明", "部屬自評實例 (STAR)", "", "組織文化整體主管回饋 (Feedback)"]
+        c_h1 = ws.cell(row_idx, 1, value=headers_cult[0])
+        c_h2 = ws.cell(row_idx, 2, value=headers_cult[1])
+        c_h3 = ws.cell(row_idx, 3, value=headers_cult[2])
+        ws.merge_cells(start_row=row_idx, start_column=4, end_row=row_idx, end_column=5)
+        c_h4 = ws.cell(row_idx, 4, value=headers_cult[4])
+
+        for cell in [c_h1, c_h2, c_h3]:
+            cell.font = font_sub_header
+            cell.fill = fill_sub_header
+            cell.alignment = align_header
+            cell.border = thin_border
+        c_h4.font = font_sub_header
+        c_h4.alignment = align_header
+        style_merged_range(ws, row_idx, 4, row_idx, 5, fill=fill_sub_header, border=thin_border)
+        ws.row_dimensions[row_idx].height = 24
+        row_idx += 1
+        
+        culture_rows = [
+            ("【信任】獨立行動與決策、主動協作、雙向溝通，在高彈性下給予彼此信任", se.get("values", {}).get("信任", "（無）")),
+            ("【多元】尊重差異、多元工作方法、主動表達不同觀點與想法", se.get("values", {}).get("多元", "（無）")),
+            ("【實驗】透過開放心態嘗試修正與反思，勇於檢討及給予回饋", se.get("values", {}).get("實驗", "（無）")),
+            ("【可持續】內在韌性、自我照顧、彈性的人際與工作邊界", se.get("values", {}).get("可持續", "（無）")),
+        ]
+        
+        start_cult_r = row_idx
+        for title, ans in culture_rows:
+            c2 = ws.cell(row_idx, 2, value=title)
+            c3 = ws.cell(row_idx, 3, value=ans)
+            
+            for cell in [c2, c3]:
+                cell.border = thin_border
+                cell.font = font_body
+                cell.alignment = align_left
+            
+            text_len = len(str(ans))
+            ws.row_dimensions[row_idx].height = max(28, min(140, int(text_len / 45 * 18) + 20))
+            row_idx += 1
+            
+        end_cult_r = row_idx - 1
+        # Merge Column A for 組織文化
+        ws.merge_cells(start_row=start_cult_r, start_column=1, end_row=end_cult_r, end_column=1)
+        c_cult_cat = ws.cell(start_cult_r, 1, value="組織文化")
+        c_cult_cat.font = font_body_bold
+        c_cult_cat.alignment = align_center
+        style_merged_range(ws, start_cult_r, 1, end_cult_r, 1, fill=fill_white, border=thin_border)
+
+        # Merge Columns D:E across all 4 rows for single overall Culture Feedback
+        ws.merge_cells(start_row=start_cult_r, start_column=4, end_row=end_cult_r, end_column=5)
+        c_cult_fb = ws.cell(start_cult_r, 4, value="")
+        c_cult_fb.font = font_body
+        c_cult_fb.alignment = align_left
+        style_merged_range(ws, start_cult_r, 4, end_cult_r, 5, fill=fill_white, border=thin_border)
+
+        # 4. 職能展現 Chunk Table (Specific Lv. 1-5 dropdown & Feedback)
+        if se.get("competencies"):
+            ws.merge_cells(start_row=row_idx, start_column=1, end_row=row_idx, end_column=5)
+            comp_banner = ws.cell(row_idx, 1, value=f"職位專屬職能展現實例【{se.get('job_role')}】")
+            comp_banner.font = font_sub_header
+            comp_banner.alignment = Alignment(horizontal="left", vertical="center", indent=1)
+            style_merged_range(ws, row_idx, 1, row_idx, 5, fill=fill_sub_header, border=thin_border)
+            ws.row_dimensions[row_idx].height = 24
+            row_idx += 1
+            
+            headers_comp = ["評估面向", "職能項目與題目定義", "部屬自評實例", "評分 (Lv.1-5選單)", "主管回饋 (Feedback)"]
+            for col_i, h in enumerate(headers_comp, 1):
+                cell = ws.cell(row_idx, col_i, value=h)
+                cell.font = font_sub_header
+                cell.fill = fill_sub_header
+                cell.alignment = align_header
+                cell.border = thin_border
+            ws.row_dimensions[row_idx].height = 24
+            row_idx += 1
+            
+            start_comp_r = row_idx
+            for comp in se["competencies"]:
+                c2 = ws.cell(row_idx, 2, value=comp["title"])
+                c3 = ws.cell(row_idx, 3, value=comp["answer"] or "（無填寫）")
+                c4 = ws.cell(row_idx, 4, value="")
+                c5 = ws.cell(row_idx, 5, value="")
+                
+                dv.add(c4)
+
+                for cell in [c2, c3, c4, c5]:
+                    cell.border = thin_border
+                    cell.font = font_body
+                    cell.alignment = align_left
+                c4.alignment = align_center
+                c4.font = font_body_bold
+                
+                text_len = len(str(comp["answer"]))
+                ws.row_dimensions[row_idx].height = max(28, min(140, int(text_len / 45 * 18) + 20))
+                row_idx += 1
+                
+            end_comp_r = row_idx - 1
+            ws.merge_cells(start_row=start_comp_r, start_column=1, end_row=end_comp_r, end_column=1)
+            c_comp_cat = ws.cell(start_comp_r, 1, value="專業職能")
+            c_comp_cat.font = font_body_bold
+            c_comp_cat.alignment = align_center
+            style_merged_range(ws, start_comp_r, 1, end_comp_r, 1, fill=fill_white, border=thin_border)
+                
+        # (卡關與展望 section has been removed completely from Excel as requested!)
+        row_idx += 2 # Clean gap between chunks
+        
+    ws.column_dimensions['A'].width = 15
+    ws.column_dimensions['B'].width = 36
+    ws.column_dimensions['C'].width = 68
+    ws.column_dimensions['D'].width = 15
+    ws.column_dimensions['E'].width = 34
+
+# Generate standalone supervisor workbooks
+for sup_key, members in SUPERVISOR_TEAMS.items():
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "部屬自評彙整表"
+    create_supervisor_chunk_sheet(ws, sup_key, members, entries)
+    fname = f"自評_{sup_key}主管專用_部屬自評彙整表.xlsx" if sup_key != "張希慈_執行長" else "自評_張希慈執行長自評表.xlsx"
+    wb.save(fname)
+    print(f"Generated {fname}")
+
+# Generate Full Workbook
+wb_full = openpyxl.Workbook()
+wb_full.remove(wb_full.active)
+
+for sup_key, members in SUPERVISOR_TEAMS.items():
+    s_title = f"自評_{sup_key}" if sup_key != "張希慈_執行長" else "自評_執行長"
+    ws = wb_full.create_sheet(title=s_title)
+    create_supervisor_chunk_sheet(ws, sup_key, members, entries)
+
+# Add "評主管總表"
+ws_sup = wb_full.create_sheet(title="評主管總表")
+ws_sup.views.sheetView[0].showGridLines = True
+ws_sup.merge_cells("A1:W1")
+t_sup = ws_sup.cell(1, 1, value="好好星球文化基金會 360 年中成長評估 - 【評主管】回覆總表")
+t_sup.font = Font(name="微軟正黑體", size=13, bold=True, color="3E2723")
+t_sup.alignment = Alignment(horizontal="left", vertical="center", indent=1)
+style_merged_range(ws_sup, 1, 1, 1, 23, fill=fill_chunk_header, border=thin_border)
+ws_sup.row_dimensions[1].height = 30
+
+sup_headers = [
+    "時間戳記", "填答者Email", "受評主管", 
+    "Q4.尋求協助", "Q5.具體引導", "Q6.改善幅度", "Q7.跨部門推動",
+    "Q8.資源評估", "Q9.失誤回應", "Q10.肯定認可", "Q11.工作成效",
+    "Q12.【信任】表達想法", "Q13.【多元】聆聽意見", "Q14.【實驗】嘗試創新",
+    "Q15.【實驗】試錯空間", "Q16.【可持續】讚美肯定", "Q17.【可持續】尊重界線",
+    "Q18.NPS推薦度", "Q19.滿意度",
+    "Q20.願景使命引導(質化)", "Q21.管理提升建議(質化)", "Q22.其他補充評價(質化)", "Q23.肯定感謝詞(好好星光大賞)"
+]
+for col_i, h in enumerate(sup_headers, 1):
+    c = ws_sup.cell(2, col_i, value=h)
+    c.font = font_sub_header
+    c.fill = fill_sub_header
+    c.alignment = align_header
+    c.border = thin_border
+ws_sup.row_dimensions[2].height = 26
+
+r_idx = 3
+for e in entries:
+    if e["relation"] == "主管":
+        se = e.get("supervisor_eval", {})
+        row_vals = [
+            e["timestamp"], e["email"], e["target"],
+            se.get("q4_help_easy"), se.get("q5_guidance_freq"), se.get("q6_improve_degree"), se.get("q7_cross_dept"),
+            se.get("q8_resource_eval"), se.get("q9_constructive_mistake"), se.get("q10_recognition"), se.get("q11_overall_performance"),
+            se.get("q12_trust_express"), se.get("q13_diversity_listen"), se.get("q14_experiment_try"),
+            se.get("q15_experiment_psych_safety"), se.get("q16_sustain_praise"), se.get("q17_sustain_boundary"),
+            se.get("q18_nps_recommend"), se.get("q19_satisfaction"),
+            se.get("q20_vision_mission"), se.get("q21_improvement_advice"), se.get("q22_other_comments"), se.get("q23_starlight_thanks")
+        ]
+        for col_i, val in enumerate(row_vals, 1):
+            c = ws_sup.cell(r_idx, col_i, value=val)
+            c.font = font_body
+            c.border = thin_border
+            c.alignment = align_center if col_i <= 19 else align_left
+        ws_sup.row_dimensions[r_idx].height = 40
+        r_idx += 1
+
+for c in range(1, len(sup_headers) + 1):
+    ws_sup.column_dimensions[get_column_letter(c)].width = 15 if c <= 19 else 34
+
+# Add "評同事總表"
+ws_peer = wb_full.create_sheet(title="評同事總表")
+ws_peer.views.sheetView[0].showGridLines = True
+ws_peer.merge_cells("A1:S1")
+t_peer = ws_peer.cell(1, 1, value="好好星球文化基金會 360 年中成長評估 - 【評同事】回覆總表")
+t_peer.font = Font(name="微軟正黑體", size=13, bold=True, color="3E2723")
+t_peer.alignment = Alignment(horizontal="left", vertical="center", indent=1)
+style_merged_range(ws_peer, 1, 1, 1, 19, fill=fill_chunk_header, border=thin_border)
+ws_peer.row_dimensions[1].height = 30
+
+peer_headers = [
+    "時間戳記", "填答者Email", "受評同事",
+    "Q24.合作狀況", "Q25.注重細節", "Q26.準時完成", "Q27.靈活調整", "Q28.追蹤承諾", "Q29.說明依據",
+    "Q30.【多元】接受不同意見", "Q31.【多元】建設性觀點", "Q32.【實驗】開放調整",
+    "Q33.【信任】分享經驗", "Q34.【可持續】讚美同事", "Q35.【可持續】尊重界線",
+    "Q36.NPS推薦度",
+    "Q37.提升建議(質化)", "Q38.其他評價(質化)", "Q39.肯定感謝詞(好好星光大賞)"
+]
+for col_i, h in enumerate(peer_headers, 1):
+    c = ws_peer.cell(2, col_i, value=h)
+    c.font = font_sub_header
+    c.fill = fill_sub_header
+    c.alignment = align_header
+    c.border = thin_border
+ws_peer.row_dimensions[2].height = 26
+
+r_idx = 3
+for e in entries:
+    if e["relation"] == "同事":
+        pe = e.get("peer_eval", {})
+        row_vals = [
+            e["timestamp"], e["email"], e["target"],
+            pe.get("q24_cooperation"), pe.get("q25_detail_oriented"), pe.get("q26_on_time"), pe.get("q27_flexibility"),
+            pe.get("q28_follow_up"), pe.get("q29_transparency"),
+            pe.get("q30_open_to_opposing"), pe.get("q31_constructive_opinions"), pe.get("q32_growth_mindset"),
+            pe.get("q33_share_knowledge"), pe.get("q34_praise_peers"), pe.get("q35_boundary_respect"),
+            pe.get("q36_nps_recommend"),
+            pe.get("q37_improvement_advice"), pe.get("q38_other_comments"), pe.get("q39_starlight_thanks")
+        ]
+        for col_i, val in enumerate(row_vals, 1):
+            c = ws_peer.cell(r_idx, col_i, value=val)
+            c.font = font_body
+            c.border = thin_border
+            c.alignment = align_center if col_i <= 16 else align_left
+        ws_peer.row_dimensions[r_idx].height = 40
+        r_idx += 1
+
+for c in range(1, len(peer_headers) + 1):
+    ws_peer.column_dimensions[get_column_letter(c)].width = 15 if c <= 16 else 34
+
+wb_full.save("好好星球_360年中成長評估_主管分流與完整彙整表.xlsx")
+print("Saved all XLSX files: Culture with merged text feedback & no Lv, Competencies with Lv dropdown, and No 卡關與展望 in Excel!")
