@@ -8,7 +8,7 @@ if not os.path.exists(DATA_PATH):
 with open(DATA_PATH, "r", encoding="utf-8") as f:
     raw_data_json = f.read()
 
-# Make sure evaluation_data.json is also at root
+# Make sure root evaluation_data.json is in sync
 root_data_path = os.path.join(os.path.dirname(__file__), "..", "evaluation_data.json")
 with open(root_data_path, "w", encoding="utf-8") as f:
     f.write(raw_data_json)
@@ -72,6 +72,12 @@ html_content = r"""<!DOCTYPE html>
     .screen-only-view { display: block; }
     .print-only-doc { display: none; }
 
+    @keyframes spin-slow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin-custom { animation: spin-slow 1s linear infinite; }
+
     @media print {
       @page { size: A4 portrait; margin: 14mm 16mm 14mm 16mm; }
       body { background-color: #FFFFFF !important; color: #111111 !important; font-size: 9.5pt; line-height: 1.5; font-family: 'Times New Roman', 'Noto Serif TC', '微軟正黑體', serif !important; }
@@ -105,33 +111,44 @@ html_content = r"""<!DOCTYPE html>
           <div>
             <div class="flex items-center gap-2.5">
               <h1 class="text-base sm:text-lg font-bold text-[#2E2827] leading-tight font-serif-tc">好好星球文化基金會 360 年中成長評估</h1>
-              <span class="px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#FCE5CD] text-[#783E16] border border-[#F3D1B0]">
-                2026 年中版
+              <span class="px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#FCE5CD] text-[#783E16] border border-[#F3D1B0]" id="header-data-source-badge">
+                優先連線 Google 試算表
               </span>
             </div>
-            <p class="text-xs text-[#7A726D] mt-0.5">組織架構與職稱已更新 ｜ 支援自評 vs 主管評比對與 Excel 雙向載入</p>
+            <p class="text-xs text-[#7A726D] mt-0.5">優先讀取試算表「表單回覆1」 ｜ 支援自評 vs 主管評比對與雙向 Excel 載入</p>
           </div>
         </div>
 
         <!-- ACTION BUTTONS -->
-        <div class="flex items-center gap-3">
-          <button onclick="window.print()" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#2E2827] hover:bg-[#EBE4D8] transition border border-[#E0D7CA]">
-            <i data-lucide="printer" class="w-4 h-4 text-[#557A61]"></i>
-            <span class="hidden sm:inline">列印 / 存為 PDF (Cmd+P)</span>
-            <span class="sm:hidden">列印 PDF</span>
+        <div class="flex items-center gap-2.5 sm:gap-3 flex-wrap justify-end">
+          
+          <!-- GAS SYNC BUTTON -->
+          <button onclick="syncFromGoogleAppsScript(true)" id="gasSyncBtn" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#E4ECD3] text-[#2D5239] hover:bg-[#D4DFC0] transition border border-[#CDE0BC] shadow-2xs" title="優先讀取 Google 試算表 (表單回覆1)">
+            <i data-lucide="refresh-cw" class="w-4 h-4 text-[#557A61]" id="gasSyncIcon"></i>
+            <span class="hidden md:inline" id="gasSyncText">同步 Google 試算表</span>
+            <span class="md:hidden">同步</span>
           </button>
 
-          <label class="cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] hover:text-[#2E2827] transition border border-[#E0D7CA]">
+          <!-- PRINT BUTTON -->
+          <button onclick="window.print()" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#2E2827] hover:bg-[#EBE4D8] transition border border-[#E0D7CA]">
+            <i data-lucide="printer" class="w-4 h-4 text-[#557A61]"></i>
+            <span class="hidden sm:inline">列印 / 存為 PDF (Cmd+P)</span>
+            <span class="sm:hidden">列印</span>
+          </button>
+
+          <!-- UPLOAD LOCAL CSV BUTTON -->
+          <label class="cursor-pointer inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] hover:text-[#2E2827] transition border border-[#E0D7CA]">
             <i data-lucide="upload" class="w-4 h-4 text-[#557A61]"></i>
-            <span class="hidden sm:inline">上傳最新 CSV / 主管評定</span>
-            <span class="sm:hidden">上傳</span>
+            <span class="hidden lg:inline">上傳本地 CSV</span>
+            <span class="lg:hidden">上傳</span>
             <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="handleFileUpload(event)">
           </label>
 
+          <!-- EXPORT DROPDOWN -->
           <div class="relative inline-block text-left" id="exportDropdown">
-            <button onclick="toggleDropdown()" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
+            <button onclick="toggleDropdown()" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
               <i data-lucide="download" class="w-4 h-4"></i>
-              <span class="hidden sm:inline">下載各類全彩 Excel 報表</span>
+              <span class="hidden sm:inline">下載全彩 Excel 報表</span>
               <span class="sm:hidden">下載 Excel</span>
               <i data-lucide="chevron-down" class="w-4 h-4 opacity-80"></i>
             </button>
@@ -445,13 +462,16 @@ html_content = r"""<!DOCTYPE html>
   </div>
 
   <footer class="no-print bg-[#FFFDF9] border-t border-[#E8E2D8] py-7 text-center text-xs text-[#7A726D] mt-auto">
-    好好星球文化基金會 360 年中成長評估系統 · 支援 Cmd+P 列印為完整 PDF 報告 · 採用柔和色彩美學與模組化 Chunk 排版
+    好好星球文化基金會 360 年中成長評估系統 · 優先連線 Google 試算表（表單回覆1） · 支援 Cmd+P 莫蘭迪柔和色階列印
   </footer>
 
   <script>
+    const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbxM-5YB3AX_CRK6APM3-dxGPUK7A2anQLrWSRwDK0_cZubdUu3pcUSl9lTPy5ahxXytgg/exec";
+
+    // EMBEDDED DEFAULT / FALLBACK DATA
     let RAW_DATA = """ + raw_data_json + r""";
 
-    // UPDATED OFFICIAL ORG & TITLES
+    // OFFICIAL ORG & TITLES
     const SUPERVISOR_TEAMS = {
       "張希慈": ["何維安", "陳泳璇", "張芳媐", "姚品瑄", "胡喻翔"],
       "何維安": ["林文琇"],
@@ -531,7 +551,6 @@ html_content = r"""<!DOCTYPE html>
       ["Q36", "NPS推薦", "NPS 推薦度（向他人推薦與此夥伴共事的意願）", "q36_nps_recommend"],
     ];
 
-    // Local in-memory supervisor ratings state
     let SUPERVISOR_EVAL_STATE = {};
 
     let currentSubReviewTeam = '張希慈';
@@ -546,14 +565,18 @@ html_content = r"""<!DOCTYPE html>
     let peerRadar = null;
     let peerBar = null;
 
-    function showToast(msg) {
+    function showToast(msg, isWarn = false) {
       const toast = document.getElementById('toast');
       if (!toast) return;
       document.getElementById('toast-msg').innerText = msg;
+      const iconWrap = document.getElementById('toast-icon');
+      if (iconWrap) {
+        iconWrap.className = isWarn ? 'p-1 rounded-lg bg-[#C27D38] text-white' : 'p-1 rounded-lg bg-[#557A61] text-white';
+      }
       toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
       setTimeout(() => {
         toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
-      }, 3500);
+      }, 4000);
     }
 
     function toggleDropdown() {
@@ -588,6 +611,181 @@ html_content = r"""<!DOCTYPE html>
       else if (tabId === 'self') renderSelfSection();
       else if (tabId === 'peerAnon') renderPeerAnonSection();
       else if (tabId === 'peer') renderPeerSection();
+    }
+
+    // =========================================================================
+    // GOOGLE APPS SCRIPT SYNC ENGINE (PRIORITY FETCH WITH LOCAL FALLBACK)
+    // =========================================================================
+    function parse2DArrayData(rawRows) {
+      if (!rawRows || rawRows.length < 2) return null;
+      const header = rawRows[0];
+      const dataRows = rawRows.slice(1);
+      const newEntries = [];
+
+      dataRows.forEach(row => {
+        if (row.length < 4) return;
+        const timestamp = (row[0] || "").toString().trim();
+        const email = (row[1] || "").toString().trim();
+        const target = (row[2] || "").toString().trim();
+        const relation = (row[3] || "").toString().trim();
+        const job_role = JOB_ROLES_MAP[target] || ((row[58] || "").toString().trim());
+
+        const entry = { timestamp, email, target, relation, job_role };
+
+        if (relation === "主管") {
+          const scores = {};
+          for (let c = 4; c <= 19; c++) {
+            const val = (row[c] !== undefined && row[c] !== null) ? row[c].toString().trim() : "";
+            scores[header[c]] = val ? parseFloat(val) : null;
+          }
+          entry.supervisor_eval = {
+            q_scores: scores,
+            q4_help_easy: scores[header[4]],
+            q5_guidance_freq: scores[header[5]],
+            q6_improve_degree: scores[header[6]],
+            q7_cross_dept: scores[header[7]],
+            q8_resource_eval: scores[header[8]],
+            q9_constructive_mistake: scores[header[9]],
+            q10_recognition: scores[header[10]],
+            q11_overall_performance: scores[header[11]],
+            q12_trust_express: scores[header[12]],
+            q13_diversity_listen: scores[header[13]],
+            q14_experiment_try: scores[header[14]],
+            q15_experiment_psych_safety: scores[header[15]],
+            q16_sustain_praise: scores[header[16]],
+            q17_sustain_boundary: scores[header[17]],
+            q18_nps_recommend: scores[header[18]],
+            q19_satisfaction: scores[header[19]],
+            q20_vision_mission: (row[20] || "").toString().trim(),
+            q21_improvement_advice: (row[21] || "").toString().trim(),
+            q22_other_comments: (row[22] || "").toString().trim(),
+            q23_starlight_thanks: (row[23] || "").toString().trim()
+          };
+        } else if (relation === "同事") {
+          const scores = {};
+          for (let c = 24; c <= 36; c++) {
+            const val = (row[c] !== undefined && row[c] !== null) ? row[c].toString().trim() : "";
+            scores[header[c]] = val ? parseFloat(val) : null;
+          }
+          entry.peer_eval = {
+            q_scores: scores,
+            q24_cooperation: scores[header[24]],
+            q25_detail_oriented: scores[header[25]],
+            q26_on_time: scores[header[26]],
+            q27_flexibility: scores[header[27]],
+            q28_follow_up: scores[header[28]],
+            q29_transparency: scores[header[29]],
+            q30_open_to_opposing: scores[header[30]],
+            q31_constructive_opinions: scores[header[31]],
+            q32_growth_mindset: scores[header[32]],
+            q33_share_knowledge: scores[header[33]],
+            q34_praise_peers: scores[header[34]],
+            q35_boundary_respect: scores[header[35]],
+            q36_nps_recommend: scores[header[36]],
+            q37_improvement_advice: (row[37] || "").toString().trim(),
+            q38_other_comments: (row[38] || "").toString().trim(),
+            q39_starlight_thanks: (row[39] || "").toString().trim()
+          };
+        } else if (relation === "自評") {
+          const top3_stable = (row[52] || "").toString().split(",").map(s => s.trim()).filter(Boolean);
+          const top3_practice = (row[53] || "").toString().split(",").map(s => s.trim()).filter(Boolean);
+          const values = {
+            "信任": (row[54] || "").toString().trim(),
+            "多元": (row[55] || "").toString().trim(),
+            "實驗": (row[56] || "").toString().trim(),
+            "可持續": (row[57] || "").toString().trim()
+          };
+
+          const competencies = [];
+          const reflection = {};
+
+          for (let c = 59; c < row.length; c++) {
+            const val = (row[c] || "").toString().trim();
+            if (!val) continue;
+            const colName = (header[c] || "").toString().trim();
+            if (colName.includes("在未來的一年中") || colName.includes("卡關") || colName.includes("願景和使命")) {
+              reflection[colName] = val;
+            } else if (colName.includes("記得也要花") || colName.includes("下一階段進行")) {
+              continue;
+            } else {
+              competencies.append ? competencies.push({ title: colName, answer: val }) : competencies.push({ title: colName, answer: val });
+            }
+          }
+
+          entry.self_eval = {
+            job_role,
+            top3_stable,
+            top3_practice,
+            values,
+            competencies,
+            reflection
+          };
+        }
+        newEntries.push(entry);
+      });
+
+      return newEntries;
+    }
+
+    async function syncFromGoogleAppsScript(isUserInitiated = false) {
+      const syncBtn = document.getElementById('gasSyncBtn');
+      const syncIcon = document.getElementById('gasSyncIcon');
+      const syncText = document.getElementById('gasSyncText');
+      const badge = document.getElementById('header-data-source-badge');
+
+      if (syncIcon) syncIcon.classList.add('animate-spin-custom');
+      if (syncText) syncText.innerText = "連線讀取中...";
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        const response = await fetch(GAS_ENDPOINT_URL, {
+          method: 'GET',
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const rawRows = await response.json();
+
+        const parsed = parse2DArrayData(rawRows);
+        if (parsed && parsed.length > 0) {
+          RAW_DATA = parsed;
+          if (badge) {
+            badge.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#E4ECD3] text-[#2D5239] border border-[#CDE0BC]";
+            badge.innerText = `🟢 試算表即時連線 (${parsed.length}筆)`;
+          }
+          if (syncText) syncText.innerText = `已同步 (${parsed.length}筆)`;
+          showToast(`成功優先同步 Google 試算表（表單回覆1）最新 ${parsed.length} 筆資料！`);
+          refreshAllViews();
+        } else {
+          throw new Error("試算表回傳資料格式為空");
+        }
+      } catch (err) {
+        console.warn("GAS Sync fallback to local data:", err);
+        if (badge) {
+          badge.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#F2EEE6] text-[#6E6662] border border-[#E0D7CA]";
+          badge.innerText = `⚪ 本地備份資料 (${RAW_DATA.length}筆)`;
+        }
+        if (syncText) syncText.innerText = "同步 Google 試算表";
+        if (isUserInitiated) {
+          showToast("無法連線至 Google 試算表，系統已無縫切換使用本地最新備份資料。", true);
+        }
+        refreshAllViews();
+      } finally {
+        if (syncIcon) syncIcon.classList.remove('animate-spin-custom');
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+      }
+    }
+
+    function refreshAllViews() {
+      renderSubReviewSection();
+      renderSupervisorSection();
+      renderSelfSection();
+      initPeerPills();
+      initPeerAnonPills();
+      if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
     // =========================================================================
@@ -1817,101 +2015,12 @@ html_content = r"""<!DOCTYPE html>
             alert("CSV 內容為空或格式不正確！");
             return;
           }
-          const rawRows = results.data.slice(1);
-          const header = results.data[0];
-
-          const newEntries = [];
-          rawRows.forEach(row => {
-            if (row.length < 4) return;
-            const timestamp = (row[0] || "").trim();
-            const email = (row[1] || "").trim();
-            const target = (row[2] || "").trim();
-            const relation = (row[3] || "").trim();
-            const job_role = JOB_ROLES_MAP[target] || (row[58] || "").trim();
-
-            const entry = { timestamp, email, target, relation, job_role };
-
-            if (relation === "主管") {
-              const scores = {};
-              for (let c = 4; c <= 19; c++) {
-                const val = (row[c] || "").trim();
-                scores[header[c]] = val ? parseFloat(val) : null;
-              }
-              entry.supervisor_eval = {
-                q_scores: scores,
-                q4_help_easy: scores[header[4]],
-                q5_guidance_freq: scores[header[5]],
-                q6_improve_degree: scores[header[6]],
-                q7_cross_dept: scores[header[7]],
-                q8_resource_eval: scores[header[8]],
-                q9_constructive_mistake: scores[header[9]],
-                q10_recognition: scores[header[10]],
-                q11_overall_performance: scores[header[11]],
-                q12_trust_express: scores[header[12]],
-                q13_diversity_listen: scores[header[13]],
-                q14_experiment_try: scores[header[14]],
-                q15_experiment_psych_safety: scores[header[15]],
-                q16_sustain_praise: scores[header[16]],
-                q17_sustain_boundary: scores[header[17]],
-                q18_nps_recommend: scores[header[18]],
-                q19_satisfaction: scores[header[19]],
-                q20_vision_mission: (row[20] || "").trim(),
-                q21_improvement_advice: (row[21] || "").trim(),
-                q22_other_comments: (row[22] || "").trim(),
-                q23_starlight_thanks: (row[23] || "").trim()
-              };
-            } else if (relation === "同事") {
-              const scores = {};
-              for (let c = 24; c <= 36; c++) {
-                const val = (row[c] || "").trim();
-                scores[header[c]] = val ? parseFloat(val) : null;
-              }
-              entry.peer_eval = {
-                q_scores: scores,
-                q24_cooperation: scores[header[24]],
-                q25_detail_oriented: scores[header[25]],
-                q26_on_time: scores[header[26]],
-                q27_flexibility: scores[header[27]],
-                q28_follow_up: scores[header[28]],
-                q29_transparency: scores[header[29]],
-                q30_open_to_opposing: scores[header[30]],
-                q31_constructive_opinions: scores[header[31]],
-                q32_growth_mindset: scores[header[32]],
-                q33_share_knowledge: scores[header[33]],
-                q34_praise_peers: scores[header[34]],
-                q35_boundary_respect: scores[header[35]],
-                q36_nps_recommend: scores[header[36]],
-                q37_improvement_advice: (row[37] || "").trim(),
-                q38_other_comments: (row[38] || "").trim(),
-                q39_starlight_thanks: (row[39] || "").trim()
-              };
-            } else if (relation === "自評") {
-              const top3_stable = (row[52] || "").split(",").map(s => s.trim()).filter(Boolean);
-              const top3_practice = (row[53] || "").split(",").map(s => s.trim()).filter(Boolean);
-              entry.self_eval = {
-                job_role,
-                top3_stable,
-                top3_practice,
-                values: {
-                  "信任": (row[54] || "").trim(),
-                  "多元": (row[55] || "").trim(),
-                  "實驗": (row[56] || "").trim(),
-                  "可持續": (row[57] || "").trim()
-                },
-                competencies: [],
-                reflection: {}
-              };
-            }
-            newEntries.push(entry);
-          });
-
-          RAW_DATA = newEntries;
-          renderSubReviewSection();
-          renderSupervisorSection();
-          renderSelfSection();
-          initPeerPills();
-          initPeerAnonPills();
-          showToast(`成功載入最新 CSV！共更新 ${newEntries.length} 筆填答紀錄。`);
+          const parsed = parse2DArrayData(results.data);
+          if (parsed && parsed.length > 0) {
+            RAW_DATA = parsed;
+            refreshAllViews();
+            showToast(`成功載入本地 CSV！共更新 ${parsed.length} 筆填答紀錄。`);
+          }
         }
       });
     }
@@ -1932,11 +2041,9 @@ html_content = r"""<!DOCTYPE html>
       right: { style: 'thin', color: { argb: 'FFD7CCC8' } }
     };
 
-    const fontChunkTitle = { name: '微軟正黑體', size: 11, bold: true, color: { argb: 'FF3E2723' } };
     const fontSubHeader = { name: '微軟正黑體', size: 10, bold: true, color: { argb: 'FF4E342E' } };
     const fontBody = { name: '微軟正黑體', size: 9.5, color: { argb: 'FF2D2323' } };
     const fontBodyBold = { name: '微軟正黑體', size: 9.5, bold: true, color: { argb: 'FF2D2323' } };
-    const fontWarnItalic = { name: '微軟正黑體', size: 9, italic: true, color: { argb: 'FFB45309' } };
 
     const alignCenter = { horizontal: 'center', vertical: 'middle', wrapText: true };
     const alignLeft = { horizontal: 'left', vertical: 'top', wrapText: true };
@@ -2110,11 +2217,10 @@ html_content = r"""<!DOCTYPE html>
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      renderSubReviewSection();
-      renderSupervisorSection();
-      initPeerPills();
-      initPeerAnonPills();
-      if (typeof lucide !== 'undefined') lucide.createIcons();
+      // 1. First render default view
+      refreshAllViews();
+      // 2. Immediately try to fetch latest from Google Apps Script endpoint
+      syncFromGoogleAppsScript(false);
     });
   </script>
 </body>
@@ -2125,4 +2231,4 @@ output_file = os.path.join(os.path.dirname(__file__), "..", "index.html")
 with open(output_file, "w", encoding="utf-8") as f:
     f.write(html_content)
 
-print(f"Generated {output_file} successfully!")
+print(f"Generated {output_file} successfully with Google Apps Script Sync Engine!")
