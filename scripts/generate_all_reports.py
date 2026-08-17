@@ -14,31 +14,25 @@ with open(DATA_PATH, "r", encoding="utf-8") as f:
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "reports_excel")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# Colors
-COLOR_PINK_BLUSH = "F4CCCC"
-COLOR_PEACH_CREAM = "FCE5CD"
+# Unified, restrained Sage & Stone Colors
+COLOR_SAGE_HEADER = "E4ECD3"
+COLOR_STONE_HEADER = "F2EEE6"
 COLOR_WHITE = "FFFFFF"
-COLOR_WARN_BG = "FFF2D6"
-COLOR_SAGE_BG = "E4ECD3"
-COLOR_L4_BG = "E2F3F0"
-COLOR_L3_BG = "FFF4CD"
 
-thin_side = Side(border_style="thin", color="D7CCC8")
+thin_side = Side(border_style="thin", color="D5CEC5")
 thin_border = Border(top=thin_side, left=thin_side, right=thin_side, bottom=thin_side)
 
-font_main_title = Font(name="微軟正黑體", size=13, bold=True, color="3E2723")
-font_chunk_title = Font(name="微軟正黑體", size=11, bold=True, color="3E2723")
-font_sub_header = Font(name="微軟正黑體", size=10, bold=True, color="4E342E")
-font_body = Font(name="微軟正黑體", size=9.5, color="2D2323")
-font_body_bold = Font(name="微軟正黑體", size=9.5, bold=True, color="2D2323")
-font_warn = Font(name="微軟正黑體", size=9.5, bold=True, color="B45309")
-font_warn_italic = Font(name="微軟正黑體", size=9, italic=True, color="B45309")
+font_main_title = Font(name="微軟正黑體", size=13, bold=True, color="2E2827")
+font_chunk_title = Font(name="微軟正黑體", size=11, bold=True, color="2E2827")
+font_sub_header = Font(name="微軟正黑體", size=10, bold=True, color="2E2827")
+font_body = Font(name="微軟正黑體", size=9.5, color="2E2827")
+font_body_bold = Font(name="微軟正黑體", size=9.5, bold=True, color="2E2827")
 
 align_center = Alignment(horizontal="center", vertical="center", wrap_text=True)
 align_left = Alignment(horizontal="left", vertical="top", wrap_text=True)
 align_header = Alignment(horizontal="center", vertical="center", wrap_text=True)
 
-# UPDATED TITLES
+# OFFICIAL ORG & TITLES
 JOB_ROLES_MAP = {
     "張希慈": "執行長",
     "陳泳璇": "行政經理",
@@ -100,28 +94,28 @@ def add_subordinate_alignment_sheet(wb, member_name):
 
     # Title
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=7)
-    ws.cell(row=1, column=1, value=f"好好星球文化基金會 360 年中成長評估 - 【{member_name}】部屬自評與主管評核對照表（主管專用）")
-    style_cell_range(ws, 1, 1, 1, 7, font_main_title, COLOR_PINK_BLUSH, Alignment(horizontal="left", vertical="center", indent=1))
+    ws.cell(row=1, column=1, value=f"好好星球文化基金會 360 年中成長評估 — 【{member_name}】部屬自評與主管評核對照表（主管專用）")
+    style_cell_range(ws, 1, 1, 1, 7, font_main_title, COLOR_STONE_HEADER, Alignment(horizontal="left", vertical="center", indent=1))
     ws.row_dimensions[1].height = 28
 
     # Metadata
     ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=7)
-    ws.cell(row=2, column=1, value=f"評估對象：{member_name}（{job_role}） ｜ 直屬主管：{sup_name} ｜ 同儕樣本：{num_peers} 位 ｜ 自評狀態：{'已完成自評' if has_self else '尚未自評'}")
-    style_cell_range(ws, 2, 1, 2, 7, font_sub_header, COLOR_PEACH_CREAM, Alignment(horizontal="left", vertical="center", indent=1))
+    ws.cell(row=2, column=1, value=f"評估對象：{member_name}（${job_role}） ｜ 直屬主管：{sup_name} ｜ 同儕樣本：{num_peers} 位 ｜ 自評狀態：{'已完成自評' if has_self else '尚未自評'}")
+    style_cell_range(ws, 2, 1, 2, 7, font_sub_header, COLOR_WHITE, Alignment(horizontal="left", vertical="center", indent=1))
     ws.row_dimensions[2].height = 22
 
     r = 3
     # 1. 組織文化 (一列一個面向)
     ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7)
     ws.cell(row=r, column=1, value="一、組織文化實踐：部屬自評實例 vs 主管評核回饋（一列一個面向）")
-    style_cell_range(ws, r, 1, r, 7, font_sub_header, COLOR_PEACH_CREAM, Alignment(horizontal="left", vertical="center", indent=1))
+    style_cell_range(ws, r, 1, r, 7, font_sub_header, COLOR_STONE_HEADER, Alignment(horizontal="left", vertical="center", indent=1))
     ws.row_dimensions[r].height = 22
     r += 1
 
-    cult_headers = ["文化面向", "文化定義與行為指引", "部屬自評實例 (STAR)", "自評等級", "主管評定", "落差分析", "主管評核回饋與觀察"]
+    cult_headers = ["文化面向", "文化定義與行為指引", "部屬自評實例（STAR）", "自評等級", "主管評定", "落差分析", "主管評核回饋與觀察"]
     for i, h in enumerate(cult_headers):
         ws.cell(row=r, column=i+1, value=h)
-    style_cell_range(ws, r, 1, r, 7, font_sub_header, COLOR_PEACH_CREAM, align_header)
+    style_cell_range(ws, r, 1, r, 7, font_sub_header, COLOR_STONE_HEADER, align_header)
     ws.row_dimensions[r].height = 22
     r += 1
 
@@ -147,7 +141,6 @@ def add_subordinate_alignment_sheet(wb, member_name):
         ws.cell(row=r, column=4).alignment = align_center
         ws.cell(row=r, column=5).alignment = align_center
         ws.cell(row=r, column=6).alignment = align_center
-        ws.cell(row=r, column=7).fill = PatternFill(start_color=COLOR_WARN_BG, end_color=COLOR_WARN_BG, fill_type="solid")
         ws.row_dimensions[r].height = max(24, min(100, len(c_self or "") // 35 * 16 + 18))
         r += 1
 
@@ -155,21 +148,21 @@ def add_subordinate_alignment_sheet(wb, member_name):
     # 2. 專業職能 (一列一個面向，自評 vs 主管評並列)
     ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7)
     ws.cell(row=r, column=1, value=f"二、專業職能：自評 vs 主管評分並列對照【{job_role}】（逐項比對認知差異）")
-    style_cell_range(ws, r, 1, r, 7, font_sub_header, COLOR_PEACH_CREAM, Alignment(horizontal="left", vertical="center", indent=1))
+    style_cell_range(ws, r, 1, r, 7, font_sub_header, COLOR_STONE_HEADER, Alignment(horizontal="left", vertical="center", indent=1))
     ws.row_dimensions[r].height = 22
     r += 1
 
-    comp_headers = ["職能項目", "職能定義與說明", "部屬自評實例 (STAR)", "部屬自評", "主管評定 (L1~L5)", "落差分析", "主管評語與回饋 (Feedback)"]
+    comp_headers = ["職能項目", "職能定義與說明", "部屬自評實例（STAR）", "部屬自評（Lv. 1～5）", "主管評定（Lv. 1～5）", "落差分析", "主管評語與回饋（Feedback）"]
     for i, h in enumerate(comp_headers):
         ws.cell(row=r, column=i+1, value=h)
-    style_cell_range(ws, r, 1, r, 7, font_sub_header, COLOR_PEACH_CREAM, align_header)
+    style_cell_range(ws, r, 1, r, 7, font_sub_header, COLOR_STONE_HEADER, align_header)
     ws.row_dimensions[r].height = 22
     r += 1
 
     dv = DataValidation(type="list", formula1='"L1,L2,L3,L4,L5"', allow_blank=True)
-    dv.error ='請從選單選擇等級 L1~L5'
+    dv.error ='請從選單選擇等級 L1～L5'
     dv.errorTitle = '評分無效'
-    dv.prompt = '請選取：L1(Start), L2(Grow), L3(Keep), L4(Good), L5(Amazing!)'
+    dv.prompt = '請選取：L1（Start）、L2（Grow）、L3（Keep）、L4（Good）、L5（Amazing！）'
     dv.promptTitle = '等級選單'
     ws.add_data_validation(dv)
 
@@ -184,7 +177,7 @@ def add_subordinate_alignment_sheet(wb, member_name):
         ws.cell(row=r, column=1, value=c_title)
         ws.cell(row=r, column=2, value="核心專業職能")
         ws.cell(row=r, column=3, value=self_ans)
-        ws.cell(row=r, column=4, value="待補齊")
+        ws.cell(row=r, column=4, value="待評")
         ws.cell(row=r, column=5, value="")
         ws.cell(row=r, column=6, value="待主管評")
         ws.cell(row=r, column=7, value="【待主管填寫回饋】")
@@ -194,36 +187,38 @@ def add_subordinate_alignment_sheet(wb, member_name):
         ws.cell(row=r, column=4).alignment = align_center
         ws.cell(row=r, column=5).alignment = align_center
         ws.cell(row=r, column=5).font = font_body_bold
-        ws.cell(row=r, column=5).fill = PatternFill(start_color=COLOR_WARN_BG, end_color=COLOR_WARN_BG, fill_type="solid")
         ws.cell(row=r, column=6).alignment = align_center
-        ws.cell(row=r, column=7).fill = PatternFill(start_color=COLOR_WARN_BG, end_color=COLOR_WARN_BG, fill_type="solid")
 
+        dv.add(ws.cell(row=r, column=4))
         dv.add(ws.cell(row=r, column=5))
+
         ws.row_dimensions[r].height = max(24, min(100, len(self_ans or "") // 35 * 16 + 18))
         r += 1
 
-    ws.column_dimensions['A'].width = 16
-    ws.column_dimensions['B'].width = 34
-    ws.column_dimensions['C'].width = 55
-    ws.column_dimensions['D'].width = 14
-    ws.column_dimensions['E'].width = 15
-    ws.column_dimensions['F'].width = 14
-    ws.column_dimensions['G'].width = 36
+    ws.column_dimensions["A"].width = 14
+    ws.column_dimensions["B"].width = 34
+    ws.column_dimensions["C"].width = 55
+    ws.column_dimensions["D"].width = 14
+    ws.column_dimensions["E"].width = 14
+    ws.column_dimensions["F"].width = 16
+    ws.column_dimensions["G"].width = 35
 
-# Generate Supervisor Team Workbooks
-for sup_key, members in SUPERVISOR_TEAMS.items():
+# Build Supervisor Workbook
+for sup_name, members in SUPERVISOR_TEAMS.items():
     wb = openpyxl.Workbook()
-    wb.remove(wb.active)
+    wb.remove(wb.active) # Remove default sheet
     for m in members:
         add_subordinate_alignment_sheet(wb, m)
-    fname = f"主管專用_【{sup_key}】部屬自評vs主管評對照表.xlsx"
-    wb.save(os.path.join(OUTPUT_DIR, fname))
+    fname = f"【{sup_name}主管專用】部屬自評vs主管評對照彙整包.xlsx"
+    fpath = os.path.join(OUTPUT_DIR, fname)
+    wb.save(fpath)
+    print(f"Generated {fpath}")
 
-# Generate Master Workbook containing all 9 members
-wb_master = openpyxl.Workbook()
-wb_master.remove(wb_master.active)
+# Build Full Organization Workbook
+wb_full = openpyxl.Workbook()
+wb_full.remove(wb_full.active)
 for m in ALL_MEMBERS:
-    add_subordinate_alignment_sheet(wb_master, m)
-wb_master.save(os.path.join(OUTPUT_DIR, "好好星球_360年中成長評估_全體部屬自評vs主管評對照總表.xlsx"))
-
-print("All Alignment Excel Workbooks generated successfully with updated titles!")
+    add_subordinate_alignment_sheet(wb_full, m)
+full_path = os.path.join(OUTPUT_DIR, "好好星球_360年中成長評估_主管分流與完整彙整表.xlsx")
+wb_full.save(full_path)
+print(f"Generated {full_path}")

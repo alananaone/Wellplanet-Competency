@@ -38,12 +38,15 @@ html_content = r"""<!DOCTYPE html>
     :root {
       --bg-page: #FAF7F2;
       --bg-card: #FFFDF9;
-      --bg-box: #F9F6EE;
+      --bg-surface: #F2EEE6;
       --color-primary: #557A61;
-      --color-blush: #F4CCCC;
-      --color-apricot: #FCE5CD;
-      --color-border: #E8E2D8;
+      --color-primary-dark: #3F5E4A;
+      --color-primary-light: #E4ECD3;
+      --color-primary-text: #2D5239;
+      --color-border: #E2DDD5;
+      --color-border-subtle: #EDE8DF;
       --color-text-main: #2E2827;
+      --color-text-muted: #6E6662;
     }
 
     body {
@@ -57,17 +60,17 @@ html_content = r"""<!DOCTYPE html>
     .font-serif-tc { font-family: 'Noto Serif TC', serif; }
 
     .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #D9D2C9; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #D6CEC3; border-radius: 4px; }
 
-    .badge-stable { background-color: #E4ECD3; color: #2D5239; border: 1px solid #CDE0BC; }
-    .badge-practice { background-color: #FCE5CD; color: #783E16; border: 1px solid #F5D3B3; }
-    .badge-missing { background-color: #FFF2D6; color: #B45309; border: 1px solid #FCE299; }
-    .badge-best { background-color: #E4ECD3; color: #2D5239; border: 1px solid #CDE0BC; }
-    .badge-worst { background-color: #FCE5CD; color: #8C4B1E; border: 1px solid #F5D3B3; }
+    /* Unified, muted, non-clashing badges */
+    .badge-sage { background-color: #E4ECD3; color: #2D5239; border: 1px solid #CDE0BC; }
+    .badge-stone { background-color: #F2EEE6; color: #4A433E; border: 1px solid #E0D7CA; }
+    .badge-accent { background-color: #EBE4D8; color: #3E3734; border: 1px solid #D8CFC2; }
+    .badge-neutral { background-color: #FAF7F2; color: #6E6662; border: 1px solid #E8E2D8; }
 
-    .chunk-header-banner { background-color: var(--color-blush); color: #3E2426; border-bottom: 1px solid #E6BDBD; }
-    .chunk-subheader-banner { background-color: var(--color-apricot); color: #4A2E1C; border-bottom: 1px solid #EED1B4; }
-    .soft-card-shadow { box-shadow: 0 4px 20px -2px rgba(120, 100, 80, 0.06), 0 2px 6px -1px rgba(120, 100, 80, 0.04); }
+    .chunk-header-banner { background-color: #F2EEE6; color: #2E2827; border-bottom: 1px solid #E2DDD5; }
+    .chunk-subheader-banner { background-color: #FAF7F2; color: #3E3734; border-bottom: 1px solid #E8E2D8; }
+    .soft-card-shadow { box-shadow: 0 4px 16px -2px rgba(90, 80, 70, 0.05), 0 2px 6px -1px rgba(90, 80, 70, 0.03); }
 
     .screen-only-view { display: block; }
     .print-only-doc { display: none; }
@@ -89,9 +92,9 @@ html_content = r"""<!DOCTYPE html>
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-shadow: none !important; border-radius: 0 !important; }
       .word-doc-table { width: 100% !important; border-collapse: collapse !important; margin-top: 8px !important; margin-bottom: 14px !important; font-size: 9pt !important; }
       .word-doc-table th, .word-doc-table td { border: 1px solid #555555 !important; padding: 5px 8px !important; vertical-align: middle !important; line-height: 1.4 !important; }
-      .word-doc-table th { background-color: #F2EFE9 !important; color: #2E2827 !important; font-weight: bold !important; text-align: center !important; }
+      .word-doc-table th { background-color: #F2EEE6 !important; color: #2E2827 !important; font-weight: bold !important; text-align: center !important; }
       .print-avoid-break, .word-doc-section, .word-feedback-block { break-inside: avoid !important; page-break-inside: avoid !important; }
-      .word-sec-title { font-size: 11pt !important; font-weight: bold !important; color: #2E2827 !important; background-color: #EAE6DF !important; padding: 4px 8px !important; border-left: 4px solid #557A61 !important; margin-top: 16px !important; margin-bottom: 8px !important; }
+      .word-sec-title { font-size: 11pt !important; font-weight: bold !important; color: #2E2827 !important; background-color: #F2EEE6 !important; padding: 4px 8px !important; border-left: 4px solid #557A61 !important; margin-top: 16px !important; margin-bottom: 8px !important; }
       .word-doc-divider { border-top: 2px solid #557A61 !important; border-bottom: 1px solid #557A61 !important; height: 3px !important; margin: 10px 0 14px 0 !important; }
       .print-footer { display: block !important; text-align: center; font-size: 8pt; color: #777777; margin-top: 20px; border-top: 1px solid #CCCCCC; padding-top: 6px; }
     }
@@ -100,7 +103,7 @@ html_content = r"""<!DOCTYPE html>
 <body class="min-h-screen flex flex-col antialiased">
 
   <!-- TOP HEADER (NO-PRINT) -->
-  <header class="bg-[#FFFDF9]/95 backdrop-blur-md border-b border-[#E8E2D8] sticky top-0 z-40 shadow-xs no-print">
+  <header class="bg-[#FFFDF9]/95 backdrop-blur-md border-b border-[#E2DDD5] sticky top-0 z-40 shadow-xs no-print">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-18 gap-4">
         <!-- BRAND -->
@@ -111,11 +114,11 @@ html_content = r"""<!DOCTYPE html>
           <div>
             <div class="flex items-center gap-2.5">
               <h1 class="text-base sm:text-lg font-bold text-[#2E2827] leading-tight font-serif-tc">好好星球文化基金會 360 年中成長評估</h1>
-              <span class="px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#FCE5CD] text-[#783E16] border border-[#F3D1B0]" id="header-data-source-badge">
+              <span class="px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#F2EEE6] text-[#4A433E] border border-[#E0D7CA]" id="header-data-source-badge">
                 優先連線 Google 試算表
               </span>
             </div>
-            <p class="text-xs text-[#7A726D] mt-0.5">營運經理統籌自評登記 (LocalStorage) ｜ 試算表「表單回覆1」即時連動</p>
+            <p class="text-xs text-[#7A726D] mt-0.5">營運經理統籌自評登記（LocalStorage）｜ 試算表「表單回覆1」即時連動</p>
           </div>
         </div>
 
@@ -123,14 +126,14 @@ html_content = r"""<!DOCTYPE html>
         <div class="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
           
           <!-- OPEN SELF COMPETENCY MODAL BUTTON -->
-          <button onclick="openSelfCompetencyModal()" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#FFF2D6] text-[#B45309] hover:bg-[#FDE7B8] transition border border-[#FCE299] shadow-2xs" title="由營運經理登記各員職能自評等級 (Lv. 1~5)">
-            <i data-lucide="edit-3" class="w-4 h-4 text-[#B45309]"></i>
-            <span class="hidden md:inline">登記各員職能自評 (Lv.1~5)</span>
+          <button onclick="openSelfCompetencyModal()" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#E4ECD3] text-[#2D5239] hover:bg-[#D4DFC0] transition border border-[#CDE0BC] shadow-2xs" title="由營運經理登記各員職能自評等級（Lv. 1～5）">
+            <i data-lucide="edit-3" class="w-4 h-4 text-[#557A61]"></i>
+            <span class="hidden md:inline">登記各員職能自評（Lv. 1～5）</span>
             <span class="md:hidden">登記自評</span>
           </button>
 
           <!-- GAS SYNC BUTTON -->
-          <button onclick="syncFromGoogleAppsScript(true)" id="gasSyncBtn" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#E4ECD3] text-[#2D5239] hover:bg-[#D4DFC0] transition border border-[#CDE0BC] shadow-2xs" title="優先讀取 Google 試算表 (表單回覆1)">
+          <button onclick="syncFromGoogleAppsScript(true)" id="gasSyncBtn" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition border border-[#E0D7CA] shadow-2xs" title="優先讀取 Google 試算表（表單回覆1）">
             <i data-lucide="refresh-cw" class="w-4 h-4 text-[#557A61]" id="gasSyncIcon"></i>
             <span class="hidden lg:inline" id="gasSyncText">同步 Google 試算表</span>
             <span class="lg:hidden">同步</span>
@@ -139,7 +142,7 @@ html_content = r"""<!DOCTYPE html>
           <!-- PRINT BUTTON -->
           <button onclick="window.print()" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#2E2827] hover:bg-[#EBE4D8] transition border border-[#E0D7CA]">
             <i data-lucide="printer" class="w-4 h-4 text-[#557A61]"></i>
-            <span class="hidden sm:inline">列印 / 存為 PDF (Cmd+P)</span>
+            <span class="hidden sm:inline">列印／存為 PDF（Cmd＋P）</span>
             <span class="sm:hidden">列印</span>
           </button>
 
@@ -155,31 +158,31 @@ html_content = r"""<!DOCTYPE html>
           <div class="relative inline-block text-left" id="exportDropdown">
             <button onclick="toggleDropdown()" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
               <i data-lucide="download" class="w-4 h-4"></i>
-              <span class="hidden sm:inline">下載全彩 Excel 報表</span>
+              <span class="hidden sm:inline">下載 Excel 報表</span>
               <span class="sm:hidden">下載 Excel</span>
               <i data-lucide="chevron-down" class="w-4 h-4 opacity-80"></i>
             </button>
             
-            <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-92 origin-top-right rounded-2xl bg-[#FFFDF9] p-3 shadow-2xl ring-1 ring-black/5 z-50 divide-y divide-[#EFEAE1] border border-[#E8E2D8]">
+            <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-92 origin-top-right rounded-2xl bg-[#FFFDF9] p-3 shadow-2xl ring-1 ring-black/5 z-50 divide-y divide-[#EFEAE1] border border-[#E2DDD5]">
               <div class="py-2">
                 <div class="px-3 py-1 text-[11px] font-bold text-[#8C837C] uppercase tracking-wider">
-                  自評 vs 主管評對照包 (含自評登記與 L1~L5)
+                  自評 vs 主管評對照包（含自評登記與 Lv. 1～5）
                 </div>
-                <button onclick="exportSupervisorTeamSubordinatesComprehensiveExcelClientSide('張希慈')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#E4ECD3]/40 rounded-xl transition">
+                <button onclick="exportSupervisorTeamSubordinatesComprehensiveExcelClientSide('張希慈')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#F2EEE6] rounded-xl transition">
                   <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="git-compare" class="w-4 h-4"></i></div>
                   <div>
                     <div class="font-bold text-[#2E2827]">【張希慈】部屬自評 vs 主管評對照包</div>
                     <div class="text-[11px] text-[#7A726D]">何維安、陳泳璇、張芳媐、姚品瑄、胡喻翔</div>
                   </div>
                 </button>
-                <button onclick="exportSupervisorTeamSubordinatesComprehensiveExcelClientSide('何維安')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#E4ECD3]/40 rounded-xl transition">
+                <button onclick="exportSupervisorTeamSubordinatesComprehensiveExcelClientSide('何維安')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#F2EEE6] rounded-xl transition">
                   <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="git-compare" class="w-4 h-4"></i></div>
                   <div>
                     <div class="font-bold text-[#2E2827]">【何維安】部屬自評 vs 主管評對照包</div>
                     <div class="text-[11px] text-[#7A726D]">林文琇（美感設計師）</div>
                   </div>
                 </button>
-                <button onclick="exportSupervisorTeamSubordinatesComprehensiveExcelClientSide('姚品瑄')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#E4ECD3]/40 rounded-xl transition">
+                <button onclick="exportSupervisorTeamSubordinatesComprehensiveExcelClientSide('姚品瑄')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#F2EEE6] rounded-xl transition">
                   <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="git-compare" class="w-4 h-4"></i></div>
                   <div>
                     <div class="font-bold text-[#2E2827]">【姚品瑄】部屬自評 vs 主管評對照包</div>
@@ -189,10 +192,10 @@ html_content = r"""<!DOCTYPE html>
               </div>
 
               <div class="py-2">
-                <button onclick="exportFullWorkbookClientSide()" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm font-bold text-[#557A61] hover:bg-[#E4ECD3]/40 rounded-xl transition">
+                <button onclick="exportFullWorkbookClientSide()" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm font-bold text-[#557A61] hover:bg-[#F2EEE6] rounded-xl transition">
                   <div class="p-2 bg-[#557A61] text-white rounded-xl"><i data-lucide="layers" class="w-4 h-4"></i></div>
                   <div>
-                    <div>下載全組織 Master Excel (16 Sheets 完整整合)</div>
+                    <div>下載全組織 Master Excel（16 個工作表完整整合）</div>
                     <div class="text-[11px] text-[#557A61] font-normal">包含所有自評、主管評、同儕匿名表</div>
                   </div>
                 </button>
@@ -203,8 +206,8 @@ html_content = r"""<!DOCTYPE html>
       </div>
 
       <!-- MAIN TABS (NO-PRINT) -->
-      <nav class="flex space-x-2 border-t border-[#E8E2D8] pt-2.5 -mb-px overflow-x-auto custom-scrollbar no-print">
-        <button onclick="switchTab('subReview')" id="tab-btn-subReview" class="tab-btn inline-flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-semibold rounded-t-xl border-b-2 border-[#557A61] text-[#2D5239] bg-[#E4ECD3]/30 shrink-0 transition">
+      <nav class="flex space-x-2 border-t border-[#E2DDD5] pt-2.5 -mb-px overflow-x-auto custom-scrollbar no-print">
+        <button onclick="switchTab('subReview')" id="tab-btn-subReview" class="tab-btn inline-flex items-center gap-2 px-5 py-3 text-xs sm:text-sm font-semibold rounded-t-xl border-b-2 border-[#557A61] text-[#2D5239] bg-[#E4ECD3]/40 shrink-0 transition">
           <i data-lucide="git-compare" class="w-4 h-4 text-[#557A61]"></i>
           自評 vs 主管評對照（主管填核）
           <span class="px-2 py-0.5 text-xs rounded-full bg-[#E4ECD3] text-[#2D5239] font-bold">核心對照</span>
@@ -243,41 +246,41 @@ html_content = r"""<!DOCTYPE html>
       <div class="screen-only-view space-y-7">
         
         <!-- SUPERVISOR SELECTION FILTER BAR -->
-        <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E8E2D8] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E2DDD5] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div class="flex items-center gap-2.5 flex-wrap">
             <span class="text-xs font-bold text-[#8C837C] mr-1 flex items-center gap-1.5 uppercase tracking-wider">
               <i data-lucide="filter" class="w-3.5 h-3.5 text-[#557A61]"></i> 主管團隊：
             </span>
             <button onclick="filterSubReviewTeam('張希慈')" id="sub-team-btn-張希慈" class="sub-team-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#557A61] text-white shadow-xs transition">
-              張希慈 的部屬 (5人)
+              張希慈 的部屬（5人）
             </button>
             <button onclick="filterSubReviewTeam('何維安')" id="sub-team-btn-何維安" class="sub-team-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
-              何維安 的部屬 (1人)
+              何維安 的部屬（1人）
             </button>
             <button onclick="filterSubReviewTeam('姚品瑄')" id="sub-team-btn-姚品瑄" class="sub-team-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
-              姚品瑄 的部屬 (2人)
+              姚品瑄 的部屬（2人）
             </button>
             <button onclick="filterSubReviewTeam('張希慈_執行長')" id="sub-team-btn-張希慈_執行長" class="sub-team-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
               執行長個人自評
             </button>
             <button onclick="filterSubReviewTeam('ALL')" id="sub-team-btn-ALL" class="sub-team-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
-              全體員工 (9人)
+              全體員工（9人）
             </button>
           </div>
 
           <div class="flex items-center gap-3">
-            <button onclick="openSelfCompetencyModal(currentSubReviewMember)" class="inline-flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#FFF2D6] text-[#B45309] hover:bg-[#FDE7B8] transition border border-[#FCE299] shadow-2xs">
-              <i data-lucide="edit-3" class="w-4 h-4"></i> 填寫【${currentSubReviewMember}】自評等級
+            <button onclick="openSelfCompetencyModal(currentSubReviewMember)" class="inline-flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#E4ECD3] text-[#2D5239] hover:bg-[#D4DFC0] transition border border-[#CDE0BC] shadow-2xs">
+              <i data-lucide="edit-3" class="w-4 h-4"></i> 登記【${currentSubReviewMember}】自評等級
             </button>
             <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
-              <i data-lucide="printer" class="w-4 h-4"></i> 列印 / 存為 PDF (Cmd+P)
+              <i data-lucide="printer" class="w-4 h-4"></i> 列印／存為 PDF（Cmd＋P）
             </button>
             <div id="sub-review-export-btn-container"></div>
           </div>
         </div>
 
         <!-- SUBORDINATE MEMBER SELECTOR PILLS -->
-        <div class="bg-[#FFFDF9] rounded-2xl p-5 border border-[#E8E2D8] soft-card-shadow flex items-center gap-3 flex-wrap" id="sub-review-member-pills"></div>
+        <div class="bg-[#FFFDF9] rounded-2xl p-5 border border-[#E2DDD5] soft-card-shadow flex items-center gap-3 flex-wrap" id="sub-review-member-pills"></div>
 
         <!-- REPORT CONTAINER -->
         <div id="sub-review-report-container" class="space-y-7"></div>
@@ -292,30 +295,30 @@ html_content = r"""<!DOCTYPE html>
     <!-- ======================================================== -->
     <section id="tab-section-supervisor" class="tab-content hidden space-y-7">
       <div class="screen-only-view space-y-7">
-        <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E8E2D8] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E2DDD5] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div class="flex items-center gap-2.5 flex-wrap">
             <span class="text-xs font-bold text-[#8C837C] mr-1 flex items-center gap-1.5 uppercase tracking-wider">
               <i data-lucide="user" class="w-3.5 h-3.5 text-[#557A61]"></i> 受評主管：
             </span>
             <button onclick="filterSupervisor('ALL')" id="sup-filter-btn-ALL" class="sup-filter-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
-              全部主管 (4筆)
+              全部主管（4筆）
             </button>
             <button onclick="filterSupervisor('張希慈')" id="sup-filter-btn-張希慈" class="sup-filter-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#557A61] text-white shadow-xs transition">
-              張希慈 (3筆)
+              張希慈（3筆）
             </button>
             <button onclick="filterSupervisor('何維安')" id="sup-filter-btn-何維安" class="sup-filter-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
-              何維安 (1筆)
+              何維安（1筆）
             </button>
           </div>
           <button onclick="window.print()" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
-            <i data-lucide="printer" class="w-4 h-4"></i> 列印 / 存為 PDF (Cmd+P)
+            <i data-lucide="printer" class="w-4 h-4"></i> 列印／存為 PDF（Cmd＋P）
           </button>
         </div>
 
         <div id="sup-stat-summary-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="bg-[#FFFDF9] p-6 rounded-2xl border border-[#E8E2D8] soft-card-shadow">
+          <div class="bg-[#FFFDF9] p-6 rounded-2xl border border-[#E2DDD5] soft-card-shadow">
             <h3 class="text-sm sm:text-base font-bold text-[#2E2827] mb-3 flex items-center gap-2 font-serif-tc">
               <i data-lucide="compass" class="w-4 h-4 text-[#557A61]"></i> 四大文化實踐維度
             </h3>
@@ -323,9 +326,9 @@ html_content = r"""<!DOCTYPE html>
               <canvas id="supervisorRadarChart"></canvas>
             </div>
           </div>
-          <div class="bg-[#FFFDF9] p-6 rounded-2xl border border-[#E8E2D8] soft-card-shadow lg:col-span-2">
+          <div class="bg-[#FFFDF9] p-6 rounded-2xl border border-[#E2DDD5] soft-card-shadow lg:col-span-2">
             <h3 class="text-sm sm:text-base font-bold text-[#2E2827] mb-3 flex items-center gap-2 font-serif-tc">
-              <i data-lucide="bar-chart-3" class="w-4 h-4 text-[#557A61]"></i> 管理能力各題平均得分 (滿分10分)
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-[#557A61]"></i> 管理能力各題平均得分（滿分 10 分）
             </h3>
             <div class="h-68">
               <canvas id="supervisorBarChart"></canvas>
@@ -333,25 +336,25 @@ html_content = r"""<!DOCTYPE html>
           </div>
         </div>
 
-        <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 sm:p-8 soft-card-shadow">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E8E2D8] pb-4 mb-5">
+        <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 sm:p-8 soft-card-shadow">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2DDD5] pb-4 mb-5">
             <div class="flex items-center gap-2.5">
-              <div class="p-2 bg-[#FCE5CD] text-[#783E16] rounded-xl"><i data-lucide="table-properties" class="w-4 h-4"></i></div>
+              <div class="p-2 bg-[#F2EEE6] text-[#2E2827] rounded-xl"><i data-lucide="table-properties" class="w-4 h-4"></i></div>
               <h3 class="text-base sm:text-lg font-bold text-[#2E2827] font-serif-tc">各題項評分統計表（平均分、最高最好、最低最差）</h3>
             </div>
-            <span class="text-xs text-[#8C837C]">滿分 10 分 ｜ 標註綠色代表優異 (≥9.0分)，橙色代表有成長空間 (≤7.0分)</span>
+            <span class="text-xs text-[#8C837C]">滿分 10 分 ｜ 標註綠色代表優異（≥9.0分），深灰代表有成長空間（≤7.0分）</span>
           </div>
 
-          <div class="overflow-x-auto rounded-xl border border-[#E8E2D8]">
+          <div class="overflow-x-auto rounded-xl border border-[#E2DDD5]">
             <table class="w-full text-xs sm:text-sm text-left border-collapse" id="sup-item-stats-table">
-              <thead class="bg-[#FCE5CD] text-[#4A2E1C]">
+              <thead class="bg-[#F2EEE6] text-[#2E2827]">
                 <tr>
-                  <th class="py-3 px-3.5 font-bold text-center w-14 border-r border-[#E8E2D8]">題號</th>
-                  <th class="py-3 px-3.5 font-bold text-center w-28 border-r border-[#E8E2D8]">評估面向</th>
-                  <th class="py-3 px-4 font-bold border-r border-[#E8E2D8]">題目內容與能力指引</th>
-                  <th class="py-3 px-3.5 font-bold text-center w-24 border-r border-[#E8E2D8] bg-[#E4ECD3]/80 text-[#2D5239]">平均得分</th>
-                  <th class="py-3 px-3.5 font-bold text-center w-24 border-r border-[#E8E2D8]">最好 (最高)</th>
-                  <th class="py-3 px-3.5 font-bold text-center w-24 border-r border-[#E8E2D8]">最差 (最低)</th>
+                  <th class="py-3 px-3.5 font-bold text-center w-14 border-r border-[#E2DDD5]">題號</th>
+                  <th class="py-3 px-3.5 font-bold text-center w-28 border-r border-[#E2DDD5]">評估面向</th>
+                  <th class="py-3 px-4 font-bold border-r border-[#E2DDD5]">題目內容與能力指引</th>
+                  <th class="py-3 px-3.5 font-bold text-center w-24 border-r border-[#E2DDD5] bg-[#E4ECD3]/80 text-[#2D5239]">平均得分</th>
+                  <th class="py-3 px-3.5 font-bold text-center w-24 border-r border-[#E2DDD5]">最好（最高）</th>
+                  <th class="py-3 px-3.5 font-bold text-center w-24 border-r border-[#E2DDD5]">最差（最低）</th>
                   <th class="py-3 px-4 font-bold text-center w-36">給分明細</th>
                 </tr>
               </thead>
@@ -370,43 +373,43 @@ html_content = r"""<!DOCTYPE html>
     <!-- TAB: 自評 (依主管分流) -->
     <!-- ======================================================== -->
     <section id="tab-section-self" class="tab-content hidden space-y-7">
-      <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E8E2D8] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
+      <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E2DDD5] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
         <div class="flex items-center gap-2.5 flex-wrap" id="self-supervisor-pills">
           <span class="text-xs font-bold text-[#8C837C] mr-1 flex items-center gap-1.5 uppercase tracking-wider">
             <i data-lucide="filter" class="w-3.5 h-3.5 text-[#557A61]"></i> 主管團隊：
           </span>
           <button onclick="filterSelfSupervisor('張希慈')" id="self-sup-btn-張希慈" class="self-sup-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#557A61] text-white shadow-xs transition">
-            張希慈 的部屬 (5人)
+            張希慈 的部屬（5人）
           </button>
           <button onclick="filterSelfSupervisor('何維安')" id="self-sup-btn-何維安" class="self-sup-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
-            何維安 的部屬 (1人)
+            何維安 的部屬（1人）
           </button>
           <button onclick="filterSelfSupervisor('姚品瑄')" id="self-sup-btn-姚品瑄" class="self-sup-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
-            姚品瑄 的部屬 (2人)
+            姚品瑄 的部屬（2人）
           </button>
           <button onclick="filterSelfSupervisor('張希慈_執行長')" id="self-sup-btn-張希慈_執行長" class="self-sup-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
             執行長個人自評
           </button>
           <button onclick="filterSelfSupervisor('ALL')" id="self-sup-btn-ALL" class="self-sup-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
-            全部已自評 (5人)
+            全部已自評（5人）
           </button>
         </div>
 
         <div id="self-export-btn-container"></div>
       </div>
 
-      <div id="self-team-banner" class="bg-[#FCE5CD]/40 border border-[#F3D1B0] rounded-2xl p-6 flex items-center justify-between">
+      <div id="self-team-banner" class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-6 flex items-center justify-between">
         <div class="flex items-center gap-3.5">
-          <div class="p-3 bg-[#F4CCCC] text-[#3E2426] rounded-xl shadow-2xs">
+          <div class="p-3 bg-[#E4ECD3] text-[#2D5239] rounded-xl shadow-2xs">
             <i data-lucide="users" class="w-5 h-5"></i>
           </div>
           <div>
-            <h2 id="self-team-title" class="text-base sm:text-lg font-bold text-[#3E2426] font-serif-tc">張希慈 的部屬自評列表</h2>
-            <p id="self-team-subtitle" class="text-xs sm:text-sm text-[#7A4822] mt-0.5">涵蓋部屬：何維安（品牌經理）、陳泳璇（行政經理）、張芳媐（營運經理兼執行長特助）、姚品瑄（部門儲備主管）、胡喻翔（專案經理）</p>
+            <h2 id="self-team-title" class="text-base sm:text-lg font-bold text-[#2E2827] font-serif-tc">張希慈 的部屬自評列表</h2>
+            <p id="self-team-subtitle" class="text-xs sm:text-sm text-[#6E6662] mt-0.5">涵蓋部屬：何維安（品牌經理）、陳泳璇（行政經理）、張芳媐（營運經理兼執行長特助）、姚品瑄（部門儲備主管）、胡喻翔（專案經理）</p>
           </div>
         </div>
-        <div class="text-xs sm:text-sm px-4 py-2 bg-white/90 rounded-full text-[#783E16] font-bold border border-[#F3D1B0] shadow-2xs" id="self-completion-status">
-          已填答 2 / 應填 5 人
+        <div class="text-xs sm:text-sm px-4 py-2 bg-white rounded-full text-[#4A433E] font-bold border border-[#E0D7CA] shadow-2xs" id="self-completion-status">
+          已填答 2 ／ 應填 5 人
         </div>
       </div>
 
@@ -417,7 +420,7 @@ html_content = r"""<!DOCTYPE html>
     <!-- TAB: 員工同儕匿名表 (逐題明細) -->
     <!-- ======================================================== -->
     <section id="tab-section-peerAnon" class="tab-content hidden space-y-7">
-      <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E8E2D8] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
+      <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E2DDD5] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
         <div class="flex items-center gap-2.5 flex-wrap" id="peer-anon-member-pills"></div>
         <div id="peer-anon-export-btn-container"></div>
       </div>
@@ -429,12 +432,12 @@ html_content = r"""<!DOCTYPE html>
     <!-- TAB: 評同事 (同儕回饋總覽) -->
     <!-- ======================================================== -->
     <section id="tab-section-peer" class="tab-content hidden space-y-7">
-      <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E8E2D8] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
+      <div class="bg-[#FFFDF9] rounded-2xl p-6 border border-[#E2DDD5] soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
         <div class="flex items-center gap-2.5 flex-wrap" id="peer-pills-container"></div>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="bg-[#FFFDF9] p-6 rounded-2xl border border-[#E8E2D8] soft-card-shadow">
+        <div class="bg-[#FFFDF9] p-6 rounded-2xl border border-[#E2DDD5] soft-card-shadow">
           <h3 class="text-sm sm:text-base font-bold text-[#2E2827] mb-3 flex items-center gap-2 font-serif-tc">
             <i data-lucide="compass" class="w-4 h-4 text-[#557A61]"></i> 文化實踐維度表現
           </h3>
@@ -442,9 +445,9 @@ html_content = r"""<!DOCTYPE html>
             <canvas id="peerRadarChart"></canvas>
           </div>
         </div>
-        <div class="bg-[#FFFDF9] p-6 rounded-2xl border border-[#E8E2D8] soft-card-shadow lg:col-span-2">
+        <div class="bg-[#FFFDF9] p-6 rounded-2xl border border-[#E2DDD5] soft-card-shadow lg:col-span-2">
           <h3 class="text-sm sm:text-base font-bold text-[#2E2827] mb-3 flex items-center gap-2 font-serif-tc">
-            <i data-lucide="bar-chart-3" class="w-4 h-4 text-[#557A61]"></i> 協作、當責與溝通評分 (滿分10分)
+            <i data-lucide="bar-chart-3" class="w-4 h-4 text-[#557A61]"></i> 協作、當責與溝通評分（滿分 10 分）
           </h3>
           <div class="h-68">
             <canvas id="peerBarChart"></canvas>
@@ -459,9 +462,10 @@ html_content = r"""<!DOCTYPE html>
 
   <!-- ========================================================================= -->
   <!-- SELF COMPETENCY RATING MODAL (營運經理專用職能自評登記彈窗) -->
+  <!-- 精簡設計：只包含職能項目與分數等級選擇，無多餘文字與敘述 -->
   <!-- ========================================================================= -->
   <div id="selfCompetencyModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 no-print">
-    <div class="bg-[#FFFDF9] rounded-3xl max-w-4xl w-full border border-[#E8E2D8] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+    <div class="bg-[#FFFDF9] rounded-3xl max-w-4xl w-full border border-[#E2DDD5] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
       
       <!-- MODAL HEADER -->
       <div class="px-6 py-5 bg-[#557A61] text-white flex items-center justify-between shrink-0">
@@ -472,9 +476,9 @@ html_content = r"""<!DOCTYPE html>
           <div>
             <div class="flex items-center gap-2">
               <h3 class="text-base sm:text-lg font-bold font-serif-tc text-white">員工職能自評登記表</h3>
-              <span class="px-2.5 py-0.5 text-xs font-bold rounded-md bg-[#FCE5CD] text-[#783E16]">營運經理統籌填寫</span>
+              <span class="px-2.5 py-0.5 text-xs font-bold rounded-md bg-[#E4ECD3] text-[#2D5239]">營運經理統籌填寫</span>
             </div>
-            <p class="text-xs text-white/80 mt-0.5">以選項方式（Lv. 1~5）選填每位夥伴的職能自評，自動儲存於本機瀏覽器（LocalStorage）並即時連動至所有對照表、列印與下載。</p>
+            <p class="text-xs text-white/80 mt-0.5">點選每位同仁之專屬職能自評等級（Lv. 1～5），自動儲存於本機瀏覽器（LocalStorage）並即時套用。</p>
           </div>
         </div>
         <button onclick="closeSelfCompetencyModal()" class="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition">
@@ -483,8 +487,8 @@ html_content = r"""<!DOCTYPE html>
       </div>
 
       <!-- MEMBER SELECTION TABS IN MODAL -->
-      <div class="px-6 py-3.5 bg-[#F2EEE6] border-b border-[#E8E2D8] flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0">
-        <span class="text-xs font-bold text-[#8C837C] shrink-0 mr-1 flex items-center gap-1">
+      <div class="px-6 py-3.5 bg-[#F2EEE6] border-b border-[#E2DDD5] flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0">
+        <span class="text-xs font-bold text-[#6E6662] shrink-0 mr-1 flex items-center gap-1">
           <i data-lucide="user" class="w-3.5 h-3.5 text-[#557A61]"></i> 評定對象：
         </span>
         <div id="modal-member-pills" class="flex items-center gap-2">
@@ -492,31 +496,19 @@ html_content = r"""<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- LEVEL LEGEND BAR -->
-      <div class="px-6 py-3 bg-[#FAF7F2] border-b border-[#E8E2D8] flex items-center justify-between flex-wrap gap-2 text-xs shrink-0">
-        <span class="font-bold text-[#4A433E]">等級定義參考：</span>
-        <div class="flex items-center gap-2 flex-wrap text-[11px]">
-          <span class="px-2 py-0.5 rounded bg-white border border-[#E0D7CA] text-[#4A433E]"><b>L1: Start</b> (起步/建立基礎)</span>
-          <span class="px-2 py-0.5 rounded bg-white border border-[#E0D7CA] text-[#4A433E]"><b>L2: Grow</b> (成長/逐步熟悉)</span>
-          <span class="px-2 py-0.5 rounded bg-[#FFF4CD] border border-[#FCE299] text-[#7A5E12]"><b>L3: Keep</b> (維持/穩定符合期待)</span>
-          <span class="px-2 py-0.5 rounded bg-[#E4ECD3] border border-[#CDE0BC] text-[#2D5239]"><b>L4: Good</b> (良好/獨立成熟)</span>
-          <span class="px-2 py-0.5 rounded bg-[#F4CCCC] border border-[#E6BDBD] text-[#592629]"><b>L5: Amazing!</b> (卓越/超越期待引領典範)</span>
-        </div>
-      </div>
-
-      <!-- MODAL BODY: COMPETENCY LIST -->
-      <div class="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6" id="modal-competencies-container">
+      <!-- MODAL BODY: COMPETENCY LIST (TABLE FORMAT: ONLY COMPETENCY & SCORE BUTTONS) -->
+      <div class="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-5" id="modal-competencies-container">
         <!-- Injected via JS -->
       </div>
 
       <!-- MODAL FOOTER -->
-      <div class="px-6 py-4 bg-[#FFFDF9] border-t border-[#E8E2D8] flex items-center justify-between gap-4 shrink-0">
+      <div class="px-6 py-4 bg-[#FFFDF9] border-t border-[#E2DDD5] flex items-center justify-between gap-4 shrink-0">
         <div class="text-xs text-[#7A726D] flex items-center gap-1.5">
           <i data-lucide="hard-drive" class="w-4 h-4 text-[#557A61]"></i>
-          <span>儲存狀態：<b>本機瀏覽器 LocalStorage</b>（關閉或重整後依然保留）</span>
+          <span>儲存狀態：<b>本機瀏覽器 LocalStorage</b>（關閉或重整後依然完整保留）</span>
         </div>
         <div class="flex items-center gap-3">
-          <button onclick="clearModalCurrentMemberRatings()" class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-[#F2EEE6] text-[#8C4B1E] hover:bg-[#EBE4D8] transition">
+          <button onclick="clearModalCurrentMemberRatings()" class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
             重設此員自評
           </button>
           <button onclick="closeSelfCompetencyModal()" class="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
@@ -537,8 +529,8 @@ html_content = r"""<!DOCTYPE html>
     <span id="toast-msg">操作成功</span>
   </div>
 
-  <footer class="no-print bg-[#FFFDF9] border-t border-[#E8E2D8] py-7 text-center text-xs text-[#7A726D] mt-auto">
-    好好星球文化基金會 360 年中成長評估系統 · 營運經理統籌自評登記 (LocalStorage) · 優先連線 Google 試算表（表單回覆1）
+  <footer class="no-print bg-[#FFFDF9] border-t border-[#E2DDD5] py-7 text-center text-xs text-[#7A726D] mt-auto">
+    好好星球文化基金會 360 年中成長評估系統 · 營運經理統籌自評登記（LocalStorage） · 優先連線 Google 試算表（表單回覆1）
   </footer>
 
   <script>
@@ -593,11 +585,11 @@ html_content = r"""<!DOCTYPE html>
     };
 
     const LEVEL_DEFINITIONS = {
-      "L1": { name: "Start 起步", desc: "起步中 / 建立基礎行為與熟悉流程" },
-      "L2": { name: "Grow 成長", desc: "成長中 / 逐步熟悉、能在指引下穩定完成" },
-      "L3": { name: "Keep 維持", desc: "維持 / 穩定交付符合組織期待" },
-      "L4": { name: "Good 良好", desc: "良好 / 能獨立成熟當責並主動優化" },
-      "L5": { name: "Amazing! 卓越", desc: "卓越 / 超越期待、能引領典範與賦能他人" }
+      "L1": { name: "Start 起步", desc: "起步中（建立基礎行為與熟悉流程）" },
+      "L2": { name: "Grow 成長", desc: "成長中（逐步熟悉、可在引導下穩定完成）" },
+      "L3": { name: "Keep 維持", desc: "維持（穩定交付符合組織期待）" },
+      "L4": { name: "Good 良好", desc: "良好（能獨立成熟當責並主動優化）" },
+      "L5": { name: "Amazing！卓越", desc: "卓越（超越期待、能引領典範與賦能他人）" }
     };
 
     const LEVEL_NUM = { "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5 };
@@ -700,7 +692,7 @@ html_content = r"""<!DOCTYPE html>
       document.getElementById('toast-msg').innerText = msg;
       const iconWrap = document.getElementById('toast-icon');
       if (iconWrap) {
-        iconWrap.className = isWarn ? 'p-1 rounded-lg bg-[#C27D38] text-white' : 'p-1 rounded-lg bg-[#557A61] text-white';
+        iconWrap.className = isWarn ? 'p-1 rounded-lg bg-[#4A433E] text-white' : 'p-1 rounded-lg bg-[#557A61] text-white';
       }
       toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
       setTimeout(() => {
@@ -722,12 +714,12 @@ html_content = r"""<!DOCTYPE html>
 
     function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('border-[#557A61]', 'text-[#2D5239]', 'bg-[#E4ECD3]/30', 'font-semibold');
+        btn.classList.remove('border-[#557A61]', 'text-[#2D5239]', 'bg-[#E4ECD3]/40', 'font-semibold');
         btn.classList.add('border-transparent', 'text-[#6E6662]', 'font-medium');
       });
       const activeBtn = document.getElementById('tab-btn-' + tabId);
       if (activeBtn) {
-        activeBtn.classList.add('border-[#557A61]', 'text-[#2D5239]', 'bg-[#E4ECD3]/30', 'font-semibold');
+        activeBtn.classList.add('border-[#557A61]', 'text-[#2D5239]', 'bg-[#E4ECD3]/40', 'font-semibold');
         activeBtn.classList.remove('border-transparent', 'text-[#6E6662]');
       }
 
@@ -744,6 +736,7 @@ html_content = r"""<!DOCTYPE html>
 
     // =========================================================================
     // MODAL: 營運經理統籌職能自評登記彈窗
+    // 精簡版：只包含職能名稱與等級分數（無多餘文字、無引用描述）
     // =========================================================================
     function openSelfCompetencyModal(memberName = null) {
       if (memberName && ALL_MEMBERS.includes(memberName)) {
@@ -807,100 +800,78 @@ html_content = r"""<!DOCTYPE html>
           return `
             <button onclick="selectModalMember('${m}')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition shrink-0 flex items-center gap-1.5 ${isAct ? 'bg-[#557A61] text-white shadow-xs' : 'bg-white text-[#4A433E] hover:bg-[#EBE4D8] border border-[#E0D7CA]'}">
               <span>${m}</span>
-              <span class="text-[11px] opacity-80">(${JOB_ROLES_MAP[m] || ''})</span>
+              <span class="text-[11px] opacity-80">（${JOB_ROLES_MAP[m] || ''}）</span>
               ${hasData ? '<span class="w-2 h-2 rounded-full bg-[#82B29A] inline-block"></span>' : ''}
             </button>
           `;
         }).join('');
       }
 
-      // 2. Fetch original self eval STAR for this member
-      const selfEntry = RAW_DATA.find(e => e.relation === "自評" && e.target === memName);
-      const hasSelf = Boolean(selfEntry && selfEntry.self_eval);
-      const se = hasSelf ? selfEntry.self_eval : null;
-
       const compList = ROLE_COMPETENCIES[jobRole] || [];
       const userRatings = SELF_COMPETENCY_STATE[memName] || {};
 
-      // 3. Render Competency Items
+      // 2. Render Competency Items - STREAMLINED & CONCISE TABLE (NO TEXT BLOCKS)
       const compContainer = document.getElementById('modal-competencies-container');
       if (compContainer) {
         let html = `
-          <div class="bg-[#F9F6EE] rounded-2xl p-5 border border-[#E8E2D8] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="bg-[#F2EEE6] rounded-2xl p-4 border border-[#E2DDD5] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-[#557A61] text-white font-bold flex items-center justify-center font-serif-tc text-base shadow-2xs">${memName.slice(0, 1)}</div>
               <div>
                 <div class="flex items-center gap-2">
                   <h4 class="text-base font-bold text-[#2E2827] font-serif-tc">${memName}</h4>
-                  <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-[#FCE5CD] text-[#783E16]">${jobRole}</span>
+                  <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-white text-[#4A433E] border border-[#E0D7CA]">${jobRole}</span>
                 </div>
-                <p class="text-xs text-[#7A726D] mt-0.5">直屬主管：<b>${supName}</b> ｜ 應評職能項目：<b>${compList.length}</b> 項</p>
+                <p class="text-xs text-[#6E6662] mt-0.5">直屬主管：<b>${supName}</b> ｜ 職能項目：<b>${compList.length}</b> 項</p>
               </div>
             </div>
-            <div class="text-xs font-bold text-[#557A61] bg-[#E4ECD3] px-3.5 py-1.5 rounded-xl border border-[#CDE0BC] self-start sm:self-auto">
-              已登記：${Object.keys(userRatings).length} / ${compList.length} 項
+            <div class="text-xs font-bold text-[#2D5239] bg-[#E4ECD3] px-3.5 py-1.5 rounded-xl border border-[#CDE0BC] self-start sm:self-auto">
+              已登記：${Object.keys(userRatings).length} ／ ${compList.length} 項
             </div>
           </div>
+
+          <div class="overflow-hidden rounded-2xl border border-[#E2DDD5] bg-white soft-card-shadow">
+            <table class="w-full text-xs sm:text-sm text-left border-collapse">
+              <thead class="bg-[#F2EEE6] text-[#2E2827] border-b border-[#E2DDD5]">
+                <tr>
+                  <th class="py-3.5 px-4 font-bold text-center w-14 border-r border-[#E2DDD5]">序號</th>
+                  <th class="py-3.5 px-4 font-bold border-r border-[#E2DDD5]">職能項目名稱</th>
+                  <th class="py-3.5 px-4 font-bold text-center w-96">自評等級選取（Lv. 1～5）</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#EFEAE1]">
         `;
 
         compList.forEach((cTitle, idx) => {
-          let selfStarAns = null;
-          if (hasSelf && se.competencies) {
-            const item = se.competencies.find(x => x.title === cTitle);
-            if (item) selfStarAns = item.answer;
-          }
-
           const currentVal = userRatings[cTitle] || "";
 
           html += `
-            <div class="bg-white rounded-2xl border border-[#E8E2D8] p-5 sm:p-6 soft-card-shadow space-y-4 hover:border-[#557A61]/50 transition">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#EFEAE1] pb-3">
-                <div class="flex items-center gap-2.5">
-                  <span class="w-6 h-6 rounded-lg bg-[#E4ECD3] text-[#2D5239] font-bold flex items-center justify-center text-xs">${idx + 1}</span>
-                  <h5 class="text-sm sm:text-base font-bold text-[#2E2827] font-serif-tc">${cTitle}</h5>
-                </div>
-                <div>
-                  ${currentVal ? `
-                    <span class="badge-stable px-3 py-1 text-xs font-bold rounded-lg flex items-center gap-1">
-                      <i data-lucide="check" class="w-3.5 h-3.5"></i> 已選：${currentVal} (${LEVEL_DEFINITIONS[currentVal]?.name || ''})
-                    </span>
-                  ` : `
-                    <span class="badge-missing px-2.5 py-1 text-xs font-semibold rounded-lg">待選取自評</span>
-                  `}
-                </div>
-              </div>
-
-              <!-- STAR ANSWER FROM RAW SURVEY -->
-              <div class="bg-[#F9F6EE] rounded-xl p-4 border border-[#E8E2D8]">
-                <span class="text-xs font-bold text-[#557A61] block mb-1 flex items-center gap-1.5">
-                  <i data-lucide="file-text" class="w-3.5 h-3.5"></i> 部屬原始自評 STAR 描述（供評定參考）：
-                </span>
-                <p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed whitespace-pre-line">${selfStarAns || '<span class="text-[#8C837C] italic">（部屬未填寫此題自評敘述）</span>'}</p>
-              </div>
-
-              <!-- LEVEL SELECTION BUTTONS -->
-              <div class="space-y-2">
-                <span class="text-xs font-bold text-[#4A433E] block">請選取自評等級 (Lv. 1 ~ 5)：</span>
-                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+            <tr class="hover:bg-[#FAF7F2] transition">
+              <td class="py-3.5 px-4 text-center font-bold text-[#7A726D] border-r border-[#E2DDD5]">${idx + 1}</td>
+              <td class="py-3.5 px-4 font-bold text-[#2E2827] border-r border-[#E2DDD5]">${cTitle}</td>
+              <td class="py-3.5 px-4 text-center">
+                <div class="flex items-center justify-center gap-1.5 flex-wrap">
                   ${["L1", "L2", "L3", "L4", "L5"].map(lvl => {
                     const isSelected = currentVal === lvl;
                     const lDef = LEVEL_DEFINITIONS[lvl];
                     return `
-                      <button onclick="setModalMemberRating('${cTitle}', '${lvl}')" class="p-3 rounded-xl border text-left transition flex flex-col justify-between gap-1.5 ${isSelected ? 'bg-[#557A61] text-white border-[#466551] shadow-xs' : 'bg-[#FFFDF9] hover:bg-[#F2EEE6] text-[#2E2827] border-[#E8E2D8]'}">
-                        <div class="flex items-center justify-between">
-                          <span class="text-xs font-bold font-serif-tc">${lvl}</span>
-                          ${isSelected ? '<i data-lucide="check-circle" class="w-4 h-4 text-white"></i>' : ''}
-                        </div>
-                        <div class="text-[11px] font-semibold ${isSelected ? 'text-white' : 'text-[#557A61]'}">${lDef.name.split(' ')[1] || lDef.name}</div>
-                        <div class="text-[10px] leading-tight ${isSelected ? 'text-white/80' : 'text-[#7A726D]'}">${lDef.desc.split('/')[0]}</div>
+                      <button onclick="setModalMemberRating('${cTitle}', '${lvl}')" title="${lDef.name}：${lDef.desc}" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${isSelected ? 'bg-[#557A61] text-white shadow-2xs ring-2 ring-[#557A61]/30' : 'bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] border border-[#E0D7CA]'}">
+                        <span>${lvl}</span>
+                        ${isSelected ? '<i data-lucide="check" class="w-3 h-3 text-white"></i>' : ''}
                       </button>
                     `;
                   }).join('')}
                 </div>
-              </div>
-            </div>
+              </td>
+            </tr>
           `;
         });
+
+        html += `
+              </tbody>
+            </table>
+          </div>
+        `;
 
         compContainer.innerHTML = html;
       }
@@ -909,17 +880,17 @@ html_content = r"""<!DOCTYPE html>
     }
 
     // =========================================================================
-    // GAP ANALYSIS HELPER
+    // GAP ANALYSIS HELPER (FULL-WIDTH LABELS & CLEAN MUTED STYLES)
     // =========================================================================
     function computeGapBadge(selfLvl, supLvl) {
       if (!selfLvl && !supLvl) {
         return `<span class="text-[#8C837C] text-xs">待雙方評定</span>`;
       }
       if (!selfLvl) {
-        return `<span class="text-[#B45309] text-xs bg-[#FFF2D6] px-2 py-0.5 rounded font-semibold">待自評</span>`;
+        return `<span class="text-[#4A433E] text-xs bg-[#F2EEE6] px-2.5 py-0.5 rounded font-semibold border border-[#E0D7CA]">待自評</span>`;
       }
       if (!supLvl) {
-        return `<span class="text-[#7A5E12] text-xs bg-[#FFF4CD] px-2 py-0.5 rounded font-semibold">待主管評</span>`;
+        return `<span class="text-[#4A433E] text-xs bg-[#F2EEE6] px-2.5 py-0.5 rounded font-semibold border border-[#E0D7CA]">待主管評</span>`;
       }
 
       const sVal = LEVEL_NUM[selfLvl] || 0;
@@ -927,11 +898,11 @@ html_content = r"""<!DOCTYPE html>
       const diff = sVal - supVal;
 
       if (diff === 0) {
-        return `<span class="bg-[#E4ECD3] text-[#2D5239] border border-[#CDE0BC] px-2.5 py-0.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i> 共識 (${selfLvl})</span>`;
+        return `<span class="bg-[#E4ECD3] text-[#2D5239] border border-[#CDE0BC] px-2.5 py-0.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i> 共識（${selfLvl}）</span>`;
       } else if (diff > 0) {
-        return `<span class="bg-[#FFF4CD] text-[#7A5E12] border border-[#FCE299] px-2.5 py-0.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1">自評高 ${diff} 級</span>`;
+        return `<span class="bg-[#F2EEE6] text-[#4A433E] border border-[#E0D7CA] px-2.5 py-0.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1">自評高 ${diff} 級</span>`;
       } else {
-        return `<span class="bg-[#E2F3F0] text-[#1E564F] border border-[#BCE4DE] px-2.5 py-0.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1">主管肯定高 ${Math.abs(diff)} 級</span>`;
+        return `<span class="bg-[#E4ECD3] text-[#2D5239] border border-[#CDE0BC] px-2.5 py-0.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1">主管肯定高 ${Math.abs(diff)} 級</span>`;
       }
     }
 
@@ -1076,9 +1047,9 @@ html_content = r"""<!DOCTYPE html>
           RAW_DATA = parsed;
           if (badge) {
             badge.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#E4ECD3] text-[#2D5239] border border-[#CDE0BC]";
-            badge.innerText = `🟢 試算表即時連線 (${parsed.length}筆)`;
+            badge.innerText = `🟢 試算表即時連線（${parsed.length}筆）`;
           }
-          if (syncText) syncText.innerText = `已同步 (${parsed.length}筆)`;
+          if (syncText) syncText.innerText = `已同步（${parsed.length}筆）`;
           showToast(`成功優先同步 Google 試算表（表單回覆1）最新 ${parsed.length} 筆資料！`);
           refreshAllViews();
         } else {
@@ -1088,7 +1059,7 @@ html_content = r"""<!DOCTYPE html>
         console.warn("GAS Sync fallback to local data:", err);
         if (badge) {
           badge.className = "px-2.5 py-0.5 text-xs font-semibold rounded-md bg-[#F2EEE6] text-[#6E6662] border border-[#E0D7CA]";
-          badge.innerText = `⚪ 本地備份資料 (${RAW_DATA.length}筆)`;
+          badge.innerText = `⚪ 本地備份資料（${RAW_DATA.length}筆）`;
         }
         if (syncText) syncText.innerText = "同步 Google 試算表";
         if (isUserInitiated) {
@@ -1174,7 +1145,7 @@ html_content = r"""<!DOCTYPE html>
           const isAct = m === currentSubReviewMember;
           phtml += `
             <button onclick="selectSubReviewMember('${m}')" id="sub-mem-btn-${m}" class="sub-review-pill-btn px-5 py-2 rounded-xl text-xs sm:text-sm transition ${isAct ? 'bg-[#557A61] text-white font-semibold shadow-xs' : 'bg-[#F2EEE6] text-[#4A433E] font-medium hover:bg-[#EBE4D8]'}">
-              ${m} (${JOB_ROLES_MAP[m] || '職位'})
+              ${m}（${JOB_ROLES_MAP[m] || '職位'}）
             </button>
           `;
         });
@@ -1185,7 +1156,7 @@ html_content = r"""<!DOCTYPE html>
       if (expContainer) {
         expContainer.innerHTML = `
           <button onclick="exportSingleSubordinateComprehensiveExcelClientSide('${currentSubReviewMember}')" class="inline-flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition border border-[#E0D7CA]">
-            <i data-lucide="download" class="w-4 h-4 text-[#557A61]"></i> 下載【${currentSubReviewMember}】自評vs主管評 XLSX
+            <i data-lucide="download" class="w-4 h-4 text-[#557A61]"></i> 下載【${currentSubReviewMember}】自評 vs 主管評 XLSX
           </button>
         `;
       }
@@ -1217,14 +1188,14 @@ html_content = r"""<!DOCTYPE html>
         }
       });
 
-      const overallPeerAvg = allPeerScores.length ? (allPeerScores.reduce((a, b) => a + b, 0) / allPeerScores.length).toFixed(2) : "-";
+      const overallPeerAvg = allPeerScores.length ? (allPeerScores.reduce((a, b) => a + b, 0) / allPeerScores.length).toFixed(2) : "—";
       const validItems = itemStats.filter(it => it.avg !== null);
       const sortedItems = [...validItems].sort((a, b) => b.avg - a.avg);
       const topStrengths = sortedItems.slice(0, 3);
       const bottomGrowth = [...sortedItems].reverse().slice(0, 3);
 
       const npsVals = peerRecords.map(r => r.peer_eval?.q36_nps_recommend).filter(v => v !== null && v !== undefined);
-      const npsAvg = npsVals.length ? (npsVals.reduce((a, b) => a + b, 0) / npsVals.length).toFixed(2) : "-";
+      const npsAvg = npsVals.length ? (npsVals.reduce((a, b) => a + b, 0) / npsVals.length).toFixed(2) : "—";
 
       const compList = ROLE_COMPETENCIES[jobRole] || [];
       const userRatings = SELF_COMPETENCY_STATE[memName] || {};
@@ -1234,7 +1205,7 @@ html_content = r"""<!DOCTYPE html>
       if (screenContainer) {
         screenContainer.innerHTML = `
           <!-- REPORT HEADER BANNER -->
-          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 sm:p-8 soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 sm:p-8 soft-card-shadow flex flex-col md:flex-row md:items-center justify-between gap-5">
             <div class="flex items-center gap-4">
               <div class="w-14 h-14 rounded-2xl bg-[#557A61] text-white font-bold flex items-center justify-center text-xl font-serif-tc shadow-xs">
                 ${memName.slice(0, 1)}
@@ -1242,13 +1213,13 @@ html_content = r"""<!DOCTYPE html>
               <div>
                 <div class="flex items-center gap-2.5 flex-wrap">
                   <h2 class="text-xl sm:text-2xl font-bold text-[#2E2827] font-serif-tc">${memName} 自評 vs 主管評估對照表</h2>
-                  <span class="px-3 py-1 text-xs font-semibold rounded-lg bg-[#FCE5CD] text-[#783E16] border border-[#F3D1B0]">${jobRole}</span>
+                  <span class="px-3 py-1 text-xs font-semibold rounded-lg bg-[#F2EEE6] text-[#4A433E] border border-[#E0D7CA]">${jobRole}</span>
                   ${hasSelf ? `
                     <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[#E4ECD3] text-[#2D5239] border border-[#CDE0BC] flex items-center gap-1">
                       <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> 部屬已自評
                     </span>
                   ` : `
-                    <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[#FFF4CD] text-[#7A5E12] border border-[#FCE299] flex items-center gap-1">
+                    <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[#F2EEE6] text-[#6E6662] border border-[#E0D7CA] flex items-center gap-1">
                       <i data-lucide="clock" class="w-3.5 h-3.5"></i> 部屬尚未自評
                     </span>
                   `}
@@ -1258,9 +1229,9 @@ html_content = r"""<!DOCTYPE html>
             </div>
             <div class="flex items-center gap-3 text-xs sm:text-sm">
               <div class="px-4 py-2 rounded-xl bg-[#E4ECD3] text-[#2D5239] font-bold">
-                同儕平均：${overallPeerAvg} / 10分
+                同儕平均：${overallPeerAvg} ／ 10 分
               </div>
-              <div class="px-4 py-2 rounded-xl bg-[#FCE5CD] text-[#8C4B1E] font-bold">
+              <div class="px-4 py-2 rounded-xl bg-[#F2EEE6] text-[#4A433E] font-bold border border-[#E0D7CA]">
                 NPS 推薦：${npsAvg} 分
               </div>
             </div>
@@ -1268,13 +1239,13 @@ html_content = r"""<!DOCTYPE html>
 
           <!-- PART 1: 頂部同儕統計摘要卡片 -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 soft-card-shadow flex flex-col justify-between">
               <div class="flex items-center justify-between pb-2">
                 <span class="text-xs font-bold text-[#8C837C] uppercase tracking-wider">同儕評分總平均</span>
                 <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="award" class="w-4 h-4"></i></div>
               </div>
               <div class="my-3">
-                <div class="text-3xl sm:text-4xl font-bold text-[#2E2827] font-serif-tc">${overallPeerAvg} <span class="text-xs text-[#8C837C] font-normal">/ 10分</span></div>
+                <div class="text-3xl sm:text-4xl font-bold text-[#2E2827] font-serif-tc">${overallPeerAvg} <span class="text-xs text-[#8C837C] font-normal">／ 10 分</span></div>
               </div>
               <div class="text-xs text-[#7A726D] flex items-center justify-between pt-3 border-t border-[#EFEAE1]">
                 <span>NPS 推薦：<b>${npsAvg}</b> 分</span>
@@ -1282,54 +1253,54 @@ html_content = r"""<!DOCTYPE html>
               </div>
             </div>
 
-            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 soft-card-shadow flex flex-col justify-between">
               <div class="flex items-center justify-between pb-2">
                 <span class="text-xs font-bold text-[#8C837C] uppercase tracking-wider">部屬工作特質</span>
-                <div class="p-2 bg-[#FCE5CD] text-[#783E16] rounded-xl"><i data-lucide="tag" class="w-4 h-4"></i></div>
+                <div class="p-2 bg-[#F2EEE6] text-[#4A433E] rounded-xl"><i data-lucide="tag" class="w-4 h-4"></i></div>
               </div>
               <div class="my-2 space-y-1">
                 <div class="text-xs text-[#2D5239] font-medium truncate">最穩定：${(se?.top3_stable || []).join('、') || '（未填）'}</div>
-                <div class="text-xs text-[#8C4B1E] font-medium truncate">練習中：${(se?.top3_practice || []).join('、') || '（未填）'}</div>
+                <div class="text-xs text-[#4A433E] font-medium truncate">練習中：${(se?.top3_practice || []).join('、') || '（未填）'}</div>
               </div>
               <div class="text-xs text-[#7A726D] pt-3 border-t border-[#EFEAE1]">
                 部屬自評特質盤點
               </div>
             </div>
 
-            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 soft-card-shadow flex flex-col justify-between">
               <div class="flex items-center justify-between pb-2">
                 <span class="text-xs font-bold text-[#2D5239] uppercase tracking-wider flex items-center gap-1.5">
                   <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#557A61]"></i> 同儕評分最高 Top 3
                 </span>
-                <span class="badge-best px-2 py-0.5 text-[11px] font-bold rounded-md">亮點</span>
+                <span class="badge-sage px-2 py-0.5 text-[11px] font-bold rounded-md">亮點</span>
               </div>
               <div class="space-y-1.5 my-2">
                 ${topStrengths.length > 0 ? topStrengths.map(it => `
                   <div class="text-xs flex items-center justify-between">
-                    <span class="truncate text-[#2E2827] font-medium mr-2">${it.qNo}. ${it.qDesc.split('（')[0]}</span>
-                    <span class="badge-best px-2 py-0.5 rounded font-bold shrink-0">${it.avg.toFixed(1)}分</span>
+                    <span class="truncate text-[#2E2827] font-medium mr-2">${it.qNo}．${it.qDesc.split('（')[0]}</span>
+                    <span class="badge-sage px-2 py-0.5 rounded font-bold shrink-0">${it.avg.toFixed(1)}分</span>
                   </div>
                 `).join('') : '<div class="text-xs text-[#8C837C]">尚無同儕評分</div>'}
               </div>
-              <div class="text-[11px] text-[#7A726D] pt-2 border-t border-[#EFEAE1]">最高給分達 ${topStrengths[0] ? topStrengths[0].best : '-'} 分</div>
+              <div class="text-[11px] text-[#7A726D] pt-2 border-t border-[#EFEAE1]">最高給分達 ${topStrengths[0] ? topStrengths[0].best : '—'} 分</div>
             </div>
 
-            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 soft-card-shadow flex flex-col justify-between">
               <div class="flex items-center justify-between pb-2">
-                <span class="text-xs font-bold text-[#8C4B1E] uppercase tracking-wider flex items-center gap-1.5">
-                  <i data-lucide="trending-up" class="w-3.5 h-3.5 text-[#C27D38]"></i> 相對待提升 Top 3
+                <span class="text-xs font-bold text-[#4A433E] uppercase tracking-wider flex items-center gap-1.5">
+                  <i data-lucide="trending-up" class="w-3.5 h-3.5 text-[#557A61]"></i> 相對待提升 Top 3
                 </span>
-                <span class="badge-worst px-2 py-0.5 text-[11px] font-bold rounded-md">成長</span>
+                <span class="badge-stone px-2 py-0.5 text-[11px] font-bold rounded-md">成長</span>
               </div>
               <div class="space-y-1.5 my-2">
                 ${bottomGrowth.length > 0 ? bottomGrowth.map(it => `
                   <div class="text-xs flex items-center justify-between">
-                    <span class="truncate text-[#2E2827] font-medium mr-2">${it.qNo}. ${it.qDesc.split('（')[0]}</span>
-                    <span class="badge-worst px-2 py-0.5 rounded font-bold shrink-0">${it.avg.toFixed(1)}分</span>
+                    <span class="truncate text-[#2E2827] font-medium mr-2">${it.qNo}．${it.qDesc.split('（')[0]}</span>
+                    <span class="badge-stone px-2 py-0.5 rounded font-bold shrink-0">${it.avg.toFixed(1)}分</span>
                   </div>
                 `).join('') : '<div class="text-xs text-[#8C837C]">尚無同儕評分</div>'}
               </div>
-              <div class="text-[11px] text-[#7A726D] pt-2 border-t border-[#EFEAE1]">最低給分落點 ${bottomGrowth[0] ? bottomGrowth[0].worst : '-'} 分</div>
+              <div class="text-[11px] text-[#7A726D] pt-2 border-t border-[#EFEAE1]">最低給分落點 ${bottomGrowth[0] ? bottomGrowth[0].worst : '—'} 分</div>
             </div>
           </div>
 
@@ -1337,7 +1308,7 @@ html_content = r"""<!DOCTYPE html>
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2.5">
-                <div class="p-2 bg-[#F4CCCC] text-[#4A2426] rounded-xl"><i data-lucide="heart" class="w-5 h-5"></i></div>
+                <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="heart" class="w-5 h-5"></i></div>
                 <div>
                   <h3 class="text-base sm:text-lg font-bold text-[#2E2827] font-serif-tc">一、組織文化實踐：部屬自評實例 vs 主管評核回饋</h3>
                   <p class="text-xs text-[#7A726D]">四大文化面向一列一項，對照部屬自評 STAR 描述與主管回饋</p>
@@ -1345,14 +1316,14 @@ html_content = r"""<!DOCTYPE html>
               </div>
             </div>
 
-            <div class="overflow-x-auto rounded-2xl border border-[#E8E2D8] bg-[#FFFDF9] soft-card-shadow">
+            <div class="overflow-x-auto rounded-2xl border border-[#E2DDD5] bg-[#FFFDF9] soft-card-shadow">
               <table class="w-full text-xs sm:text-sm text-left border-collapse">
-                <thead class="bg-[#FCE5CD] text-[#4A2E1C]">
+                <thead class="bg-[#F2EEE6] text-[#2E2827]">
                   <tr>
-                    <th class="py-3 px-4 font-bold text-center w-28 border-r border-[#E8E2D8]">文化面向</th>
-                    <th class="py-3 px-4 font-bold border-r border-[#E8E2D8] w-72">文化定義與行為指引</th>
-                    <th class="py-3 px-4 font-bold border-r border-[#E8E2D8]">部屬自評實例 (STAR)</th>
-                    <th class="py-3 px-4 font-bold w-80 bg-[#FFF2D6] text-[#B45309]">主管評核回饋與觀察</th>
+                    <th class="py-3 px-4 font-bold text-center w-28 border-r border-[#E2DDD5]">文化面向</th>
+                    <th class="py-3 px-4 font-bold border-r border-[#E2DDD5] w-72">文化定義與行為指引</th>
+                    <th class="py-3 px-4 font-bold border-r border-[#E2DDD5]">部屬自評實例（STAR）</th>
+                    <th class="py-3 px-4 font-bold w-80 bg-[#FAF7F2] text-[#2E2827]">主管評核回饋與觀察</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-[#EFEAE1] bg-white">
@@ -1363,13 +1334,13 @@ html_content = r"""<!DOCTYPE html>
                     ["可持續", "【可持續】內在韌性、自我照顧、彈性的人際與工作邊界", se?.values?.['可持續']],
                   ].map(([cTitle, cDesc, cSelf]) => `
                     <tr class="hover:bg-[#FAF7F2] transition">
-                      <td class="py-3.5 px-4 font-bold text-center text-[#2E2827] border-r border-[#E8E2D8] bg-[#FAF7F2]">${cTitle}</td>
-                      <td class="py-3.5 px-4 text-[#4A433E] border-r border-[#E8E2D8] text-xs leading-relaxed">${cDesc}</td>
-                      <td class="py-3.5 px-4 text-[#2E2827] border-r border-[#E8E2D8] leading-relaxed">
-                        ${cSelf || '<span class="text-[#B45309] italic">（部屬未填寫）</span>'}
+                      <td class="py-3.5 px-4 font-bold text-center text-[#2E2827] border-r border-[#E2DDD5] bg-[#FAF7F2]">${cTitle}</td>
+                      <td class="py-3.5 px-4 text-[#4A433E] border-r border-[#E2DDD5] text-xs leading-relaxed">${cDesc}</td>
+                      <td class="py-3.5 px-4 text-[#2E2827] border-r border-[#E2DDD5] leading-relaxed">
+                        ${cSelf || '<span class="text-[#7A726D] italic">（部屬未填寫）</span>'}
                       </td>
                       <td class="py-3.5 px-4 bg-[#FFFDF9]">
-                        <textarea onblur="updateSupervisorFeedback('${memName}', '文化_${cTitle}', this.value)" placeholder="請輸入主管針對【${cTitle}】的回饋與觀察..." class="w-full text-xs p-2.5 rounded-xl border border-[#FCE299] bg-[#FFF2D6]/30 focus:bg-white transition focus:outline-[#557A61] resize-y" rows="2">${SUPERVISOR_EVAL_STATE[memName]?.[`文化_${cTitle}`]?.feedback || ''}</textarea>
+                        <textarea onblur="updateSupervisorFeedback('${memName}', '文化_${cTitle}', this.value)" placeholder="請輸入主管針對【${cTitle}】的回饋與觀察..." class="w-full text-xs p-2.5 rounded-xl border border-[#E0D7CA] bg-[#FAF7F2] focus:bg-white transition focus:outline-[#557A61] resize-y" rows="2">${SUPERVISOR_EVAL_STATE[memName]?.[`文化_${cTitle}`]?.feedback || ''}</textarea>
                       </td>
                     </tr>
                   `).join('')}
@@ -1385,24 +1356,24 @@ html_content = r"""<!DOCTYPE html>
                 <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="briefcase" class="w-5 h-5"></i></div>
                 <div>
                   <h3 class="text-base sm:text-lg font-bold text-[#2E2827] font-serif-tc">二、專業職能：自評 vs 主管評分並列對照（逐項比對認知差異）</h3>
-                  <p class="text-xs text-[#7A726D]">職能項目一列一項，並列呈現部屬自評等級 (LocalStorage)、主管評核等級與認知落差分析</p>
+                  <p class="text-xs text-[#7A726D]">職能項目一列一項，並列呈現部屬自評等級（LocalStorage）、主管評核等級與認知落差分析</p>
                 </div>
               </div>
-              <button onclick="openSelfCompetencyModal('${memName}')" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl bg-[#FFF2D6] text-[#B45309] hover:bg-[#FDE7B8] transition border border-[#FCE299]">
+              <button onclick="openSelfCompetencyModal('${memName}')" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl bg-[#E4ECD3] text-[#2D5239] hover:bg-[#D4DFC0] transition border border-[#CDE0BC]">
                 <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> 開啟【${memName}】自評登記彈窗
               </button>
             </div>
 
-            <div class="overflow-x-auto rounded-2xl border border-[#E8E2D8] bg-[#FFFDF9] soft-card-shadow">
+            <div class="overflow-x-auto rounded-2xl border border-[#E2DDD5] bg-[#FFFDF9] soft-card-shadow">
               <table class="w-full text-xs sm:text-sm text-left border-collapse">
-                <thead class="bg-[#FCE5CD] text-[#4A2E1C]">
+                <thead class="bg-[#F2EEE6] text-[#2E2827]">
                   <tr>
-                    <th class="py-3 px-3.5 font-bold text-center w-40 border-r border-[#E8E2D8]">職能項目</th>
-                    <th class="py-3 px-4 font-bold border-r border-[#E8E2D8]">部屬自評實例 (STAR)</th>
-                    <th class="py-3 px-3 font-bold text-center w-28 border-r border-[#E8E2D8] bg-[#FFF4CD] text-[#7A5E12]">部屬自評</th>
-                    <th class="py-3 px-3 font-bold text-center w-28 border-r border-[#E8E2D8] bg-[#FFF2D6] text-[#B45309]">主管評定</th>
-                    <th class="py-3 px-3 font-bold text-center w-36 border-r border-[#E8E2D8]">落差分析</th>
-                    <th class="py-3 px-4 font-bold w-68 bg-[#FFF2D6] text-[#B45309]">主管回饋與具體事證</th>
+                    <th class="py-3 px-3.5 font-bold text-center w-40 border-r border-[#E2DDD5]">職能項目</th>
+                    <th class="py-3 px-4 font-bold border-r border-[#E2DDD5]">部屬自評實例（STAR）</th>
+                    <th class="py-3 px-3 font-bold text-center w-28 border-r border-[#E2DDD5] bg-[#FAF7F2] text-[#2E2827]">部屬自評</th>
+                    <th class="py-3 px-3 font-bold text-center w-28 border-r border-[#E2DDD5] bg-[#FAF7F2] text-[#2E2827]">主管評定</th>
+                    <th class="py-3 px-3 font-bold text-center w-36 border-r border-[#E2DDD5]">落差分析</th>
+                    <th class="py-3 px-4 font-bold w-68 bg-[#FAF7F2] text-[#2E2827]">主管回饋與具體事證</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-[#EFEAE1] bg-white">
@@ -1420,36 +1391,36 @@ html_content = r"""<!DOCTYPE html>
 
                     return `
                       <tr class="hover:bg-[#FAF7F2] transition">
-                        <td class="py-3.5 px-3.5 font-bold text-[#2E2827] border-r border-[#E8E2D8] bg-[#FAF7F2]">${cTitle}</td>
-                        <td class="py-3.5 px-4 text-[#2E2827] border-r border-[#E8E2D8] leading-relaxed">
-                          ${selfAns || '<span class="text-[#B45309] italic">（部屬未填寫自評實例）</span>'}
+                        <td class="py-3.5 px-3.5 font-bold text-[#2E2827] border-r border-[#E2DDD5] bg-[#FAF7F2]">${cTitle}</td>
+                        <td class="py-3.5 px-4 text-[#2E2827] border-r border-[#E2DDD5] leading-relaxed">
+                          ${selfAns || '<span class="text-[#7A726D] italic">（部屬未填寫自評實例）</span>'}
                         </td>
-                        <td class="py-3.5 px-3 text-center border-r border-[#E8E2D8] bg-[#FFFDF9]">
+                        <td class="py-3.5 px-3 text-center border-r border-[#E2DDD5] bg-[#FFFDF9]">
                           ${selfRatingLvl ? `
-                            <button onclick="openSelfCompetencyModal('${memName}')" class="badge-stable px-2.5 py-1 rounded-lg text-xs font-bold hover:bg-[#D4DFC0] transition inline-flex items-center gap-1">
+                            <button onclick="openSelfCompetencyModal('${memName}')" class="badge-sage px-2.5 py-1 rounded-lg text-xs font-bold hover:bg-[#D4DFC0] transition inline-flex items-center gap-1">
                               <span>${selfRatingLvl}</span>
-                              <span class="text-[11px] font-normal opacity-80">(${LEVEL_DEFINITIONS[selfRatingLvl]?.name?.split(' ')[1] || ''})</span>
+                              <span class="text-[11px] font-normal opacity-80">（${LEVEL_DEFINITIONS[selfRatingLvl]?.name?.split(' ')[1] || ''}）</span>
                               <i data-lucide="edit-2" class="w-3 h-3 opacity-60"></i>
                             </button>
                           ` : `
-                            <button onclick="openSelfCompetencyModal('${memName}')" class="badge-missing px-2 py-0.5 rounded text-xs font-semibold hover:underline inline-flex items-center gap-1">
+                            <button onclick="openSelfCompetencyModal('${memName}')" class="badge-stone px-2 py-0.5 rounded text-xs font-semibold hover:underline inline-flex items-center gap-1">
                               <i data-lucide="plus" class="w-3 h-3"></i> 登記自評
                             </button>
                           `}
                         </td>
-                        <td class="py-3.5 px-3 text-center border-r border-[#E8E2D8] bg-[#FFF2D6]/40">
-                          <select onchange="updateSupervisorRating('${memName}', '${cTitle}', this.value)" class="text-xs font-bold p-1.5 rounded-lg border border-[#FCE299] bg-white focus:outline-[#557A61]">
+                        <td class="py-3.5 px-3 text-center border-r border-[#E2DDD5] bg-[#FAF7F2]">
+                          <select onchange="updateSupervisorRating('${memName}', '${cTitle}', this.value)" class="text-xs font-bold p-1.5 rounded-lg border border-[#E0D7CA] bg-white focus:outline-[#557A61]">
                             <option value="">選取</option>
-                            <option value="L5" ${supRating==='L5'?'selected':''}>L5 (Amazing!)</option>
-                            <option value="L4" ${supRating==='L4'?'selected':''}>L4 (Good)</option>
-                            <option value="L3" ${supRating==='L3'?'selected':''}>L3 (Keep)</option>
-                            <option value="L2" ${supRating==='L2'?'selected':''}>L2 (Grow)</option>
-                            <option value="L1" ${supRating==='L1'?'selected':''}>L1 (Start)</option>
+                            <option value="L5" ${supRating==='L5'?'selected':''}>L5（Amazing！）</option>
+                            <option value="L4" ${supRating==='L4'?'selected':''}>L4（Good）</option>
+                            <option value="L3" ${supRating==='L3'?'selected':''}>L3（Keep）</option>
+                            <option value="L2" ${supRating==='L2'?'selected':''}>L2（Grow）</option>
+                            <option value="L1" ${supRating==='L1'?'selected':''}>L1（Start）</option>
                           </select>
                         </td>
-                        <td class="py-3.5 px-3 text-center border-r border-[#E8E2D8]">${gapHtml}</td>
+                        <td class="py-3.5 px-3 text-center border-r border-[#E2DDD5]">${gapHtml}</td>
                         <td class="py-3.5 px-4 bg-[#FFFDF9]">
-                          <textarea onblur="updateSupervisorFeedback('${memName}', '${cTitle}', this.value)" placeholder="輸入主管針對此職能的評語與建議..." class="w-full text-xs p-2 rounded-xl border border-[#FCE299] bg-[#FFF2D6]/30 focus:bg-white transition focus:outline-[#557A61] resize-y" rows="2">${supFb}</textarea>
+                          <textarea onblur="updateSupervisorFeedback('${memName}', '${cTitle}', this.value)" placeholder="輸入主管針對此職能的評語與建議..." class="w-full text-xs p-2 rounded-xl border border-[#E0D7CA] bg-[#FAF7F2] focus:bg-white transition focus:outline-[#557A61] resize-y" rows="2">${supFb}</textarea>
                         </td>
                       </tr>
                     `;
@@ -1462,21 +1433,21 @@ html_content = r"""<!DOCTYPE html>
           <!-- PART 4: 同儕質化文字回饋 -->
           <div class="space-y-5">
             <div class="flex items-center gap-2.5">
-              <div class="p-2 bg-[#FCE5CD] text-[#783E16] rounded-xl"><i data-lucide="message-square" class="w-5 h-5"></i></div>
+              <div class="p-2 bg-[#F2EEE6] text-[#2E2827] rounded-xl"><i data-lucide="message-square" class="w-5 h-5"></i></div>
               <div>
                 <h3 class="text-base sm:text-lg font-bold text-[#2E2827] font-serif-tc">三、同儕質化文字回饋彙整</h3>
                 <p class="text-xs text-[#7A726D]">彙整同儕針對工作提升建議、其他補充觀察與星光感謝詞</p>
               </div>
             </div>
 
-            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 sm:p-8 soft-card-shadow space-y-6">
-              <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 sm:p-8 soft-card-shadow space-y-6">
+              <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
                 <div class="text-xs sm:text-sm font-bold text-[#557A61] flex items-center gap-2">
-                  <i data-lucide="trending-up" class="w-4 h-4"></i> Q37. 工作與文化提升建議
+                  <i data-lucide="trending-up" class="w-4 h-4"></i> Q37．工作與文化提升建議
                 </div>
                 <div class="space-y-2.5">
                   ${numPeers > 0 ? peerRecords.map((r, i) => `
-                    <div class="bg-white rounded-xl p-4 border border-[#E8E2D8] shadow-2xs">
+                    <div class="bg-white rounded-xl p-4 border border-[#E2DDD5] shadow-2xs">
                       <span class="text-xs font-bold text-[#8C837C] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
                       <p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${r.peer_eval?.q37_improvement_advice || '（無填寫）'}</p>
                     </div>
@@ -1484,13 +1455,13 @@ html_content = r"""<!DOCTYPE html>
                 </div>
               </div>
 
-              <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+              <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
                 <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2">
-                  <i data-lucide="message-circle" class="w-4 h-4 text-[#557A61]"></i> Q38. 其他補充評價與觀察
+                  <i data-lucide="message-circle" class="w-4 h-4 text-[#557A61]"></i> Q38．其他補充評價與觀察
                 </div>
                 <div class="space-y-2.5">
                   ${numPeers > 0 ? peerRecords.map((r, i) => `
-                    <div class="bg-white rounded-xl p-4 border border-[#E8E2D8] shadow-2xs">
+                    <div class="bg-white rounded-xl p-4 border border-[#E2DDD5] shadow-2xs">
                       <span class="text-xs font-bold text-[#8C837C] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
                       <p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${r.peer_eval?.q38_other_comments || '（無填寫）'}</p>
                     </div>
@@ -1498,15 +1469,15 @@ html_content = r"""<!DOCTYPE html>
                 </div>
               </div>
 
-              <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                <div class="text-xs sm:text-sm font-bold text-[#7A363A] flex items-center gap-2">
-                  <i data-lucide="award" class="w-4 h-4 text-[#D48B7B]"></i> Q39. 肯定與感謝的話（好好星光大賞）
+              <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2">
+                  <i data-lucide="award" class="w-4 h-4 text-[#557A61]"></i> Q39．肯定與感謝的話（好好星光大賞）
                 </div>
                 <div class="space-y-2.5">
                   ${numPeers > 0 ? peerRecords.map((r, i) => `
-                    <div class="bg-white rounded-xl p-4 border border-[#F4CCCC] shadow-2xs">
-                      <span class="text-xs font-bold text-[#8C5558] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
-                      <p class="text-xs sm:text-sm text-[#592629] font-medium leading-relaxed">${r.peer_eval?.q39_starlight_thanks || '（無填寫）'}</p>
+                    <div class="bg-white rounded-xl p-4 border border-[#E0D7CA] shadow-2xs">
+                      <span class="text-xs font-bold text-[#6E6662] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
+                      <p class="text-xs sm:text-sm text-[#2E2827] font-medium leading-relaxed">${r.peer_eval?.q39_starlight_thanks || '（無填寫）'}</p>
                     </div>
                   `).join('') : '<p class="text-xs text-[#8C837C]">目前尚無同儕填答回饋</p>'}
                 </div>
@@ -1516,7 +1487,7 @@ html_content = r"""<!DOCTYPE html>
         `;
       }
 
-      // 2. PRINT VIEW
+      // 2. PRINT VIEW (WORD STYLE, FULL-WIDTH PUNCTUATION & NEUTRAL TABLE BORDERS)
       const printContainer = document.getElementById('sub-review-print-container');
       if (printContainer) {
         printContainer.innerHTML = `
@@ -1531,21 +1502,21 @@ html_content = r"""<!DOCTYPE html>
           <table class="word-doc-table">
             <tbody>
               <tr>
-                <th style="width: 18%; background-color: #E4ECD3;">部屬姓名</th>
+                <th style="width: 18%; background-color: #F2EEE6;">部屬姓名</th>
                 <td style="width: 32%; font-weight: bold; font-size: 11pt;">${memName}</td>
-                <th style="width: 18%; background-color: #FCE5CD;">職位 / 職稱</th>
+                <th style="width: 18%; background-color: #F2EEE6;">職位／職稱</th>
                 <td style="width: 32%; font-weight: bold;">${jobRole}</td>
               </tr>
               <tr>
                 <th>直屬主管</th>
                 <td style="font-weight: bold;">${supName}</td>
                 <th>評估週期</th>
-                <td>2026 年中評估 (H1)</td>
+                <td>2026 年中評估（H1）</td>
               </tr>
               <tr>
                 <th>同儕平均得分</th>
-                <td style="font-weight: bold; font-size: 11pt; color: #2D5239; background-color: #F8FAF6;">${overallPeerAvg} / 10.0 分</td>
-                <th>同儕樣本 / NPS</th>
+                <td style="font-weight: bold; font-size: 11pt; color: #2D5239; background-color: #F8FAF6;">${overallPeerAvg} ／ 10.0 分</td>
+                <th>同儕樣本／NPS</th>
                 <td>共 ${numPeers} 位同儕 ｜ NPS：${npsAvg} 分</td>
               </tr>
             </tbody>
@@ -1555,11 +1526,11 @@ html_content = r"""<!DOCTYPE html>
             <div class="word-sec-title">壹、組織文化實踐：部屬自評實例 vs 主管評核回饋</div>
             <table class="word-doc-table">
               <thead>
-                <tr style="background-color: #FCE5CD;">
+                <tr style="background-color: #F2EEE6;">
                   <th style="width: 12%;">文化面向</th>
                   <th style="width: 28%;">定義說明</th>
-                  <th style="width: 32%;">部屬自評實例 (STAR)</th>
-                  <th style="width: 28%; background-color: #FFF2D6;">主管評核回饋</th>
+                  <th style="width: 32%;">部屬自評實例（STAR）</th>
+                  <th style="width: 28%;">主管評核回饋</th>
                 </tr>
               </thead>
               <tbody>
@@ -1584,12 +1555,12 @@ html_content = r"""<!DOCTYPE html>
             <div class="word-sec-title">貳、專業職能：自評 vs 主管評分並列對照（逐項比對）</div>
             <table class="word-doc-table">
               <thead>
-                <tr style="background-color: #FCE5CD;">
+                <tr style="background-color: #F2EEE6;">
                   <th style="width: 20%;">職能項目</th>
-                  <th style="width: 30%;">部屬自評實例 (STAR)</th>
-                  <th style="width: 12%; background-color: #FFF4CD;">部屬自評</th>
-                  <th style="width: 12%; background-color: #FFF2D6;">主管評定</th>
-                  <th style="width: 26%; background-color: #FFF2D6;">主管回饋與具體事證</th>
+                  <th style="width: 30%;">部屬自評實例（STAR）</th>
+                  <th style="width: 12%;">部屬自評</th>
+                  <th style="width: 12%;">主管評定</th>
+                  <th style="width: 26%;">主管回饋與具體事證</th>
                 </tr>
               </thead>
               <tbody>
@@ -1607,7 +1578,7 @@ html_content = r"""<!DOCTYPE html>
                       <td style="font-weight: bold; background-color: #FAFAFA;">${cTitle}</td>
                       <td>${selfAns || '（部屬未填寫自評實例）'}</td>
                       <td style="text-align: center; font-weight: bold; color: #2D5239;">${selfLvl}</td>
-                      <td style="text-align: center; font-weight: bold; color: #B45309;">${supLvl}</td>
+                      <td style="text-align: center; font-weight: bold; color: #2E2827;">${supLvl}</td>
                       <td>${supFb}</td>
                     </tr>
                   `;
@@ -1623,8 +1594,8 @@ html_content = r"""<!DOCTYPE html>
                 <table class="word-doc-table">
                   <thead>
                     <tr>
-                      <th colspan="2" style="text-align: left; background-color: #EAE6DF; font-size: 9pt; padding: 5px 8px;">
-                        【同儕回饋 ${String.fromCharCode(65 + i)}】 ｜ NPS 推薦：${r.peer_eval?.q36_nps_recommend || '-'} 分 ｜ 合作評分：${r.peer_eval?.q24_cooperation || '-'} 分
+                      <th colspan="2" style="text-align: left; background-color: #F2EEE6; font-size: 9pt; padding: 5px 8px;">
+                        【同儕回饋 ${String.fromCharCode(65 + i)}】 ｜ NPS 推薦：${r.peer_eval?.q36_nps_recommend || '—'} 分 ｜ 合作評分：${r.peer_eval?.q24_cooperation || '—'} 分
                       </th>
                     </tr>
                   </thead>
@@ -1698,27 +1669,27 @@ html_content = r"""<!DOCTYPE html>
         }
       });
 
-      const overallAvg = allScoreValues.length ? (allScoreValues.reduce((a, b) => a + b, 0) / allScoreValues.length).toFixed(2) : "-";
+      const overallAvg = allScoreValues.length ? (allScoreValues.reduce((a, b) => a + b, 0) / allScoreValues.length).toFixed(2) : "—";
       const validItems = itemStatResults.filter(it => it.avg !== null);
       const sortedByAvg = [...validItems].sort((a, b) => b.avg - a.avg);
       const topStrengths = sortedByAvg.slice(0, 3);
       const bottomOpportunities = [...sortedByAvg].reverse().slice(0, 3);
 
       const npsVals = filtered.map(e => e.supervisor_eval?.q18_nps_recommend).filter(v => v !== null && v !== undefined);
-      const npsScore = npsVals.length ? (npsVals.reduce((a,b)=>a+b, 0) / npsVals.length).toFixed(2) : "-";
+      const npsScore = npsVals.length ? (npsVals.reduce((a,b)=>a+b, 0) / npsVals.length).toFixed(2) : "—";
       const satVals = filtered.map(e => e.supervisor_eval?.q19_satisfaction).filter(v => v !== null && v !== undefined);
-      const satScore = satVals.length ? (satVals.reduce((a,b)=>a+b, 0) / satVals.length).toFixed(2) : "-";
+      const satScore = satVals.length ? (satVals.reduce((a,b)=>a+b, 0) / satVals.length).toFixed(2) : "—";
 
       const summaryCardsContainer = document.getElementById('sup-stat-summary-cards');
       if (summaryCardsContainer) {
         summaryCardsContainer.innerHTML = `
-          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 soft-card-shadow flex flex-col justify-between">
             <div class="flex items-center justify-between pb-2">
               <span class="text-xs font-bold text-[#8C837C] uppercase tracking-wider">整體評分平均</span>
               <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="award" class="w-4 h-4"></i></div>
             </div>
             <div class="my-3">
-              <div class="text-3xl sm:text-4xl font-bold text-[#2E2827] font-serif-tc">${overallAvg} <span class="text-xs text-[#8C837C] font-normal">/ 10分</span></div>
+              <div class="text-3xl sm:text-4xl font-bold text-[#2E2827] font-serif-tc">${overallAvg} <span class="text-xs text-[#8C837C] font-normal">／ 10 分</span></div>
             </div>
             <div class="text-xs text-[#7A726D] flex items-center justify-between pt-3 border-t border-[#EFEAE1]">
               <span>NPS 推薦：<b>${npsScore}</b> 分</span>
@@ -1726,10 +1697,10 @@ html_content = r"""<!DOCTYPE html>
             </div>
           </div>
 
-          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 soft-card-shadow flex flex-col justify-between">
             <div class="flex items-center justify-between pb-2">
               <span class="text-xs font-bold text-[#8C837C] uppercase tracking-wider">受評樣本數量</span>
-              <div class="p-2 bg-[#FCE5CD] text-[#783E16] rounded-xl"><i data-lucide="users" class="w-4 h-4"></i></div>
+              <div class="p-2 bg-[#F2EEE6] text-[#4A433E] rounded-xl"><i data-lucide="users" class="w-4 h-4"></i></div>
             </div>
             <div class="my-3">
               <div class="text-3xl sm:text-4xl font-bold text-[#2E2827] font-serif-tc">${filtered.length} <span class="text-xs text-[#8C837C] font-normal">份回覆</span></div>
@@ -1737,40 +1708,40 @@ html_content = r"""<!DOCTYPE html>
             <div class="text-xs text-[#7A726D] pt-3 border-t border-[#EFEAE1]">受評對象：<b>${supTitle}</b></div>
           </div>
 
-          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 soft-card-shadow flex flex-col justify-between">
             <div class="flex items-center justify-between pb-2">
               <span class="text-xs font-bold text-[#2D5239] uppercase tracking-wider flex items-center gap-1.5">
-                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#557A61]"></i> 表現最好項目 (Top 3)
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#557A61]"></i> 表現最好項目（Top 3）
               </span>
-              <span class="badge-best px-2 py-0.5 text-[11px] font-bold rounded-md">亮點</span>
+              <span class="badge-sage px-2 py-0.5 text-[11px] font-bold rounded-md">亮點</span>
             </div>
             <div class="space-y-1.5 my-2">
               ${topStrengths.map(it => `
                 <div class="text-xs flex items-center justify-between">
-                  <span class="truncate text-[#2E2827] font-medium mr-2">${it.qNo}. ${it.qDesc.split('（')[0]}</span>
-                  <span class="badge-best px-2 py-0.5 rounded font-bold shrink-0">${it.avg.toFixed(1)}分</span>
+                  <span class="truncate text-[#2E2827] font-medium mr-2">${it.qNo}．${it.qDesc.split('（')[0]}</span>
+                  <span class="badge-sage px-2 py-0.5 rounded font-bold shrink-0">${it.avg.toFixed(1)}分</span>
                 </div>
               `).join('')}
             </div>
             <div class="text-[11px] text-[#7A726D] pt-2 border-t border-[#EFEAE1]">最高給分達 ${topStrengths[0] ? topStrengths[0].best : 10} 分</div>
           </div>
 
-          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 soft-card-shadow flex flex-col justify-between">
+          <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 soft-card-shadow flex flex-col justify-between">
             <div class="flex items-center justify-between pb-2">
-              <span class="text-xs font-bold text-[#8C4B1E] uppercase tracking-wider flex items-center gap-1.5">
-                <i data-lucide="trending-up" class="w-3.5 h-3.5 text-[#C27D38]"></i> 相對待提升項目
+              <span class="text-xs font-bold text-[#4A433E] uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5 text-[#557A61]"></i> 相對待提升項目
               </span>
-              <span class="badge-worst px-2 py-0.5 text-[11px] font-bold rounded-md">成長</span>
+              <span class="badge-stone px-2 py-0.5 text-[11px] font-bold rounded-md">成長</span>
             </div>
             <div class="space-y-1.5 my-2">
               ${bottomOpportunities.map(it => `
                 <div class="text-xs flex items-center justify-between">
-                  <span class="truncate text-[#2E2827] font-medium mr-2">${it.qNo}. ${it.qDesc.split('（')[0]}</span>
-                  <span class="badge-worst px-2 py-0.5 rounded font-bold shrink-0">${it.avg.toFixed(1)}分</span>
+                  <span class="truncate text-[#2E2827] font-medium mr-2">${it.qNo}．${it.qDesc.split('（')[0]}</span>
+                  <span class="badge-stone px-2 py-0.5 rounded font-bold shrink-0">${it.avg.toFixed(1)}分</span>
                 </div>
               `).join('')}
             </div>
-            <div class="text-[11px] text-[#7A726D] pt-2 border-t border-[#EFEAE1]">最低給分落點 ${bottomOpportunities[0] ? bottomOpportunities[0].worst : '-'} 分</div>
+            <div class="text-[11px] text-[#7A726D] pt-2 border-t border-[#EFEAE1]">最低給分落點 ${bottomOpportunities[0] ? bottomOpportunities[0].worst : '—'} 分</div>
           </div>
         `;
       }
@@ -1778,25 +1749,25 @@ html_content = r"""<!DOCTYPE html>
       const tbody = document.getElementById('sup-item-stats-tbody');
       if (tbody) {
         tbody.innerHTML = itemStatResults.map(it => {
-          const avgDisplay = it.avg !== null ? it.avg.toFixed(2) : "-";
-          const bestDisplay = it.best !== null ? it.best : "-";
-          const worstDisplay = it.worst !== null ? it.worst : "-";
-          const scoresDisplay = it.scores.length ? it.scores.join(", ") : "-";
+          const avgDisplay = it.avg !== null ? it.avg.toFixed(2) : "—";
+          const bestDisplay = it.best !== null ? it.best : "—";
+          const worstDisplay = it.worst !== null ? it.worst : "—";
+          const scoresDisplay = it.scores.length ? it.scores.join("、") : "—";
 
           let avgBadgeClass = "text-[#2E2827]";
           if (it.avg !== null) {
             if (it.avg >= 9.0) avgBadgeClass = "bg-[#E4ECD3] text-[#2D5239] font-bold px-2 py-0.5 rounded-md";
-            else if (it.avg <= 7.0) avgBadgeClass = "bg-[#FCE5CD] text-[#8C4B1E] font-bold px-2 py-0.5 rounded-md";
+            else if (it.avg <= 7.0) avgBadgeClass = "bg-[#F2EEE6] text-[#4A433E] font-bold px-2 py-0.5 rounded-md";
           }
 
           return `
             <tr class="hover:bg-[#FAF7F2] transition">
-              <td class="py-3 px-3.5 text-center font-bold text-[#8C837C] border-r border-[#E8E2D8]">${it.qNo}</td>
-              <td class="py-3 px-3.5 text-center text-[#4A433E] border-r border-[#E8E2D8]">${it.qCat}</td>
-              <td class="py-3 px-4 text-[#2E2827] border-r border-[#E8E2D8] font-medium">${it.qDesc}</td>
-              <td class="py-3 px-3.5 text-center border-r border-[#E8E2D8]"><span class="${avgBadgeClass}">${avgDisplay}</span></td>
-              <td class="py-3 px-3.5 text-center font-bold text-[#2D5239] border-r border-[#E8E2D8]">${bestDisplay}</td>
-              <td class="py-3 px-3.5 text-center font-bold text-[#8C4B1E] border-r border-[#E8E2D8]">${worstDisplay}</td>
+              <td class="py-3 px-3.5 text-center font-bold text-[#8C837C] border-r border-[#E2DDD5]">${it.qNo}</td>
+              <td class="py-3 px-3.5 text-center text-[#4A433E] border-r border-[#E2DDD5]">${it.qCat}</td>
+              <td class="py-3 px-4 text-[#2E2827] border-r border-[#E2DDD5] font-medium">${it.qDesc}</td>
+              <td class="py-3 px-3.5 text-center border-r border-[#E2DDD5]"><span class="${avgBadgeClass}">${avgDisplay}</span></td>
+              <td class="py-3 px-3.5 text-center font-bold text-[#2D5239] border-r border-[#E2DDD5]">${bestDisplay}</td>
+              <td class="py-3 px-3.5 text-center font-bold text-[#4A433E] border-r border-[#E2DDD5]">${worstDisplay}</td>
               <td class="py-3 px-4 text-center text-xs text-[#7A726D]">${scoresDisplay}</td>
             </tr>
           `;
@@ -1808,7 +1779,7 @@ html_content = r"""<!DOCTYPE html>
         return it && it.avg !== null ? it.avg.toFixed(1) : 0;
       };
 
-      const cultureLabels = ["信任 (真實表達)", "多元 (聆聽意見)", "實驗 (嘗試創新)", "心理安全 (試錯空間)", "肯定 (讚美認可)", "可持續 (尊重界線)"];
+      const cultureLabels = ["信任（真實表達）", "多元（聆聽意見）", "實驗（嘗試創新）", "心理安全（試錯空間）", "肯定（讚美認可）", "可持續（尊重界線）"];
       const cultureData = [
         avgOf('q12_trust_express'), avgOf('q13_diversity_listen'), avgOf('q14_experiment_try'),
         avgOf('q15_experiment_psych_safety'), avgOf('q16_sustain_praise'), avgOf('q17_sustain_boundary')
@@ -1855,8 +1826,8 @@ html_content = r"""<!DOCTYPE html>
         feedbackContainer.innerHTML = filtered.map(e => {
           const se = e.supervisor_eval || {};
           return `
-            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 sm:p-8 soft-card-shadow space-y-6">
-              <div class="flex items-center justify-between border-b border-[#E8E2D8] pb-4">
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 sm:p-8 soft-card-shadow space-y-6">
+              <div class="flex items-center justify-between border-b border-[#E2DDD5] pb-4">
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-10 rounded-xl bg-[#557A61] text-white font-bold flex items-center justify-center text-sm font-serif-tc shadow-2xs">${e.target.slice(0, 1)}</div>
                   <div>
@@ -1865,27 +1836,27 @@ html_content = r"""<!DOCTYPE html>
                   </div>
                 </div>
                 <div class="flex items-center gap-3 text-xs sm:text-sm">
-                  <span class="px-3.5 py-1.5 rounded-xl bg-[#E4ECD3] text-[#2D5239] font-bold">NPS 推薦：${se.q18_nps_recommend || '-'} 分</span>
-                  <span class="px-3.5 py-1.5 rounded-xl bg-[#FCE5CD] text-[#8C4B1E] font-bold">滿意度：${se.q19_satisfaction || '-'} 分</span>
+                  <span class="px-3.5 py-1.5 rounded-xl bg-[#E4ECD3] text-[#2D5239] font-bold">NPS 推薦：${se.q18_nps_recommend || '—'} 分</span>
+                  <span class="px-3.5 py-1.5 rounded-xl bg-[#F2EEE6] text-[#4A433E] font-medium border border-[#E0D7CA]">滿意度：${se.q19_satisfaction || '—'} 分</span>
                 </div>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                  <div class="text-xs sm:text-sm font-bold text-[#557A61] flex items-center gap-2"><i data-lucide="compass" class="w-4 h-4"></i> Q20. 願景使命理解之引導</div>
-                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.q20_vision_mission || '（無）'}</p></div>
+                <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#557A61] flex items-center gap-2"><i data-lucide="compass" class="w-4 h-4"></i> Q20．願景使命理解之引導</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E2DDD5] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.q20_vision_mission || '（無）'}</p></div>
                 </div>
-                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                  <div class="text-xs sm:text-sm font-bold text-[#783E16] flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-[#C27D38]"></i> Q21. 管理與文化精神建議</div>
-                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.q21_improvement_advice || '（無）'}</p></div>
+                <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#4A433E] flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-[#557A61]"></i> Q21．管理與文化精神建議</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E2DDD5] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.q21_improvement_advice || '（無）'}</p></div>
                 </div>
-                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                  <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="message-square" class="w-4 h-4 text-[#557A61]"></i> Q22. 其他補充評價</div>
-                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.q22_other_comments || '（無）'}</p></div>
+                <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="message-square" class="w-4 h-4 text-[#557A61]"></i> Q22．其他補充評價</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E2DDD5] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.q22_other_comments || '（無）'}</p></div>
                 </div>
-                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                  <div class="text-xs sm:text-sm font-bold text-[#7A363A] flex items-center gap-2"><i data-lucide="award" class="w-4 h-4 text-[#D48B7B]"></i> Q23. 肯定與感謝詞（好好星光大賞）</div>
-                  <div class="bg-white rounded-xl p-4 my-2 border border-[#F4CCCC] shadow-2xs"><p class="text-xs sm:text-sm text-[#592629] font-medium leading-relaxed">${se.q23_starlight_thanks || '（無）'}</p></div>
+                <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="award" class="w-4 h-4 text-[#557A61]"></i> Q23．肯定與感謝詞（好好星光大賞）</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E2DDD5] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] font-medium leading-relaxed">${se.q23_starlight_thanks || '（無）'}</p></div>
                 </div>
               </div>
             </div>
@@ -1942,9 +1913,9 @@ html_content = r"""<!DOCTYPE html>
 
       if (exportContainer) {
         exportContainer.innerHTML = `
-          <button onclick="exportSupervisorExcelClientSide('${currentSelfSupervisor}')" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
+          <button onclick="exportSupervisorTeamSubordinatesComprehensiveExcelClientSide('${currentSelfSupervisor}')" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
             <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-            下載本組主管專用 XLSX 表格 (Chunk 格式＋配色)
+            下載本組主管專用 XLSX 表格
           </button>
         `;
       }
@@ -1958,17 +1929,17 @@ html_content = r"""<!DOCTYPE html>
           completedCount++;
           const se = entry.self_eval;
           html += `
-            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] soft-card-shadow overflow-hidden">
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] soft-card-shadow overflow-hidden">
               <div class="chunk-header-banner px-6 py-5 flex flex-col md:flex-row md:items-center justify-between gap-3.5">
                 <div class="flex items-center gap-4">
-                  <div class="w-12 h-12 rounded-2xl bg-[#3E2426] text-white font-bold flex items-center justify-center text-lg font-serif-tc shadow-2xs">${memName.slice(0, 1)}</div>
+                  <div class="w-12 h-12 rounded-2xl bg-[#557A61] text-white font-bold flex items-center justify-center text-lg font-serif-tc shadow-2xs">${memName.slice(0, 1)}</div>
                   <div>
                     <div class="flex items-center gap-2.5">
-                      <h3 class="text-base sm:text-lg font-bold text-[#3E2426] font-serif-tc">${memName}</h3>
-                      <span class="px-3 py-1 text-xs font-semibold rounded-lg bg-[#FFFDF9] text-[#4A2E1C] border border-[#EED1B4]">${JOB_ROLES_MAP[memName] || se.job_role || '自評'}</span>
+                      <h3 class="text-base sm:text-lg font-bold text-[#2E2827] font-serif-tc">${memName}</h3>
+                      <span class="px-3 py-1 text-xs font-semibold rounded-lg bg-white text-[#4A433E] border border-[#E0D7CA]">${JOB_ROLES_MAP[memName] || se.job_role || '自評'}</span>
                       <span class="px-2.5 py-0.5 text-xs font-medium rounded-full bg-[#E4ECD3] text-[#2D5239] border border-[#CDE0BC] flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> 已填寫自評</span>
                     </div>
-                    <p class="text-xs text-[#7A4822] mt-1">${entry.email} · 填答時間：${entry.timestamp}</p>
+                    <p class="text-xs text-[#6E6662] mt-1">${entry.email} ｜ 填答時間：${entry.timestamp}</p>
                   </div>
                 </div>
               </div>
@@ -1977,35 +1948,35 @@ html_content = r"""<!DOCTYPE html>
                 <div>
                   <div class="text-xs sm:text-sm font-bold text-[#8C837C] uppercase tracking-wider mb-3.5 flex items-center gap-2 font-serif-tc"><i data-lucide="tag" class="w-4 h-4 text-[#557A61]"></i> 一、工作特質盤點</div>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                    <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
                       <div class="text-xs sm:text-sm font-bold text-[#2D5239] flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4 text-[#557A61]"></i> 最穩定、最具代表性 Top 3</div>
-                      <div class="flex flex-wrap gap-2.5 pt-1">${(se.top3_stable || []).map(t => `<span class="badge-stable px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-xl shadow-2xs">${t}</span>`).join('')}</div>
+                      <div class="flex flex-wrap gap-2.5 pt-1">${(se.top3_stable || []).map(t => `<span class="badge-sage px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-xl shadow-2xs">${t}</span>`).join('')}</div>
                     </div>
-                    <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                      <div class="text-xs sm:text-sm font-bold text-[#783E16] flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-[#C27D38]"></i> 目前在練習 / 期望發展 3 項</div>
-                      <div class="flex flex-wrap gap-2.5 pt-1">${(se.top3_practice || []).map(t => `<span class="badge-practice px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-xl shadow-2xs">${t}</span>`).join('')}</div>
+                    <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                      <div class="text-xs sm:text-sm font-bold text-[#4A433E] flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-[#557A61]"></i> 目前在練習／期望發展 3 項</div>
+                      <div class="flex flex-wrap gap-2.5 pt-1">${(se.top3_practice || []).map(t => `<span class="badge-stone px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-xl shadow-2xs">${t}</span>`).join('')}</div>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <div class="text-xs sm:text-sm font-bold text-[#8C837C] uppercase tracking-wider mb-3.5 flex items-center gap-2 font-serif-tc"><i data-lucide="heart" class="w-4 h-4 text-[#557A61]"></i> 二、四大文化實踐實例 (STAR 敘述)</div>
+                  <div class="text-xs sm:text-sm font-bold text-[#8C837C] uppercase tracking-wider mb-3.5 flex items-center gap-2 font-serif-tc"><i data-lucide="heart" class="w-4 h-4 text-[#557A61]"></i> 二、四大文化實踐實例（STAR 敘述）</div>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                      <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> 信任 (Trust)</div>
-                      <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.values?.['信任'] || '（未填寫）'}</p></div>
+                    <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                      <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> 信任（Trust）</div>
+                      <div class="bg-white rounded-xl p-4 my-2 border border-[#E2DDD5] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.values?.['信任'] || '（未填寫）'}</p></div>
                     </div>
-                    <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                      <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> 多元 (Diversity)</div>
-                      <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.values?.['多元'] || '（未填寫）'}</p></div>
+                    <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                      <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> 多元（Diversity）</div>
+                      <div class="bg-white rounded-xl p-4 my-2 border border-[#E2DDD5] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.values?.['多元'] || '（未填寫）'}</p></div>
                     </div>
-                    <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                      <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> 實驗 (Experiment)</div>
-                      <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.values?.['實驗'] || '（未填寫）'}</p></div>
+                    <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                      <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> 實驗（Experiment）</div>
+                      <div class="bg-white rounded-xl p-4 my-2 border border-[#E2DDD5] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.values?.['實驗'] || '（未填寫）'}</p></div>
                     </div>
-                    <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                      <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> 可持續 (Sustainability)</div>
-                      <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.values?.['可持續'] || '（未填寫）'}</p></div>
+                    <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                      <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> 可持續（Sustainability）</div>
+                      <div class="bg-white rounded-xl p-4 my-2 border border-[#E2DDD5] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${se.values?.['可持續'] || '（未填寫）'}</p></div>
                     </div>
                   </div>
                 </div>
@@ -2015,9 +1986,9 @@ html_content = r"""<!DOCTYPE html>
                     <div class="text-xs sm:text-sm font-bold text-[#8C837C] uppercase tracking-wider mb-3.5 flex items-center gap-2 font-serif-tc"><i data-lucide="briefcase" class="w-4 h-4 text-[#557A61]"></i> 三、${JOB_ROLES_MAP[memName] || se.job_role} 專屬職能展現實例</div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                       ${se.competencies.map(c => `
-                        <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
+                        <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
                           <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2 font-serif-tc"><span class="w-2.5 h-2.5 rounded-full bg-[#557A61]"></span> ${c.title}</div>
-                          <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed whitespace-pre-line">${c.answer || '（未填寫）'}</p></div>
+                          <div class="bg-white rounded-xl p-4 my-2 border border-[#E2DDD5] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed whitespace-pre-line">${c.answer || '（未填寫）'}</p></div>
                         </div>
                       `).join('')}
                     </div>
@@ -2029,9 +2000,9 @@ html_content = r"""<!DOCTYPE html>
                     <div class="text-xs sm:text-sm font-bold text-[#8C837C] uppercase tracking-wider mb-3.5 flex items-center gap-2 font-serif-tc"><i data-lucide="help-circle" class="w-4 h-4 text-[#557A61]"></i> 四、組織卡關點反思與未來價值展望</div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                       ${Object.entries(se.reflection).map(([k, v]) => `
-                        <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                          <div class="text-xs sm:text-sm font-bold text-[#783E16] flex items-center gap-2 font-serif-tc"><i data-lucide="sparkle" class="w-3.5 h-3.5 text-[#C27D38]"></i> ${k}</div>
-                          <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#4A433E] leading-relaxed">${v || '（未填寫）'}</p></div>
+                        <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                          <div class="text-xs sm:text-sm font-bold text-[#4A433E] flex items-center gap-2 font-serif-tc"><i data-lucide="sparkle" class="w-3.5 h-3.5 text-[#557A61]"></i> ${k}</div>
+                          <div class="bg-white rounded-xl p-4 my-2 border border-[#E2DDD5] shadow-2xs"><p class="text-xs sm:text-sm text-[#4A433E] leading-relaxed">${v || '（未填寫）'}</p></div>
                         </div>
                       `).join('')}
                     </div>
@@ -2042,14 +2013,14 @@ html_content = r"""<!DOCTYPE html>
           `;
         } else {
           html += `
-            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] soft-card-shadow p-7 flex items-center justify-between">
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] soft-card-shadow p-7 flex items-center justify-between">
               <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-2xl bg-[#F2EEE6] text-[#8C837C] font-bold flex items-center justify-center text-lg font-serif-tc">${memName.slice(0, 1)}</div>
                 <div>
                   <div class="flex items-center gap-2.5">
                     <h3 class="text-base sm:text-lg font-bold text-[#2E2827] font-serif-tc">${memName}</h3>
-                    <span class="px-3 py-1 text-xs font-semibold rounded-lg bg-[#FCE5CD] text-[#783E16] border border-[#F3D1B0]">${JOB_ROLES_MAP[memName] || '職位'}</span>
-                    <span class="px-3 py-1 text-xs font-medium rounded-full bg-[#FFF4CD] text-[#7A5E12] border border-[#FCE299] flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5"></i> 尚未收到自評資料</span>
+                    <span class="px-3 py-1 text-xs font-semibold rounded-lg bg-[#F2EEE6] text-[#4A433E] border border-[#E0D7CA]">${JOB_ROLES_MAP[memName] || '職位'}</span>
+                    <span class="px-3 py-1 text-xs font-medium rounded-full bg-[#F2EEE6] text-[#6E6662] border border-[#E0D7CA] flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5"></i> 尚未收到自評資料</span>
                   </div>
                   <p class="text-xs sm:text-sm text-[#8C837C] mt-1">此成員尚未於表單中送出自評紀錄，收到後上傳新 CSV 即可同步更新。</p>
                 </div>
@@ -2060,7 +2031,7 @@ html_content = r"""<!DOCTYPE html>
         }
       });
 
-      if (compStatus) compStatus.innerText = `已填答 ${completedCount} / 應填 ${memberNames.length} 人`;
+      if (compStatus) compStatus.innerText = `已填答 ${completedCount} ／ 應填 ${memberNames.length} 人`;
       if (container) container.innerHTML = html;
       if (typeof lucide !== 'undefined') lucide.createIcons();
     }
@@ -2079,7 +2050,7 @@ html_content = r"""<!DOCTYPE html>
       ALL_MEMBERS.forEach(m => {
         html += `
           <button onclick="selectPeerAnonMember('${m}')" id="peer-anon-btn-${m}" class="peer-anon-pill-btn px-5 py-2 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
-            ${m} (${JOB_ROLES_MAP[m] || ''})
+            ${m}（${JOB_ROLES_MAP[m] || ''}）
           </button>
         `;
       });
@@ -2110,7 +2081,7 @@ html_content = r"""<!DOCTYPE html>
       if (exportContainer) {
         exportContainer.innerHTML = `
           <button onclick="exportSinglePeerAnonymousExcelClientSide('${name}')" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
-            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> 下載【${name}】同儕匿名報告 (XLSX)
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> 下載【${name}】同儕匿名報告（XLSX）
           </button>
         `;
       }
@@ -2118,14 +2089,14 @@ html_content = r"""<!DOCTYPE html>
       let numPeers = peerRecords.length;
 
       let html = `
-        <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 sm:p-8 soft-card-shadow space-y-7">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E8E2D8] pb-5">
+        <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 sm:p-8 soft-card-shadow space-y-7">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E2DDD5] pb-5">
             <div class="flex items-center gap-4">
               <div class="w-14 h-14 rounded-2xl bg-[#557A61] text-white font-bold flex items-center justify-center text-xl font-serif-tc shadow-xs">${name.slice(0, 1)}</div>
               <div>
                 <div class="flex items-center gap-2.5">
                   <h2 class="text-xl sm:text-2xl font-bold text-[#2E2827] font-serif-tc">${name} 同儕匿名評估回饋表</h2>
-                  <span class="px-3 py-1 text-xs font-semibold rounded-lg bg-[#FCE5CD] text-[#783E16] border border-[#F3D1B0]">${JOB_ROLES_MAP[name] || '好好團隊夥伴'}</span>
+                  <span class="px-3 py-1 text-xs font-semibold rounded-lg bg-[#F2EEE6] text-[#4A433E] border border-[#E0D7CA]">${JOB_ROLES_MAP[name] || '好好團隊夥伴'}</span>
                 </div>
                 <p class="text-xs text-[#8C837C] mt-1">共收到 <b>${numPeers}</b> 位同儕夥伴填答（已進行全匿名化去識別處理）</p>
               </div>
@@ -2137,29 +2108,29 @@ html_content = r"""<!DOCTYPE html>
 
           <div>
             <h3 class="text-sm sm:text-base font-bold text-[#2E2827] mb-3.5 flex items-center gap-2 font-serif-tc"><i data-lucide="list-checks" class="w-4 h-4 text-[#557A61]"></i> 一、各評估題目同儕評分明細（滿分 10 分）</h3>
-            <div class="overflow-x-auto rounded-xl border border-[#E8E2D8]">
+            <div class="overflow-x-auto rounded-xl border border-[#E2DDD5]">
               <table class="w-full text-xs sm:text-sm text-left border-collapse">
-                <thead class="bg-[#FCE5CD] text-[#4A2E1C]">
+                <thead class="bg-[#F2EEE6] text-[#2E2827]">
                   <tr>
-                    <th class="py-3 px-3.5 font-bold text-center w-14 border-r border-[#E8E2D8]">題號</th>
-                    <th class="py-3 px-3.5 font-bold text-center w-24 border-r border-[#E8E2D8]">面向</th>
-                    <th class="py-3 px-4 font-bold border-r border-[#E8E2D8]">題目說明</th>
-                    <th class="py-3 px-3.5 font-bold text-center w-28 border-r border-[#E8E2D8] bg-[#E4ECD3]/60 text-[#2D5239]">同儕平均</th>
-                    ${Array.from({ length: Math.max(numPeers, 1) }).map((_, i) => `<th class="py-3 px-3 font-bold text-center w-16 border-r border-[#E8E2D8]">同儕 ${String.fromCharCode(65+i)}</th>`).join('')}
+                    <th class="py-3 px-3.5 font-bold text-center w-14 border-r border-[#E2DDD5]">題號</th>
+                    <th class="py-3 px-3.5 font-bold text-center w-24 border-r border-[#E2DDD5]">面向</th>
+                    <th class="py-3 px-4 font-bold border-r border-[#E2DDD5]">題目說明</th>
+                    <th class="py-3 px-3.5 font-bold text-center w-28 border-r border-[#E2DDD5] bg-[#E4ECD3]/60 text-[#2D5239]">同儕平均</th>
+                    ${Array.from({ length: Math.max(numPeers, 1) }).map((_, i) => `<th class="py-3 px-3 font-bold text-center w-16 border-r border-[#E2DDD5]">同儕 ${String.fromCharCode(65+i)}</th>`).join('')}
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-[#EFEAE1] bg-white">
                   ${PEER_QUESTIONS.map(([qNo, qCat, qDesc, qKey]) => {
                     const scores = peerRecords.map(r => r.peer_eval ? r.peer_eval[qKey] : null);
                     const validScores = scores.filter(s => s !== null && s !== undefined);
-                    const avg = validScores.length ? (validScores.reduce((a, b) => a + b, 0) / validScores.length).toFixed(1) : "-";
+                    const avg = validScores.length ? (validScores.reduce((a, b) => a + b, 0) / validScores.length).toFixed(1) : "—";
                     return `
                       <tr class="hover:bg-[#FAF7F2] transition">
-                        <td class="py-3 px-3.5 text-center font-bold text-[#8C837C] border-r border-[#E8E2D8]">${qNo}</td>
-                        <td class="py-3 px-3.5 text-center text-[#4A433E] border-r border-[#E8E2D8]">${qCat}</td>
-                        <td class="py-3 px-4 text-[#2E2827] border-r border-[#E8E2D8]">${qDesc}</td>
-                        <td class="py-3 px-3.5 text-center font-bold text-[#2D5239] bg-[#E4ECD3]/20 border-r border-[#E8E2D8]">${avg}</td>
-                        ${numPeers > 0 ? scores.map(s => `<td class="py-3 px-3 text-center text-[#4A433E] border-r border-[#E8E2D8]">${s !== null && s !== undefined ? s : '-'}</td>`).join('') : '<td class="py-3 px-3 text-center text-[#8C837C]">-</td>'}
+                        <td class="py-3 px-3.5 text-center font-bold text-[#8C837C] border-r border-[#E2DDD5]">${qNo}</td>
+                        <td class="py-3 px-3.5 text-center text-[#4A433E] border-r border-[#E2DDD5]">${qCat}</td>
+                        <td class="py-3 px-4 text-[#2E2827] border-r border-[#E2DDD5]">${qDesc}</td>
+                        <td class="py-3 px-3.5 text-center font-bold text-[#2D5239] bg-[#E4ECD3]/20 border-r border-[#E2DDD5]">${avg}</td>
+                        ${numPeers > 0 ? scores.map(s => `<td class="py-3 px-3 text-center text-[#4A433E] border-r border-[#E2DDD5]">${s !== null && s !== undefined ? s : '—'}</td>`).join('') : '<td class="py-3 px-3 text-center text-[#8C837C]">—</td>'}
                       </tr>
                     `;
                   }).join('')}
@@ -2171,35 +2142,35 @@ html_content = r"""<!DOCTYPE html>
           <div>
             <h3 class="text-sm sm:text-base font-bold text-[#2E2827] mb-3.5 flex items-center gap-2 font-serif-tc"><i data-lucide="message-square" class="w-4 h-4 text-[#557A61]"></i> 二、同儕質化匿名回饋彙整</h3>
             <div class="space-y-6">
-              <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                <div class="text-xs sm:text-sm font-bold text-[#557A61] flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4"></i> Q37. 工作與文化提升建議</div>
+              <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                <div class="text-xs sm:text-sm font-bold text-[#557A61] flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4"></i> Q37．工作與文化提升建議</div>
                 <div class="space-y-2.5">
                   ${numPeers > 0 ? peerRecords.map((r, i) => `
-                    <div class="bg-white rounded-xl p-4 border border-[#E8E2D8] shadow-2xs">
+                    <div class="bg-white rounded-xl p-4 border border-[#E2DDD5] shadow-2xs">
                       <span class="text-xs font-bold text-[#8C837C] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
                       <p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${r.peer_eval?.q37_improvement_advice || '（無填寫）'}</p>
                     </div>
                   `).join('') : '<p class="text-xs text-[#8C837C]">目前尚無同儕回饋</p>'}
                 </div>
               </div>
-              <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="message-circle" class="w-4 h-4 text-[#557A61]"></i> Q38. 其他補充評價與觀察</div>
+              <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="message-circle" class="w-4 h-4 text-[#557A61]"></i> Q38．其他補充評價與觀察</div>
                 <div class="space-y-2.5">
                   ${numPeers > 0 ? peerRecords.map((r, i) => `
-                    <div class="bg-white rounded-xl p-4 border border-[#E8E2D8] shadow-2xs">
+                    <div class="bg-white rounded-xl p-4 border border-[#E2DDD5] shadow-2xs">
                       <span class="text-xs font-bold text-[#8C837C] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
                       <p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${r.peer_eval?.q38_other_comments || '（無填寫）'}</p>
                     </div>
                   `).join('') : '<p class="text-xs text-[#8C837C]">目前尚無同儕回饋</p>'}
                 </div>
               </div>
-              <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                <div class="text-xs sm:text-sm font-bold text-[#7A363A] flex items-center gap-2"><i data-lucide="award" class="w-4 h-4 text-[#D48B7B]"></i> Q39. 肯定與感謝的話（好好星光大賞）</div>
+              <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="award" class="w-4 h-4 text-[#557A61]"></i> Q39．肯定與感謝的話（好好星光大賞）</div>
                 <div class="space-y-2.5">
                   ${numPeers > 0 ? peerRecords.map((r, i) => `
-                    <div class="bg-white rounded-xl p-4 border border-[#F4CCCC] shadow-2xs">
-                      <span class="text-xs font-bold text-[#8C5558] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
-                      <p class="text-xs sm:text-sm text-[#592629] font-medium leading-relaxed">${r.peer_eval?.q39_starlight_thanks || '（無填寫）'}</p>
+                    <div class="bg-white rounded-xl p-4 border border-[#E0D7CA] shadow-2xs">
+                      <span class="text-xs font-bold text-[#6E6662] block mb-1">同儕 ${String.fromCharCode(65+i)}：</span>
+                      <p class="text-xs sm:text-sm text-[#2E2827] font-medium leading-relaxed">${r.peer_eval?.q39_starlight_thanks || '（無填寫）'}</p>
                     </div>
                   `).join('') : '<p class="text-xs text-[#8C837C]">目前尚無同儕回饋</p>'}
                 </div>
@@ -2222,13 +2193,13 @@ html_content = r"""<!DOCTYPE html>
       if (!container) return;
       let html = `
         <span class="text-xs font-bold text-[#8C837C] mr-1 flex items-center gap-1.5 uppercase tracking-wider"><i data-lucide="user" class="w-3.5 h-3.5 text-[#557A61]"></i> 受評同事：</span>
-        <button onclick="filterPeer('ALL')" id="peer-btn-ALL" class="peer-pill-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#557A61] text-white shadow-xs transition">全部 (${RAW_DATA.filter(e => e.relation === "同事").length}筆)</button>
+        <button onclick="filterPeer('ALL')" id="peer-btn-ALL" class="peer-pill-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-[#557A61] text-white shadow-xs transition">全部（${RAW_DATA.filter(e => e.relation === "同事").length}筆）</button>
       `;
       peers.forEach(p => {
         const count = RAW_DATA.filter(e => e.relation === "同事" && e.target === p).length;
         html += `
           <button onclick="filterPeer('${p}')" id="peer-btn-${p}" class="peer-pill-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
-            ${p} (${count})
+            ${p}（${count}）
           </button>
         `;
       });
@@ -2259,7 +2230,7 @@ html_content = r"""<!DOCTYPE html>
         return vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : 0;
       };
 
-      const cultureLabels = ["多元 (接受意見)", "多元 (建設性觀點)", "實驗 (開放調整)", "信任 (分享經驗)", "肯定 (讚美同事)", "可持續 (尊重界線)"];
+      const cultureLabels = ["多元（接受意見）", "多元（建設性觀點）", "實驗（開放調整）", "信任（分享經驗）", "肯定（讚美同事）", "可持續（尊重界線）"];
       const cultureData = [avg('q30_open_to_opposing'), avg('q31_constructive_opinions'), avg('q32_growth_mindset'), avg('q33_share_knowledge'), avg('q34_praise_peers'), avg('q35_boundary_respect')];
 
       const workLabels = ["合作狀況", "注重細節", "準時完成", "靈活調整", "追蹤承諾", "說明決策依據", "NPS推薦"];
@@ -2299,8 +2270,8 @@ html_content = r"""<!DOCTYPE html>
         feedbackContainer.innerHTML = filtered.map(e => {
           const pe = e.peer_eval || {};
           return `
-            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E8E2D8] p-6 sm:p-8 soft-card-shadow space-y-6">
-              <div class="flex items-center justify-between border-b border-[#E8E2D8] pb-4">
+            <div class="bg-[#FFFDF9] rounded-2xl border border-[#E2DDD5] p-6 sm:p-8 soft-card-shadow space-y-6">
+              <div class="flex items-center justify-between border-b border-[#E2DDD5] pb-4">
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-10 rounded-xl bg-[#557A61] text-white font-bold flex items-center justify-center text-sm font-serif-tc shadow-2xs">${e.target.slice(0, 1)}</div>
                   <div>
@@ -2309,23 +2280,23 @@ html_content = r"""<!DOCTYPE html>
                   </div>
                 </div>
                 <div class="flex items-center gap-3 text-xs sm:text-sm">
-                  <span class="px-3.5 py-1.5 rounded-xl bg-[#E4ECD3] text-[#2D5239] font-bold">NPS 推薦：${pe.q36_nps_recommend || '-'} 分</span>
-                  <span class="px-3.5 py-1.5 rounded-xl bg-[#F2EEE6] text-[#4A433E] font-medium">合作評分：${pe.q24_cooperation || '-'} 分</span>
+                  <span class="px-3.5 py-1.5 rounded-xl bg-[#E4ECD3] text-[#2D5239] font-bold">NPS 推薦：${pe.q36_nps_recommend || '—'} 分</span>
+                  <span class="px-3.5 py-1.5 rounded-xl bg-[#F2EEE6] text-[#4A433E] font-medium border border-[#E0D7CA]">合作評分：${pe.q24_cooperation || '—'} 分</span>
                 </div>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                  <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-[#557A61]"></i> Q37. 工作與文化提升建議</div>
-                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${pe.q37_improvement_advice || '（無）'}</p></div>
+                <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-[#557A61]"></i> Q37．工作與文化提升建議</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E2DDD5] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${pe.q37_improvement_advice || '（無）'}</p></div>
                 </div>
-                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                  <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="message-square" class="w-4 h-4 text-[#557A61]"></i> Q38. 其他補充評價</div>
-                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E8E2D8] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${pe.q38_other_comments || '（無）'}</p></div>
+                <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="message-square" class="w-4 h-4 text-[#557A61]"></i> Q38．其他補充評價</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E2DDD5] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed">${pe.q38_other_comments || '（無）'}</p></div>
                 </div>
-                <div class="bg-[#F9F6EE] border border-[#E8E2D8] rounded-2xl p-5 sm:p-6 space-y-3">
-                  <div class="text-xs sm:text-sm font-bold text-[#7A363A] flex items-center gap-2"><i data-lucide="award" class="w-4 h-4 text-[#D48B7B]"></i> Q39. 肯定與感謝詞</div>
-                  <div class="bg-white rounded-xl p-4 my-2 border border-[#F4CCCC] shadow-2xs"><p class="text-xs sm:text-sm text-[#592629] font-medium leading-relaxed">${pe.q39_starlight_thanks || '（無）'}</p></div>
+                <div class="bg-[#F2EEE6] border border-[#E0D7CA] rounded-2xl p-5 sm:p-6 space-y-3">
+                  <div class="text-xs sm:text-sm font-bold text-[#2E2827] flex items-center gap-2"><i data-lucide="award" class="w-4 h-4 text-[#557A61]"></i> Q39．肯定與感謝詞</div>
+                  <div class="bg-white rounded-xl p-4 my-2 border border-[#E2DDD5] shadow-2xs"><p class="text-xs sm:text-sm text-[#2E2827] font-medium leading-relaxed">${pe.q39_starlight_thanks || '（無）'}</p></div>
                 </div>
               </div>
             </div>
@@ -2364,23 +2335,22 @@ html_content = r"""<!DOCTYPE html>
 
     // ==========================================
     // CLIENT-SIDE XLSX EXPORT VIA EXCELJS
+    // (UNIFIED RESTRAINED PALETTE & FULL-WIDTH PUNCTUATION)
     // ==========================================
-    const COLOR_PINK_BLUSH = "FFF4CCCC";
-    const COLOR_PEACH_CREAM = "FFFCE5CD";
+    const COLOR_SAGE_HEADER = "FFE4ECD3";
+    const COLOR_STONE_HEADER = "FFF2EEE6";
     const COLOR_WHITE = "FFFFFFFF";
-    const COLOR_WARN_BG = "FFFFF2D6";
-    const COLOR_SAGE_BG = "FFE4ECD3";
 
     const thinBorder = {
-      top: { style: 'thin', color: { argb: 'FFD7CCC8' } },
-      left: { style: 'thin', color: { argb: 'FFD7CCC8' } },
-      bottom: { style: 'thin', color: { argb: 'FFD7CCC8' } },
-      right: { style: 'thin', color: { argb: 'FFD7CCC8' } }
+      top: { style: 'thin', color: { argb: 'FFD5CEC5' } },
+      left: { style: 'thin', color: { argb: 'FFD5CEC5' } },
+      bottom: { style: 'thin', color: { argb: 'FFD5CEC5' } },
+      right: { style: 'thin', color: { argb: 'FFD5CEC5' } }
     };
 
-    const fontSubHeader = { name: '微軟正黑體', size: 10, bold: true, color: { argb: 'FF4E342E' } };
-    const fontBody = { name: '微軟正黑體', size: 9.5, color: { argb: 'FF2D2323' } };
-    const fontBodyBold = { name: '微軟正黑體', size: 9.5, bold: true, color: { argb: 'FF2D2323' } };
+    const fontSubHeader = { name: '微軟正黑體', size: 10, bold: true, color: { argb: 'FF2E2827' } };
+    const fontBody = { name: '微軟正黑體', size: 9.5, color: { argb: 'FF2E2827' } };
+    const fontBodyBold = { name: '微軟正黑體', size: 9.5, bold: true, color: { argb: 'FF2E2827' } };
 
     const alignCenter = { horizontal: 'center', vertical: 'middle', wrapText: true };
     const alignLeft = { horizontal: 'left', vertical: 'top', wrapText: true };
@@ -2414,26 +2384,26 @@ html_content = r"""<!DOCTYPE html>
       ws.columns = [{ width: 14 }, { width: 34 }, { width: 55 }, { width: 14 }, { width: 14 }, { width: 16 }, { width: 35 }];
 
       ws.mergeCells(1, 1, 1, 7);
-      ws.getCell(1, 1).value = `好好星球文化基金會 360 年中成長評估 - 【${memberName}】部屬自評與主管評核對照表（主管專用）`;
-      styleRange(ws, 1, 1, 1, 7, { name: '微軟正黑體', size: 13, bold: true, color: { argb: 'FF3E2723' } }, COLOR_PINK_BLUSH, { horizontal: 'left', vertical: 'middle', indent: 1 });
+      ws.getCell(1, 1).value = `好好星球文化基金會 360 年中成長評估 — 【${memberName}】部屬自評與主管評核對照表（主管專用）`;
+      styleRange(ws, 1, 1, 1, 7, { name: '微軟正黑體', size: 13, bold: true, color: { argb: 'FF2E2827' } }, COLOR_STONE_HEADER, { horizontal: 'left', vertical: 'middle', indent: 1 });
       ws.getRow(1).height = 30;
 
       ws.mergeCells(2, 1, 2, 7);
       ws.getCell(2, 1).value = `評估對象：${memberName}（${jobRole}） ｜ 直屬主管：${supName} ｜ 同儕樣本：${numPeers} 位 ｜ 自評狀態：${hasSelf ? '已完成自評' : '尚未自評'}`;
-      styleRange(ws, 2, 1, 2, 7, { name: '微軟正黑體', size: 10, bold: true, color: { argb: 'FF4E342E' } }, COLOR_PEACH_CREAM, { horizontal: 'left', vertical: 'middle', indent: 1 });
+      styleRange(ws, 2, 1, 2, 7, { name: '微軟正黑體', size: 10, bold: true, color: { argb: 'FF4A433E' } }, COLOR_WHITE, { horizontal: 'left', vertical: 'middle', indent: 1 });
       ws.getRow(2).height = 24;
 
       let rIdx = 3;
       // 1. 組織文化 (一列一個面向)
       ws.mergeCells(rIdx, 1, rIdx, 7);
       ws.getCell(rIdx, 1).value = "一、組織文化實踐：部屬自評實例 vs 主管評核回饋（一列一個面向）";
-      styleRange(ws, rIdx, 1, rIdx, 7, fontSubHeader, COLOR_PEACH_CREAM, { horizontal: 'left', vertical: 'middle', indent: 1 });
+      styleRange(ws, rIdx, 1, rIdx, 7, fontSubHeader, COLOR_STONE_HEADER, { horizontal: 'left', vertical: 'middle', indent: 1 });
       ws.getRow(rIdx).height = 24;
       rIdx++;
 
-      const cultHeaders = ["文化面向", "文化定義與行為指引", "部屬自評實例 (STAR)", "自評等級", "主管評定", "落差分析", "主管評核回饋與觀察"];
+      const cultHeaders = ["文化面向", "文化定義與行為指引", "部屬自評實例（STAR）", "自評等級", "主管評定", "落差分析", "主管評核回饋與觀察"];
       cultHeaders.forEach((h, i) => ws.getCell(rIdx, i + 1).value = h);
-      styleRange(ws, rIdx, 1, rIdx, 7, fontSubHeader, COLOR_PEACH_CREAM, alignHeader);
+      styleRange(ws, rIdx, 1, rIdx, 7, fontSubHeader, COLOR_STONE_HEADER, alignHeader);
       ws.getRow(rIdx).height = 24;
       rIdx++;
 
@@ -2467,13 +2437,13 @@ html_content = r"""<!DOCTYPE html>
       // 2. 專業職能 (一列一個面向，自評 vs 主管評並列)
       ws.mergeCells(rIdx, 1, rIdx, 7);
       ws.getCell(rIdx, 1).value = `二、專業職能：自評 vs 主管評分並列對照【${jobRole}】（逐項比對認知差異）`;
-      styleRange(ws, rIdx, 1, rIdx, 7, fontSubHeader, COLOR_PEACH_CREAM, { horizontal: 'left', vertical: 'middle', indent: 1 });
+      styleRange(ws, rIdx, 1, rIdx, 7, fontSubHeader, COLOR_STONE_HEADER, { horizontal: 'left', vertical: 'middle', indent: 1 });
       ws.getRow(rIdx).height = 24;
       rIdx++;
 
-      const compHeaders = ["職能項目", "職能定義與說明", "部屬自評實例 (STAR)", "部屬自評 (L1~L5)", "主管評定 (L1~L5)", "落差分析", "主管評語與回饋 (Feedback)"];
+      const compHeaders = ["職能項目", "職能定義與說明", "部屬自評實例（STAR）", "部屬自評（Lv. 1～5）", "主管評定（Lv. 1～5）", "落差分析", "主管評語與回饋（Feedback）"];
       compHeaders.forEach((h, i) => ws.getCell(rIdx, i + 1).value = h);
-      styleRange(ws, rIdx, 1, rIdx, 7, fontSubHeader, COLOR_PEACH_CREAM, alignHeader);
+      styleRange(ws, rIdx, 1, rIdx, 7, fontSubHeader, COLOR_STONE_HEADER, alignHeader);
       ws.getRow(rIdx).height = 24;
       rIdx++;
 
@@ -2493,7 +2463,7 @@ html_content = r"""<!DOCTYPE html>
         if (selfLvl && supLvl) {
           const sN = LEVEL_NUM[selfLvl] || 0;
           const supN = LEVEL_NUM[supLvl] || 0;
-          if (sN === supN) gapDesc = `共識 (${selfLvl})`;
+          if (sN === supN) gapDesc = `共識（${selfLvl}）`;
           else if (sN > supN) gapDesc = `自評高 ${sN - supN} 級`;
           else gapDesc = `主管高 ${supN - sN} 級`;
         } else if (selfLvl) {
@@ -2510,7 +2480,7 @@ html_content = r"""<!DOCTYPE html>
         ws.getCell(rIdx, 6).value = gapDesc;
         ws.getCell(rIdx, 7).value = supFb;
 
-        // Add dropdown data validation for Self Lv. 1~5
+        // Dropdown validation for Self Lv. 1~5
         ws.getCell(rIdx, 4).dataValidation = {
           type: 'list',
           allowBlank: true,
@@ -2519,10 +2489,10 @@ html_content = r"""<!DOCTYPE html>
           errorTitle: '評分無效',
           error: '請從下拉選單選取 L1 到 L5',
           promptTitle: '自評等級選單',
-          prompt: '請選取：L1(Start), L2(Grow), L3(Keep), L4(Good), L5(Amazing!)'
+          prompt: '請選取：L1（Start）、L2（Grow）、L3（Keep）、L4（Good）、L5（Amazing！）'
         };
 
-        // Add dropdown data validation for Supervisor Lv. 1~5
+        // Dropdown validation for Supervisor Lv. 1~5
         ws.getCell(rIdx, 5).dataValidation = {
           type: 'list',
           allowBlank: true,
@@ -2531,7 +2501,7 @@ html_content = r"""<!DOCTYPE html>
           errorTitle: '評分無效',
           error: '請從下拉選單選取 L1 到 L5',
           promptTitle: '主管等級選單',
-          prompt: '請選取：L1(Start), L2(Grow), L3(Keep), L4(Good), L5(Amazing!)'
+          prompt: '請選取：L1（Start）、L2（Grow）、L3（Keep）、L4（Good）、L5（Amazing！）'
         };
 
         styleRange(ws, rIdx, 1, rIdx, 7, fontBody, COLOR_WHITE, alignLeft);
@@ -2553,7 +2523,7 @@ html_content = r"""<!DOCTYPE html>
       const buffer = await wb.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
       saveAs(blob, `部屬自評vs主管評對照表_【${memberName}】.xlsx`);
-      showToast(`已成功下載【${memberName}】自評vs主管評對照表 XLSX！`);
+      showToast(`已成功下載【${memberName}】自評 vs 主管評對照表 XLSX！`);
     }
 
     async function exportSupervisorTeamSubordinatesComprehensiveExcelClientSide(supName) {
@@ -2563,7 +2533,7 @@ html_content = r"""<!DOCTYPE html>
       const buffer = await wb.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
       saveAs(blob, `【${supName}主管專用】部屬自評vs主管評對照彙整包.xlsx`);
-      showToast(`已成功下載【${supName}】團隊部屬自評vs主管評對照 Excel 包！`);
+      showToast(`已成功下載【${supName}】團隊部屬自評 vs 主管評對照 Excel 包！`);
     }
 
     async function exportSinglePeerAnonymousExcelClientSide(memberName) {
@@ -2600,4 +2570,4 @@ output_file = os.path.join(os.path.dirname(__file__), "..", "index.html")
 with open(output_file, "w", encoding="utf-8") as f:
     f.write(html_content)
 
-print(f"Generated {output_file} successfully with Self Competency Modal & LocalStorage Engine!")
+print(f"Generated {output_file} successfully with Simplified Modal, Refined Colors, and Full-Width Punctuation!")
