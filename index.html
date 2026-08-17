@@ -254,8 +254,9 @@
           </div>
 
           <div class="flex items-center gap-3">
-            <button onclick="openSelfCompetencyModal(currentSubReviewMember)" class="inline-flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#E4ECD3] text-[#2D5239] hover:bg-[#D4DFC0] transition border border-[#CDE0BC] shadow-2xs">
-              <i data-lucide="edit-3" class="w-4 h-4"></i> 登記【${currentSubReviewMember}】自評等級
+            <button onclick="openSelfCompetencyModal(currentSubReviewMember)" id="btn-sub-review-modal-trigger" class="inline-flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#E4ECD3] text-[#2D5239] hover:bg-[#D4DFC0] transition border border-[#CDE0BC] shadow-2xs">
+              <i data-lucide="edit-3" class="w-4 h-4 text-[#557A61]"></i>
+              <span id="btn-sub-review-modal-trigger-text">登記自評等級</span>
             </button>
             <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
               <i data-lucide="printer" class="w-4 h-4"></i> 列印／存為 PDF（Cmd＋P）
@@ -1959,14 +1960,55 @@
       "戴佑珍": "專案經理"
     };
 
+    // ACCURATE COMPETENCIES FOR EACH ROLE (REMOVED '其他創造的好事與預防的壞事')
     const ROLE_COMPETENCIES = {
-      "執行長": ["策略決策與組織方向設定", "組織治理與財務風險管理", "關鍵利害關係人關係建立與維繫", "公關、演講與媒體關係", "核心團隊培養與組織文化建立", "其他創造的好事與預防的壞事"],
-      "行政經理": ["人事薪資與人資系統管理", "法規與政府公文管理", "董事會與治理作業執行", "財務核銷與內控執行", "總務採購與行政庶務管理", "其他創造的好事與預防的壞事"],
-      "美感設計師": ["品牌識別系統設計與維護", "視覺與美感設計實務", "需求釐清與創意提案", "其他創造的好事與預防的壞事"],
-      "專案經理": ["專案企劃與現場執行", "專案時程與預算規劃管理", "需求研究與方案迭代", "外部夥伴關係經營", "多元教學設計與現場引導", "其他創造的好事與預防的壞事"],
-      "營運經理兼執行長特助": ["組織營運流程設計與優化", "制度文件與 SOP 建置", "人力資源策略與選用育留", "執行長幕僚協調與跨部門推動", "總務採購與行政庶務管理", "其他創造的好事與預防的壞事"],
-      "品牌經理": ["品牌定位與外部溝通一致性", "行銷策略與議題倡議", "品牌活動策劃與策展敘事", "內部品牌管理與雇主品牌", "品牌危機與聲譽風險處理", "其他創造的好事與預防的壞事"],
-      "部門儲備主管": ["部門策略規劃與專案組合管理", "專案經理管理與培育", "部門預算與資源配置管理", "跨領域專業掌握與推進", "利害關係人管理與衝突協調", "其他創造的好事與預防的壞事"]
+      "執行長": [
+        "策略決策與組織方向設定",
+        "組織治理與財務風險管理",
+        "關鍵利害關係人關係建立與維繫",
+        "公關、演講與媒體關係",
+        "核心團隊培養與組織文化建立"
+      ],
+      "行政經理": [
+        "人事薪資與人資系統管理",
+        "法規與政府公文管理",
+        "董事會與治理作業執行",
+        "財務核銷與內控執行",
+        "總務採購與行政庶務管理"
+      ],
+      "美感設計師": [
+        "品牌識別系統設計與維護",
+        "視覺與美感設計實務",
+        "需求釐清與創意提案"
+      ],
+      "專案經理": [
+        "專案企劃與現場執行",
+        "專案時程與預算規劃管理",
+        "需求研究與方案迭代",
+        "外部夥伴關係經營",
+        "多元教學設計與現場引導"
+      ],
+      "營運經理兼執行長特助": [
+        "組織營運流程設計與優化",
+        "制度文件與 SOP 建置",
+        "人力資源策略與選用育留",
+        "執行長幕僚協調與跨部門推動",
+        "總務採購與行政庶務管理"
+      ],
+      "品牌經理": [
+        "品牌定位與外部溝通一致性",
+        "行銷策略與議題倡議",
+        "品牌活動策劃與策展敘事",
+        "內部品牌管理與雇主品牌",
+        "品牌危機與聲譽風險處理"
+      ],
+      "部門儲備主管": [
+        "部門策略規劃與專案組合管理",
+        "專案經理管理與培育",
+        "部門預算與資源配置管理",
+        "跨領域專業掌握與推進",
+        "利害關係人管理與衝突協調"
+      ]
     };
 
     const LEVEL_DEFINITIONS = {
@@ -2535,6 +2577,12 @@
           `;
         });
         pillsContainer.innerHTML = phtml;
+      }
+
+      // Update Modal Trigger Button Text
+      const modalTriggerText = document.getElementById('btn-sub-review-modal-trigger-text');
+      if (modalTriggerText) {
+        modalTriggerText.innerText = `登記【${currentSubReviewMember}】自評等級`;
       }
 
       const expContainer = document.getElementById('sub-review-export-btn-container');
