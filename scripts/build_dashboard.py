@@ -81,7 +81,7 @@ html_content = r"""<!DOCTYPE html>
     @media print {
       @page { size: A4 portrait; margin: 14mm 16mm 14mm 16mm; }
       body { background-color: #FFFFFF !important; color: #111111 !important; font-size: 9.5pt; line-height: 1.5; font-family: 'Times New Roman', 'Noto Serif TC', '微軟正黑體', serif !important; }
-      header, #dropZone, nav, #toast, .no-print, button, .tab-btn, footer, .screen-only-view { display: none !important; }
+      header, #dropZone, nav, #toast, .no-print, button, .tab-btn, footer, .screen-only-view, #selfCompetencyModal { display: none !important; }
       .print-only-doc { display: block !important; }
       main { padding: 0 !important; max-width: 100% !important; margin: 0 !important; }
       .tab-content { display: block !important; }
@@ -100,7 +100,7 @@ html_content = r"""<!DOCTYPE html>
 <body class="min-h-screen flex flex-col antialiased">
 
   <!-- TOP HEADER (NO-PRINT) -->
-  <header class="bg-[#FFFDF9]/95 backdrop-blur-md border-b border-[#E8E2D8] sticky top-0 z-50 shadow-xs no-print">
+  <header class="bg-[#FFFDF9]/95 backdrop-blur-md border-b border-[#E8E2D8] sticky top-0 z-40 shadow-xs no-print">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-18 gap-4">
         <!-- BRAND -->
@@ -115,18 +115,25 @@ html_content = r"""<!DOCTYPE html>
                 優先連線 Google 試算表
               </span>
             </div>
-            <p class="text-xs text-[#7A726D] mt-0.5">優先讀取試算表「表單回覆1」 ｜ 支援自評 vs 主管評比對與雙向 Excel 載入</p>
+            <p class="text-xs text-[#7A726D] mt-0.5">營運經理統籌自評登記 (LocalStorage) ｜ 試算表「表單回覆1」即時連動</p>
           </div>
         </div>
 
         <!-- ACTION BUTTONS -->
-        <div class="flex items-center gap-2.5 sm:gap-3 flex-wrap justify-end">
+        <div class="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
           
+          <!-- OPEN SELF COMPETENCY MODAL BUTTON -->
+          <button onclick="openSelfCompetencyModal()" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#FFF2D6] text-[#B45309] hover:bg-[#FDE7B8] transition border border-[#FCE299] shadow-2xs" title="由營運經理登記各員職能自評等級 (Lv. 1~5)">
+            <i data-lucide="edit-3" class="w-4 h-4 text-[#B45309]"></i>
+            <span class="hidden md:inline">登記各員職能自評 (Lv.1~5)</span>
+            <span class="md:hidden">登記自評</span>
+          </button>
+
           <!-- GAS SYNC BUTTON -->
           <button onclick="syncFromGoogleAppsScript(true)" id="gasSyncBtn" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#E4ECD3] text-[#2D5239] hover:bg-[#D4DFC0] transition border border-[#CDE0BC] shadow-2xs" title="優先讀取 Google 試算表 (表單回覆1)">
             <i data-lucide="refresh-cw" class="w-4 h-4 text-[#557A61]" id="gasSyncIcon"></i>
-            <span class="hidden md:inline" id="gasSyncText">同步 Google 試算表</span>
-            <span class="md:hidden">同步</span>
+            <span class="hidden lg:inline" id="gasSyncText">同步 Google 試算表</span>
+            <span class="lg:hidden">同步</span>
           </button>
 
           <!-- PRINT BUTTON -->
@@ -139,8 +146,8 @@ html_content = r"""<!DOCTYPE html>
           <!-- UPLOAD LOCAL CSV BUTTON -->
           <label class="cursor-pointer inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] hover:text-[#2E2827] transition border border-[#E0D7CA]">
             <i data-lucide="upload" class="w-4 h-4 text-[#557A61]"></i>
-            <span class="hidden lg:inline">上傳本地 CSV</span>
-            <span class="lg:hidden">上傳</span>
+            <span class="hidden xl:inline">上傳本地 CSV</span>
+            <span class="xl:hidden">上傳</span>
             <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="handleFileUpload(event)">
           </label>
 
@@ -156,7 +163,7 @@ html_content = r"""<!DOCTYPE html>
             <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-92 origin-top-right rounded-2xl bg-[#FFFDF9] p-3 shadow-2xl ring-1 ring-black/5 z-50 divide-y divide-[#EFEAE1] border border-[#E8E2D8]">
               <div class="py-2">
                 <div class="px-3 py-1 text-[11px] font-bold text-[#8C837C] uppercase tracking-wider">
-                  自評 vs 主管評對照包 (含認知差異與 L1~L5)
+                  自評 vs 主管評對照包 (含自評登記與 L1~L5)
                 </div>
                 <button onclick="exportSupervisorTeamSubordinatesComprehensiveExcelClientSide('張希慈')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#E4ECD3]/40 rounded-xl transition">
                   <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="git-compare" class="w-4 h-4"></i></div>
@@ -259,30 +266,25 @@ html_content = r"""<!DOCTYPE html>
           </div>
 
           <div class="flex items-center gap-3">
-            <button onclick="window.print()" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
+            <button onclick="openSelfCompetencyModal(currentSubReviewMember)" class="inline-flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#FFF2D6] text-[#B45309] hover:bg-[#FDE7B8] transition border border-[#FCE299] shadow-2xs">
+              <i data-lucide="edit-3" class="w-4 h-4"></i> 填寫【${currentSubReviewMember}】自評等級
+            </button>
+            <button onclick="window.print()" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
               <i data-lucide="printer" class="w-4 h-4"></i> 列印 / 存為 PDF (Cmd+P)
             </button>
-            <div id="sub-review-export-btn-container">
-              <!-- Export button -->
-            </div>
+            <div id="sub-review-export-btn-container"></div>
           </div>
         </div>
 
         <!-- SUBORDINATE MEMBER SELECTOR PILLS -->
-        <div class="bg-[#FFFDF9] rounded-2xl p-5 border border-[#E8E2D8] soft-card-shadow flex items-center gap-3 flex-wrap" id="sub-review-member-pills">
-          <!-- Injected via JS -->
-        </div>
+        <div class="bg-[#FFFDF9] rounded-2xl p-5 border border-[#E8E2D8] soft-card-shadow flex items-center gap-3 flex-wrap" id="sub-review-member-pills"></div>
 
         <!-- REPORT CONTAINER -->
-        <div id="sub-review-report-container" class="space-y-7">
-          <!-- Injected via JS -->
-        </div>
+        <div id="sub-review-report-container" class="space-y-7"></div>
       </div>
 
       <!-- PRINT-ONLY WORD-STYLE CONTAINER -->
-      <div id="sub-review-print-container" class="print-only-doc">
-        <!-- Injected via JS -->
-      </div>
+      <div id="sub-review-print-container" class="print-only-doc"></div>
     </section>
 
     <!-- ======================================================== -->
@@ -455,6 +457,80 @@ html_content = r"""<!DOCTYPE html>
 
   </main>
 
+  <!-- ========================================================================= -->
+  <!-- SELF COMPETENCY RATING MODAL (營運經理專用職能自評登記彈窗) -->
+  <!-- ========================================================================= -->
+  <div id="selfCompetencyModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 no-print">
+    <div class="bg-[#FFFDF9] rounded-3xl max-w-4xl w-full border border-[#E8E2D8] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      
+      <!-- MODAL HEADER -->
+      <div class="px-6 py-5 bg-[#557A61] text-white flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-white/20 rounded-2xl">
+            <i data-lucide="edit-3" class="w-6 h-6 text-white"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-base sm:text-lg font-bold font-serif-tc text-white">員工職能自評登記表</h3>
+              <span class="px-2.5 py-0.5 text-xs font-bold rounded-md bg-[#FCE5CD] text-[#783E16]">營運經理統籌填寫</span>
+            </div>
+            <p class="text-xs text-white/80 mt-0.5">以選項方式（Lv. 1~5）選填每位夥伴的職能自評，自動儲存於本機瀏覽器（LocalStorage）並即時連動至所有對照表、列印與下載。</p>
+          </div>
+        </div>
+        <button onclick="closeSelfCompetencyModal()" class="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- MEMBER SELECTION TABS IN MODAL -->
+      <div class="px-6 py-3.5 bg-[#F2EEE6] border-b border-[#E8E2D8] flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0">
+        <span class="text-xs font-bold text-[#8C837C] shrink-0 mr-1 flex items-center gap-1">
+          <i data-lucide="user" class="w-3.5 h-3.5 text-[#557A61]"></i> 評定對象：
+        </span>
+        <div id="modal-member-pills" class="flex items-center gap-2">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- LEVEL LEGEND BAR -->
+      <div class="px-6 py-3 bg-[#FAF7F2] border-b border-[#E8E2D8] flex items-center justify-between flex-wrap gap-2 text-xs shrink-0">
+        <span class="font-bold text-[#4A433E]">等級定義參考：</span>
+        <div class="flex items-center gap-2 flex-wrap text-[11px]">
+          <span class="px-2 py-0.5 rounded bg-white border border-[#E0D7CA] text-[#4A433E]"><b>L1: Start</b> (起步/建立基礎)</span>
+          <span class="px-2 py-0.5 rounded bg-white border border-[#E0D7CA] text-[#4A433E]"><b>L2: Grow</b> (成長/逐步熟悉)</span>
+          <span class="px-2 py-0.5 rounded bg-[#FFF4CD] border border-[#FCE299] text-[#7A5E12]"><b>L3: Keep</b> (維持/穩定符合期待)</span>
+          <span class="px-2 py-0.5 rounded bg-[#E4ECD3] border border-[#CDE0BC] text-[#2D5239]"><b>L4: Good</b> (良好/獨立成熟)</span>
+          <span class="px-2 py-0.5 rounded bg-[#F4CCCC] border border-[#E6BDBD] text-[#592629]"><b>L5: Amazing!</b> (卓越/超越期待引領典範)</span>
+        </div>
+      </div>
+
+      <!-- MODAL BODY: COMPETENCY LIST -->
+      <div class="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6" id="modal-competencies-container">
+        <!-- Injected via JS -->
+      </div>
+
+      <!-- MODAL FOOTER -->
+      <div class="px-6 py-4 bg-[#FFFDF9] border-t border-[#E8E2D8] flex items-center justify-between gap-4 shrink-0">
+        <div class="text-xs text-[#7A726D] flex items-center gap-1.5">
+          <i data-lucide="hard-drive" class="w-4 h-4 text-[#557A61]"></i>
+          <span>儲存狀態：<b>本機瀏覽器 LocalStorage</b>（關閉或重整後依然保留）</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="clearModalCurrentMemberRatings()" class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-[#F2EEE6] text-[#8C4B1E] hover:bg-[#EBE4D8] transition">
+            重設此員自評
+          </button>
+          <button onclick="closeSelfCompetencyModal()" class="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition">
+            關閉
+          </button>
+          <button onclick="saveAndApplySelfCompetencyModal()" class="px-6 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs flex items-center gap-2">
+            <i data-lucide="save" class="w-4 h-4"></i> 儲存並套用自評
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div id="toast" class="no-print fixed bottom-6 right-6 z-50 transform transition-all duration-300 opacity-0 translate-y-4 pointer-events-none bg-[#2E2827] text-white px-5 py-4 rounded-2xl shadow-xl flex items-center gap-3 text-xs sm:text-sm border border-[#4A433E]">
     <div id="toast-icon" class="p-1 rounded-lg bg-[#557A61] text-white"><i data-lucide="check" class="w-4 h-4"></i></div>
@@ -462,7 +538,7 @@ html_content = r"""<!DOCTYPE html>
   </div>
 
   <footer class="no-print bg-[#FFFDF9] border-t border-[#E8E2D8] py-7 text-center text-xs text-[#7A726D] mt-auto">
-    好好星球文化基金會 360 年中成長評估系統 · 優先連線 Google 試算表（表單回覆1） · 支援 Cmd+P 莫蘭迪柔和色階列印
+    好好星球文化基金會 360 年中成長評估系統 · 營運經理統籌自評登記 (LocalStorage) · 優先連線 Google 試算表（表單回覆1）
   </footer>
 
   <script>
@@ -516,6 +592,16 @@ html_content = r"""<!DOCTYPE html>
       "部門儲備主管": ["部門策略規劃與專案組合管理", "專案經理管理與培育", "部門預算與資源配置管理", "跨領域專業掌握與推進", "利害關係人管理與衝突協調", "其他創造的好事與預防的壞事"]
     };
 
+    const LEVEL_DEFINITIONS = {
+      "L1": { name: "Start 起步", desc: "起步中 / 建立基礎行為與熟悉流程" },
+      "L2": { name: "Grow 成長", desc: "成長中 / 逐步熟悉、能在指引下穩定完成" },
+      "L3": { name: "Keep 維持", desc: "維持 / 穩定交付符合組織期待" },
+      "L4": { name: "Good 良好", desc: "良好 / 能獨立成熟當責並主動優化" },
+      "L5": { name: "Amazing! 卓越", desc: "卓越 / 超越期待、能引領典範與賦能他人" }
+    };
+
+    const LEVEL_NUM = { "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5 };
+
     const SUPERVISOR_QUESTIONS = [
       ["Q4", "日常賦能", "尋求協助（遇到困難時主動向主管尋求協助的容易度）", "q4_help_easy"],
       ["Q5", "指導指引", "具體引導（主管給予具體指引與改善方向的頻率與清晰度）", "q5_guidance_freq"],
@@ -551,6 +637,11 @@ html_content = r"""<!DOCTYPE html>
       ["Q36", "NPS推薦", "NPS 推薦度（向他人推薦與此夥伴共事的意願）", "q36_nps_recommend"],
     ];
 
+    // LOCAL STORAGE KEYS & IN-MEMORY CACHE
+    const LOCAL_STORAGE_SELF_KEY = "WELLPLANET_SELF_COMPETENCY_RATINGS_V1";
+    const LOCAL_STORAGE_SUP_KEY = "WELLPLANET_SUPERVISOR_EVAL_STATE_V1";
+
+    let SELF_COMPETENCY_STATE = {};
     let SUPERVISOR_EVAL_STATE = {};
 
     let currentSubReviewTeam = '張希慈';
@@ -560,10 +651,48 @@ html_content = r"""<!DOCTYPE html>
     let currentPeerFilter = 'ALL';
     let currentPeerAnonMember = '何維安';
 
+    let modalCurrentMember = '何維安';
+
     let supervisorRadar = null;
     let supervisorBar = null;
     let peerRadar = null;
     let peerBar = null;
+
+    function loadLocalStorageStates() {
+      try {
+        const savedSelf = localStorage.getItem(LOCAL_STORAGE_SELF_KEY);
+        if (savedSelf) {
+          SELF_COMPETENCY_STATE = JSON.parse(savedSelf);
+        }
+      } catch (e) {
+        console.warn("Failed to load SELF_COMPETENCY_STATE from localStorage", e);
+      }
+
+      try {
+        const savedSup = localStorage.getItem(LOCAL_STORAGE_SUP_KEY);
+        if (savedSup) {
+          SUPERVISOR_EVAL_STATE = JSON.parse(savedSup);
+        }
+      } catch (e) {
+        console.warn("Failed to load SUPERVISOR_EVAL_STATE from localStorage", e);
+      }
+    }
+
+    function persistSelfCompetencyState() {
+      try {
+        localStorage.setItem(LOCAL_STORAGE_SELF_KEY, JSON.stringify(SELF_COMPETENCY_STATE));
+      } catch (e) {
+        console.warn("Failed to save SELF_COMPETENCY_STATE to localStorage", e);
+      }
+    }
+
+    function persistSupervisorEvalState() {
+      try {
+        localStorage.setItem(LOCAL_STORAGE_SUP_KEY, JSON.stringify(SUPERVISOR_EVAL_STATE));
+      } catch (e) {
+        console.warn("Failed to save SUPERVISOR_EVAL_STATE to localStorage", e);
+      }
+    }
 
     function showToast(msg, isWarn = false) {
       const toast = document.getElementById('toast');
@@ -611,6 +740,199 @@ html_content = r"""<!DOCTYPE html>
       else if (tabId === 'self') renderSelfSection();
       else if (tabId === 'peerAnon') renderPeerAnonSection();
       else if (tabId === 'peer') renderPeerSection();
+    }
+
+    // =========================================================================
+    // MODAL: 營運經理統籌職能自評登記彈窗
+    // =========================================================================
+    function openSelfCompetencyModal(memberName = null) {
+      if (memberName && ALL_MEMBERS.includes(memberName)) {
+        modalCurrentMember = memberName;
+      } else if (!ALL_MEMBERS.includes(modalCurrentMember)) {
+        modalCurrentMember = currentSubReviewMember || ALL_MEMBERS[0];
+      }
+      const modal = document.getElementById('selfCompetencyModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        renderSelfCompetencyModal();
+      }
+    }
+
+    function closeSelfCompetencyModal() {
+      const modal = document.getElementById('selfCompetencyModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function selectModalMember(memName) {
+      modalCurrentMember = memName;
+      renderSelfCompetencyModal();
+    }
+
+    function setModalMemberRating(compTitle, level) {
+      if (!SELF_COMPETENCY_STATE[modalCurrentMember]) {
+        SELF_COMPETENCY_STATE[modalCurrentMember] = {};
+      }
+      SELF_COMPETENCY_STATE[modalCurrentMember][compTitle] = level;
+      persistSelfCompetencyState();
+      renderSelfCompetencyModal();
+    }
+
+    function clearModalCurrentMemberRatings() {
+      if (confirm(`確定要清除【${modalCurrentMember}】所有的職能自評等級嗎？`)) {
+        delete SELF_COMPETENCY_STATE[modalCurrentMember];
+        persistSelfCompetencyState();
+        renderSelfCompetencyModal();
+        showToast(`已清除【${modalCurrentMember}】之自評等級`);
+      }
+    }
+
+    function saveAndApplySelfCompetencyModal() {
+      persistSelfCompetencyState();
+      closeSelfCompetencyModal();
+      refreshAllViews();
+      showToast(`已成功儲存【${modalCurrentMember}】自評等級至 LocalStorage 並全面套用！`);
+    }
+
+    function renderSelfCompetencyModal() {
+      const memName = modalCurrentMember;
+      const jobRole = JOB_ROLES_MAP[memName] || "專案經理";
+      const supName = MEMBER_SUPERVISOR_MAP[memName] || "主管";
+
+      // 1. Render Member Pills in Modal
+      const pillsContainer = document.getElementById('modal-member-pills');
+      if (pillsContainer) {
+        pillsContainer.innerHTML = ALL_MEMBERS.map(m => {
+          const isAct = m === memName;
+          const hasData = Boolean(SELF_COMPETENCY_STATE[m] && Object.keys(SELF_COMPETENCY_STATE[m]).length > 0);
+          return `
+            <button onclick="selectModalMember('${m}')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition shrink-0 flex items-center gap-1.5 ${isAct ? 'bg-[#557A61] text-white shadow-xs' : 'bg-white text-[#4A433E] hover:bg-[#EBE4D8] border border-[#E0D7CA]'}">
+              <span>${m}</span>
+              <span class="text-[11px] opacity-80">(${JOB_ROLES_MAP[m] || ''})</span>
+              ${hasData ? '<span class="w-2 h-2 rounded-full bg-[#82B29A] inline-block"></span>' : ''}
+            </button>
+          `;
+        }).join('');
+      }
+
+      // 2. Fetch original self eval STAR for this member
+      const selfEntry = RAW_DATA.find(e => e.relation === "自評" && e.target === memName);
+      const hasSelf = Boolean(selfEntry && selfEntry.self_eval);
+      const se = hasSelf ? selfEntry.self_eval : null;
+
+      const compList = ROLE_COMPETENCIES[jobRole] || [];
+      const userRatings = SELF_COMPETENCY_STATE[memName] || {};
+
+      // 3. Render Competency Items
+      const compContainer = document.getElementById('modal-competencies-container');
+      if (compContainer) {
+        let html = `
+          <div class="bg-[#F9F6EE] rounded-2xl p-5 border border-[#E8E2D8] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-[#557A61] text-white font-bold flex items-center justify-center font-serif-tc text-base shadow-2xs">${memName.slice(0, 1)}</div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 class="text-base font-bold text-[#2E2827] font-serif-tc">${memName}</h4>
+                  <span class="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-[#FCE5CD] text-[#783E16]">${jobRole}</span>
+                </div>
+                <p class="text-xs text-[#7A726D] mt-0.5">直屬主管：<b>${supName}</b> ｜ 應評職能項目：<b>${compList.length}</b> 項</p>
+              </div>
+            </div>
+            <div class="text-xs font-bold text-[#557A61] bg-[#E4ECD3] px-3.5 py-1.5 rounded-xl border border-[#CDE0BC] self-start sm:self-auto">
+              已登記：${Object.keys(userRatings).length} / ${compList.length} 項
+            </div>
+          </div>
+        `;
+
+        compList.forEach((cTitle, idx) => {
+          let selfStarAns = null;
+          if (hasSelf && se.competencies) {
+            const item = se.competencies.find(x => x.title === cTitle);
+            if (item) selfStarAns = item.answer;
+          }
+
+          const currentVal = userRatings[cTitle] || "";
+
+          html += `
+            <div class="bg-white rounded-2xl border border-[#E8E2D8] p-5 sm:p-6 soft-card-shadow space-y-4 hover:border-[#557A61]/50 transition">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#EFEAE1] pb-3">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-6 h-6 rounded-lg bg-[#E4ECD3] text-[#2D5239] font-bold flex items-center justify-center text-xs">${idx + 1}</span>
+                  <h5 class="text-sm sm:text-base font-bold text-[#2E2827] font-serif-tc">${cTitle}</h5>
+                </div>
+                <div>
+                  ${currentVal ? `
+                    <span class="badge-stable px-3 py-1 text-xs font-bold rounded-lg flex items-center gap-1">
+                      <i data-lucide="check" class="w-3.5 h-3.5"></i> 已選：${currentVal} (${LEVEL_DEFINITIONS[currentVal]?.name || ''})
+                    </span>
+                  ` : `
+                    <span class="badge-missing px-2.5 py-1 text-xs font-semibold rounded-lg">待選取自評</span>
+                  `}
+                </div>
+              </div>
+
+              <!-- STAR ANSWER FROM RAW SURVEY -->
+              <div class="bg-[#F9F6EE] rounded-xl p-4 border border-[#E8E2D8]">
+                <span class="text-xs font-bold text-[#557A61] block mb-1 flex items-center gap-1.5">
+                  <i data-lucide="file-text" class="w-3.5 h-3.5"></i> 部屬原始自評 STAR 描述（供評定參考）：
+                </span>
+                <p class="text-xs sm:text-sm text-[#2E2827] leading-relaxed whitespace-pre-line">${selfStarAns || '<span class="text-[#8C837C] italic">（部屬未填寫此題自評敘述）</span>'}</p>
+              </div>
+
+              <!-- LEVEL SELECTION BUTTONS -->
+              <div class="space-y-2">
+                <span class="text-xs font-bold text-[#4A433E] block">請選取自評等級 (Lv. 1 ~ 5)：</span>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                  ${["L1", "L2", "L3", "L4", "L5"].map(lvl => {
+                    const isSelected = currentVal === lvl;
+                    const lDef = LEVEL_DEFINITIONS[lvl];
+                    return `
+                      <button onclick="setModalMemberRating('${cTitle}', '${lvl}')" class="p-3 rounded-xl border text-left transition flex flex-col justify-between gap-1.5 ${isSelected ? 'bg-[#557A61] text-white border-[#466551] shadow-xs' : 'bg-[#FFFDF9] hover:bg-[#F2EEE6] text-[#2E2827] border-[#E8E2D8]'}">
+                        <div class="flex items-center justify-between">
+                          <span class="text-xs font-bold font-serif-tc">${lvl}</span>
+                          ${isSelected ? '<i data-lucide="check-circle" class="w-4 h-4 text-white"></i>' : ''}
+                        </div>
+                        <div class="text-[11px] font-semibold ${isSelected ? 'text-white' : 'text-[#557A61]'}">${lDef.name.split(' ')[1] || lDef.name}</div>
+                        <div class="text-[10px] leading-tight ${isSelected ? 'text-white/80' : 'text-[#7A726D]'}">${lDef.desc.split('/')[0]}</div>
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        compContainer.innerHTML = html;
+      }
+
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    // =========================================================================
+    // GAP ANALYSIS HELPER
+    // =========================================================================
+    function computeGapBadge(selfLvl, supLvl) {
+      if (!selfLvl && !supLvl) {
+        return `<span class="text-[#8C837C] text-xs">待雙方評定</span>`;
+      }
+      if (!selfLvl) {
+        return `<span class="text-[#B45309] text-xs bg-[#FFF2D6] px-2 py-0.5 rounded font-semibold">待自評</span>`;
+      }
+      if (!supLvl) {
+        return `<span class="text-[#7A5E12] text-xs bg-[#FFF4CD] px-2 py-0.5 rounded font-semibold">待主管評</span>`;
+      }
+
+      const sVal = LEVEL_NUM[selfLvl] || 0;
+      const supVal = LEVEL_NUM[supLvl] || 0;
+      const diff = sVal - supVal;
+
+      if (diff === 0) {
+        return `<span class="bg-[#E4ECD3] text-[#2D5239] border border-[#CDE0BC] px-2.5 py-0.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5"></i> 共識 (${selfLvl})</span>`;
+      } else if (diff > 0) {
+        return `<span class="bg-[#FFF4CD] text-[#7A5E12] border border-[#FCE299] px-2.5 py-0.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1">自評高 ${diff} 級</span>`;
+      } else {
+        return `<span class="bg-[#E2F3F0] text-[#1E564F] border border-[#BCE4DE] px-2.5 py-0.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1">主管肯定高 ${Math.abs(diff)} 級</span>`;
+      }
     }
 
     // =========================================================================
@@ -708,7 +1030,7 @@ html_content = r"""<!DOCTYPE html>
             } else if (colName.includes("記得也要花") || colName.includes("下一階段進行")) {
               continue;
             } else {
-              competencies.append ? competencies.push({ title: colName, answer: val }) : competencies.push({ title: colName, answer: val });
+              competencies.push({ title: colName, answer: val });
             }
           }
 
@@ -828,6 +1150,7 @@ html_content = r"""<!DOCTYPE html>
       if (!SUPERVISOR_EVAL_STATE[memName]) SUPERVISOR_EVAL_STATE[memName] = {};
       if (!SUPERVISOR_EVAL_STATE[memName][compTitle]) SUPERVISOR_EVAL_STATE[memName][compTitle] = {};
       SUPERVISOR_EVAL_STATE[memName][compTitle].level = lvl;
+      persistSupervisorEvalState();
       renderSubReviewSection();
     }
 
@@ -835,6 +1158,7 @@ html_content = r"""<!DOCTYPE html>
       if (!SUPERVISOR_EVAL_STATE[memName]) SUPERVISOR_EVAL_STATE[memName] = {};
       if (!SUPERVISOR_EVAL_STATE[memName][compTitle]) SUPERVISOR_EVAL_STATE[memName][compTitle] = {};
       SUPERVISOR_EVAL_STATE[memName][compTitle].feedback = text;
+      persistSupervisorEvalState();
     }
 
     function renderSubReviewSection() {
@@ -860,7 +1184,7 @@ html_content = r"""<!DOCTYPE html>
       const expContainer = document.getElementById('sub-review-export-btn-container');
       if (expContainer) {
         expContainer.innerHTML = `
-          <button onclick="exportSingleSubordinateComprehensiveExcelClientSide('${currentSubReviewMember}')" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition border border-[#E0D7CA]">
+          <button onclick="exportSingleSubordinateComprehensiveExcelClientSide('${currentSubReviewMember}')" class="inline-flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition border border-[#E0D7CA]">
             <i data-lucide="download" class="w-4 h-4 text-[#557A61]"></i> 下載【${currentSubReviewMember}】自評vs主管評 XLSX
           </button>
         `;
@@ -903,6 +1227,7 @@ html_content = r"""<!DOCTYPE html>
       const npsAvg = npsVals.length ? (npsVals.reduce((a, b) => a + b, 0) / npsVals.length).toFixed(2) : "-";
 
       const compList = ROLE_COMPETENCIES[jobRole] || [];
+      const userRatings = SELF_COMPETENCY_STATE[memName] || {};
 
       // 1. SCREEN VIEW
       const screenContainer = document.getElementById('sub-review-report-container');
@@ -1055,14 +1380,17 @@ html_content = r"""<!DOCTYPE html>
 
           <!-- PART 3: 專業職能：自評 vs 主管評分並列對照 (一列一個面向) -->
           <div class="space-y-5">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between flex-wrap gap-3">
               <div class="flex items-center gap-2.5">
                 <div class="p-2 bg-[#E4ECD3] text-[#2D5239] rounded-xl"><i data-lucide="briefcase" class="w-5 h-5"></i></div>
                 <div>
                   <h3 class="text-base sm:text-lg font-bold text-[#2E2827] font-serif-tc">二、專業職能：自評 vs 主管評分並列對照（逐項比對認知差異）</h3>
-                  <p class="text-xs text-[#7A726D]">職能項目一列一項，並列呈現部屬自評實例、自評分數/等級與主管評核等級</p>
+                  <p class="text-xs text-[#7A726D]">職能項目一列一項，並列呈現部屬自評等級 (LocalStorage)、主管評核等級與認知落差分析</p>
                 </div>
               </div>
+              <button onclick="openSelfCompetencyModal('${memName}')" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl bg-[#FFF2D6] text-[#B45309] hover:bg-[#FDE7B8] transition border border-[#FCE299]">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> 開啟【${memName}】自評登記彈窗
+              </button>
             </div>
 
             <div class="overflow-x-auto rounded-2xl border border-[#E8E2D8] bg-[#FFFDF9] soft-card-shadow">
@@ -1071,9 +1399,9 @@ html_content = r"""<!DOCTYPE html>
                   <tr>
                     <th class="py-3 px-3.5 font-bold text-center w-40 border-r border-[#E8E2D8]">職能項目</th>
                     <th class="py-3 px-4 font-bold border-r border-[#E8E2D8]">部屬自評實例 (STAR)</th>
-                    <th class="py-3 px-3 font-bold text-center w-24 border-r border-[#E8E2D8] bg-[#FFF4CD] text-[#7A5E12]">部屬自評</th>
+                    <th class="py-3 px-3 font-bold text-center w-28 border-r border-[#E8E2D8] bg-[#FFF4CD] text-[#7A5E12]">部屬自評</th>
                     <th class="py-3 px-3 font-bold text-center w-28 border-r border-[#E8E2D8] bg-[#FFF2D6] text-[#B45309]">主管評定</th>
-                    <th class="py-3 px-3 font-bold text-center w-24 border-r border-[#E8E2D8]">落差分析</th>
+                    <th class="py-3 px-3 font-bold text-center w-36 border-r border-[#E8E2D8]">落差分析</th>
                     <th class="py-3 px-4 font-bold w-68 bg-[#FFF2D6] text-[#B45309]">主管回饋與具體事證</th>
                   </tr>
                 </thead>
@@ -1084,13 +1412,11 @@ html_content = r"""<!DOCTYPE html>
                       const item = se.competencies.find(x => x.title === cTitle);
                       if (item) selfAns = item.answer;
                     }
+                    const selfRatingLvl = userRatings[cTitle] || '';
                     const supRating = SUPERVISOR_EVAL_STATE[memName]?.[cTitle]?.level || '';
                     const supFb = SUPERVISOR_EVAL_STATE[memName]?.[cTitle]?.feedback || '';
                     
-                    let gapBadge = '<span class="text-[#8C837C] text-xs">待主管評</span>';
-                    if (supRating) {
-                      gapBadge = '<span class="badge-best px-2 py-0.5 rounded text-xs font-bold">主管已評</span>';
-                    }
+                    const gapHtml = computeGapBadge(selfRatingLvl, supRating);
 
                     return `
                       <tr class="hover:bg-[#FAF7F2] transition">
@@ -1099,7 +1425,17 @@ html_content = r"""<!DOCTYPE html>
                           ${selfAns || '<span class="text-[#B45309] italic">（部屬未填寫自評實例）</span>'}
                         </td>
                         <td class="py-3.5 px-3 text-center border-r border-[#E8E2D8] bg-[#FFFDF9]">
-                          <span class="badge-missing px-2 py-0.5 rounded text-xs font-semibold">待問卷補齊</span>
+                          ${selfRatingLvl ? `
+                            <button onclick="openSelfCompetencyModal('${memName}')" class="badge-stable px-2.5 py-1 rounded-lg text-xs font-bold hover:bg-[#D4DFC0] transition inline-flex items-center gap-1">
+                              <span>${selfRatingLvl}</span>
+                              <span class="text-[11px] font-normal opacity-80">(${LEVEL_DEFINITIONS[selfRatingLvl]?.name?.split(' ')[1] || ''})</span>
+                              <i data-lucide="edit-2" class="w-3 h-3 opacity-60"></i>
+                            </button>
+                          ` : `
+                            <button onclick="openSelfCompetencyModal('${memName}')" class="badge-missing px-2 py-0.5 rounded text-xs font-semibold hover:underline inline-flex items-center gap-1">
+                              <i data-lucide="plus" class="w-3 h-3"></i> 登記自評
+                            </button>
+                          `}
                         </td>
                         <td class="py-3.5 px-3 text-center border-r border-[#E8E2D8] bg-[#FFF2D6]/40">
                           <select onchange="updateSupervisorRating('${memName}', '${cTitle}', this.value)" class="text-xs font-bold p-1.5 rounded-lg border border-[#FCE299] bg-white focus:outline-[#557A61]">
@@ -1111,7 +1447,7 @@ html_content = r"""<!DOCTYPE html>
                             <option value="L1" ${supRating==='L1'?'selected':''}>L1 (Start)</option>
                           </select>
                         </td>
-                        <td class="py-3.5 px-3 text-center border-r border-[#E8E2D8]">${gapBadge}</td>
+                        <td class="py-3.5 px-3 text-center border-r border-[#E8E2D8]">${gapHtml}</td>
                         <td class="py-3.5 px-4 bg-[#FFFDF9]">
                           <textarea onblur="updateSupervisorFeedback('${memName}', '${cTitle}', this.value)" placeholder="輸入主管針對此職能的評語與建議..." class="w-full text-xs p-2 rounded-xl border border-[#FCE299] bg-[#FFF2D6]/30 focus:bg-white transition focus:outline-[#557A61] resize-y" rows="2">${supFb}</textarea>
                         </td>
@@ -1250,10 +1586,10 @@ html_content = r"""<!DOCTYPE html>
               <thead>
                 <tr style="background-color: #FCE5CD;">
                   <th style="width: 20%;">職能項目</th>
-                  <th style="width: 32%;">部屬自評實例 (STAR)</th>
-                  <th style="width: 10%; background-color: #FFF4CD;">自評</th>
-                  <th style="width: 10%; background-color: #FFF2D6;">主管評</th>
-                  <th style="width: 28%; background-color: #FFF2D6;">主管回饋與具體事證</th>
+                  <th style="width: 30%;">部屬自評實例 (STAR)</th>
+                  <th style="width: 12%; background-color: #FFF4CD;">部屬自評</th>
+                  <th style="width: 12%; background-color: #FFF2D6;">主管評定</th>
+                  <th style="width: 26%; background-color: #FFF2D6;">主管回饋與具體事證</th>
                 </tr>
               </thead>
               <tbody>
@@ -1263,13 +1599,14 @@ html_content = r"""<!DOCTYPE html>
                     const item = se.competencies.find(x => x.title === cTitle);
                     if (item) selfAns = item.answer;
                   }
+                  const selfLvl = userRatings[cTitle] || '（未評）';
                   const supLvl = SUPERVISOR_EVAL_STATE[memName]?.[cTitle]?.level || '【待評】';
                   const supFb = SUPERVISOR_EVAL_STATE[memName]?.[cTitle]?.feedback || '【待主管填寫】';
                   return `
                     <tr>
                       <td style="font-weight: bold; background-color: #FAFAFA;">${cTitle}</td>
                       <td>${selfAns || '（部屬未填寫自評實例）'}</td>
-                      <td style="text-align: center;">待補</td>
+                      <td style="text-align: center; font-weight: bold; color: #2D5239;">${selfLvl}</td>
                       <td style="text-align: center; font-weight: bold; color: #B45309;">${supLvl}</td>
                       <td>${supFb}</td>
                     </tr>
@@ -2072,7 +2409,9 @@ html_content = r"""<!DOCTYPE html>
       const hasSelf = Boolean(selfEntry && selfEntry.self_eval);
       const se = hasSelf ? selfEntry.self_eval : null;
 
-      ws.columns = [{ width: 14 }, { width: 34 }, { width: 55 }, { width: 14 }, { width: 14 }, { width: 12 }, { width: 35 }];
+      const userSelfRatings = SELF_COMPETENCY_STATE[memberName] || {};
+
+      ws.columns = [{ width: 14 }, { width: 34 }, { width: 55 }, { width: 14 }, { width: 14 }, { width: 16 }, { width: 35 }];
 
       ws.mergeCells(1, 1, 1, 7);
       ws.getCell(1, 1).value = `好好星球文化基金會 360 年中成長評估 - 【${memberName}】部屬自評與主管評核對照表（主管專用）`;
@@ -2132,7 +2471,7 @@ html_content = r"""<!DOCTYPE html>
       ws.getRow(rIdx).height = 24;
       rIdx++;
 
-      const compHeaders = ["職能項目", "職能定義與說明", "部屬自評實例 (STAR)", "部屬自評", "主管評定 (L1~L5)", "落差分析", "主管評語與回饋 (Feedback)"];
+      const compHeaders = ["職能項目", "職能定義與說明", "部屬自評實例 (STAR)", "部屬自評 (L1~L5)", "主管評定 (L1~L5)", "落差分析", "主管評語與回饋 (Feedback)"];
       compHeaders.forEach((h, i) => ws.getCell(rIdx, i + 1).value = h);
       styleRange(ws, rIdx, 1, rIdx, 7, fontSubHeader, COLOR_PEACH_CREAM, alignHeader);
       ws.getRow(rIdx).height = 24;
@@ -2146,17 +2485,44 @@ html_content = r"""<!DOCTYPE html>
           if (item) selfAns = item.answer;
         }
 
+        const selfLvl = userSelfRatings[cT] || "";
         const supLvl = SUPERVISOR_EVAL_STATE[memberName]?.[cT]?.level || "";
         const supFb = SUPERVISOR_EVAL_STATE[memberName]?.[cT]?.feedback || "【待主管填寫回饋】";
+
+        let gapDesc = "待評";
+        if (selfLvl && supLvl) {
+          const sN = LEVEL_NUM[selfLvl] || 0;
+          const supN = LEVEL_NUM[supLvl] || 0;
+          if (sN === supN) gapDesc = `共識 (${selfLvl})`;
+          else if (sN > supN) gapDesc = `自評高 ${sN - supN} 級`;
+          else gapDesc = `主管高 ${supN - sN} 級`;
+        } else if (selfLvl) {
+          gapDesc = "待主管評";
+        } else if (supLvl) {
+          gapDesc = "待自評";
+        }
 
         ws.getCell(rIdx, 1).value = cT;
         ws.getCell(rIdx, 2).value = "核心專業職能";
         ws.getCell(rIdx, 3).value = selfAns || "（部屬未填寫自評實例）";
-        ws.getCell(rIdx, 4).value = "待補齊";
+        ws.getCell(rIdx, 4).value = selfLvl;
         ws.getCell(rIdx, 5).value = supLvl;
-        ws.getCell(rIdx, 6).value = supLvl ? "已評定" : "待主管評";
+        ws.getCell(rIdx, 6).value = gapDesc;
         ws.getCell(rIdx, 7).value = supFb;
 
+        // Add dropdown data validation for Self Lv. 1~5
+        ws.getCell(rIdx, 4).dataValidation = {
+          type: 'list',
+          allowBlank: true,
+          formulae: ['"L1,L2,L3,L4,L5"'],
+          showErrorMessage: true,
+          errorTitle: '評分無效',
+          error: '請從下拉選單選取 L1 到 L5',
+          promptTitle: '自評等級選單',
+          prompt: '請選取：L1(Start), L2(Grow), L3(Keep), L4(Good), L5(Amazing!)'
+        };
+
+        // Add dropdown data validation for Supervisor Lv. 1~5
         ws.getCell(rIdx, 5).dataValidation = {
           type: 'list',
           allowBlank: true,
@@ -2164,13 +2530,14 @@ html_content = r"""<!DOCTYPE html>
           showErrorMessage: true,
           errorTitle: '評分無效',
           error: '請從下拉選單選取 L1 到 L5',
-          promptTitle: '等級選單',
+          promptTitle: '主管等級選單',
           prompt: '請選取：L1(Start), L2(Grow), L3(Keep), L4(Good), L5(Amazing!)'
         };
 
         styleRange(ws, rIdx, 1, rIdx, 7, fontBody, COLOR_WHITE, alignLeft);
         ws.getCell(rIdx, 1).font = fontBodyBold;
         ws.getCell(rIdx, 4).alignment = alignCenter;
+        ws.getCell(rIdx, 4).font = fontBodyBold;
         ws.getCell(rIdx, 5).alignment = alignCenter;
         ws.getCell(rIdx, 5).font = fontBodyBold;
         ws.getCell(rIdx, 6).alignment = alignCenter;
@@ -2217,9 +2584,11 @@ html_content = r"""<!DOCTYPE html>
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      // 1. First render default view
+      // 1. Load LocalStorage States
+      loadLocalStorageStates();
+      // 2. Render initial view
       refreshAllViews();
-      // 2. Immediately try to fetch latest from Google Apps Script endpoint
+      // 3. Try to sync latest from Google Apps Script endpoint
       syncFromGoogleAppsScript(false);
     });
   </script>
@@ -2231,4 +2600,4 @@ output_file = os.path.join(os.path.dirname(__file__), "..", "index.html")
 with open(output_file, "w", encoding="utf-8") as f:
     f.write(html_content)
 
-print(f"Generated {output_file} successfully with Google Apps Script Sync Engine!")
+print(f"Generated {output_file} successfully with Self Competency Modal & LocalStorage Engine!")
