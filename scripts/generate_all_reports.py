@@ -26,7 +26,7 @@ COLOR_RATING_TITLE_BG = "FBE4EA"# Pink header for rating table
 COLOR_RATING_HDR_BG = "E8638A"  # Deep rose header for rating table
 COLOR_L5_BG = "E4EDF7"          # Amazing! soft sky blue
 COLOR_L4_BG = "E3F1E6"          # Good soft mint green
-COLOR_L3_BG = "FFF7E0"          # Keep soft warm yellow (fixed!)
+COLOR_L3_BG = "FFF7E0"          # Keep soft warm yellow
 COLOR_L2_BG = "FCE8EC"          # Grow soft blush pink
 COLOR_L1_BG = "FCE8EC"          # Start soft blush pink
 
@@ -238,16 +238,18 @@ def add_subordinate_supervisor_sheet(wb, member_name):
     ws.row_dimensions[2].height = 24
 
     r = 3
-    # 1. 組織文化 (一列一個面向，文字全部公布)
+    # 1. 組織文化 (4欄結構：移除「部屬自評」與「主管評定」，Col 4~6 合併為「主管評核回饋與觀察」)
     ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=6)
     ws.cell(row=r, column=1, value="一、組織文化實踐：部屬自評實例 vs 主管評核回饋（一列一個面向）")
     style_cell_range(ws, r, 1, r, 6, font_sub_header, COLOR_SECTION_BG, Alignment(horizontal="left", vertical="center", indent=1))
     ws.row_dimensions[r].height = 24
     r += 1
 
-    cult_headers = ["文化面向", "文化定義與行為指引", "部屬自評實例 (STAR)", "部屬自評", "主管評定", "主管評核回饋與觀察"]
-    for i, h in enumerate(cult_headers):
-        ws.cell(row=r, column=i+1, value=h)
+    ws.cell(row=r, column=1, value="文化面向")
+    ws.cell(row=r, column=2, value="文化定義與行為指引")
+    ws.cell(row=r, column=3, value="部屬自評實例 (STAR)")
+    ws.merge_cells(start_row=r, start_column=4, end_row=r, end_column=6)
+    ws.cell(row=r, column=4, value="主管評核回饋與觀察")
     style_cell_range(ws, r, 1, r, 6, font_table_hdr, COLOR_SECTION_BG, align_header)
     ws.row_dimensions[r].height = 24
     r += 1
@@ -263,23 +265,21 @@ def add_subordinate_supervisor_sheet(wb, member_name):
         ws.cell(row=r, column=1, value=c_title)
         ws.cell(row=r, column=2, value=c_desc)
         ws.cell(row=r, column=3, value=c_self) # 全部公布文字
-        ws.cell(row=r, column=4, value="")
-        ws.cell(row=r, column=5, value="")
-        ws.cell(row=r, column=6, value="【待主管填寫回饋】")
+        ws.merge_cells(start_row=r, start_column=4, end_row=r, end_column=6)
+        ws.cell(row=r, column=4, value="【待主管填寫回饋】")
 
         style_cell_range(ws, r, 1, r, 6, font_body, COLOR_WHITE, align_left)
         ws.cell(row=r, column=1).alignment = align_center
         ws.cell(row=r, column=1).font = font_body_bold
-        ws.cell(row=r, column=4).alignment = align_center
-        ws.cell(row=r, column=5).alignment = align_center
-        ws.cell(row=r, column=6).fill = PatternFill(start_color=COLOR_FEEDBACK_BG, end_color=COLOR_FEEDBACK_BG, fill_type="solid")
+        for c_idx in range(4, 7):
+            ws.cell(row=r, column=c_idx).fill = PatternFill(start_color=COLOR_FEEDBACK_BG, end_color=COLOR_FEEDBACK_BG, fill_type="solid")
         ws.row_dimensions[r].height = max(30, min(120, len(c_self or "") // 35 * 18 + 18))
         r += 1
 
     r += 1
-    # 2. 專業職能 (文字全部公布，等級統一寫「尚不公布」以避免影響主管評分)
+    # 2. 專業職能 (6欄結構：文字全部公布，等級統一寫「尚不公布」以避免影響主管評分)
     ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=6)
-    ws.cell(row=r, column=1, value=f"二、專業職能：自評 vs 主管評分並列對照【{job_role}】（逐項比對認知差異）")
+    ws.cell(row=r, column=1, value=f"二、專業職能：自評 vs 主管評分並列對照【${job_role}】（逐項比對認知差異）".replace("${job_role}", job_role))
     style_cell_range(ws, r, 1, r, 6, font_sub_header, COLOR_SECTION_BG, Alignment(horizontal="left", vertical="center", indent=1))
     ws.row_dimensions[r].height = 24
     r += 1
@@ -363,7 +363,7 @@ def add_subordinate_peer_sheet(wb, member_name):
     # Metadata
     ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=7)
     status_str = "已自評" if has_self else "尚未自評"
-    ws.cell(row=2, column=1, value=f"評估對象：{member_name}（{job_role}） ｜ 直屬主管：{sup_name} ｜ 同儕填答樣本：{num_peers} 位 ｜ 自評狀態：{status_str}")
+    ws.cell(row=2, column=1, value=f"評估對象：{member_name}（{job_role}） ｜ 直屬主管：{sup_name} ｜ 同儕填答樣本：${num_peers} 位 ｜ 自評狀態：${status_str}".replace("${num_peers}", str(num_peers)).replace("${status_str}", status_str))
     style_cell_range(ws, 2, 1, 2, 7, font_sub_header, COLOR_SECTION_BG, Alignment(horizontal="left", vertical="center", indent=1))
     ws.row_dimensions[2].height = 24
 
@@ -594,3 +594,13 @@ for m in ALL_MEMBERS:
 fname_master = "好好星球_360年中成長評估_【主管評下屬用】Master總表.xlsx"
 wb_master.save(os.path.join(OUTPUT_DIR, fname_master))
 print(f"Generated {fname_master}")
+
+# 6. Individual member files
+for m in ALL_MEMBERS:
+    wb_single = openpyxl.Workbook()
+    wb_single.remove(wb_single.active)
+    add_subordinate_supervisor_sheet(wb_single, m)
+    add_subordinate_peer_sheet(wb_single, m)
+    fname_single = f"【{m}】_【主管評下屬用】.xlsx"
+    wb_single.save(os.path.join(OUTPUT_DIR, fname_single))
+    print(f"Generated {fname_single}")

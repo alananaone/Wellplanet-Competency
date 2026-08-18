@@ -2186,7 +2186,7 @@
       const roleKey = MEMBER_COMPETENCY_KEY[memName] || "專案經理_CGL";
       const compList = ROLE_COMPETENCIES_MAP[roleKey] || [];
 
-      // SCREEN VIEW (ALL TEXTS VISIBLE, ONLY SCORE COLUMN SHOWS 尚不公布)
+      // SCREEN VIEW (ALL TEXTS VISIBLE, 4-COL CULTURE TABLE, ONLY COMPETENCY SCORE COLUMN SHOWS 尚不公布)
       const screenContainer = document.getElementById('sub-review-report-container');
       if (screenContainer) {
         screenContainer.innerHTML = `
@@ -2221,7 +2221,7 @@
             </div>
           </div>
 
-          <!-- PART 1: 組織文化實踐：部屬自評實例 vs 主管評核回饋 (文字全部公布) -->
+          <!-- PART 1: 組織文化實踐：部屬自評實例 vs 主管評核回饋 (4 欄：移除部屬自評與主管評定) -->
           <div class="space-y-4">
             <div class="bg-[#FCE5CD] px-5 py-3.5 rounded-2xl border border-[#EAD1B8] flex items-center justify-between">
               <div class="flex items-center gap-2.5">
@@ -3058,7 +3058,7 @@
     const COLOR_RATING_HDR_BG = "FFE8638A";
     const COLOR_L5_BG = "FFE4EDF7";
     const COLOR_L4_BG = "FFE3F1E6";
-    const COLOR_L3_BG = "FFFFF7E0"; // Fixed: 8 hex chars (was FFFFFF7E0)
+    const COLOR_L3_BG = "FFFFF7E0";
     const COLOR_L2_BG = "FFFCE8EC";
     const COLOR_L1_BG = "FFFCE8EC";
     const COLOR_WHITE = "FFFFFFFF";
@@ -3156,15 +3156,18 @@
       ws.getRow(2).height = 24;
 
       let r = 3;
-      // 1. 組織文化 (一列一個面向，文字全部公布)
+      // 1. 組織文化 (4 欄結構：移除「部屬自評」與「主管評定」，Col 4~6 合併為「主管評核回饋與觀察」)
       ws.mergeCells(r, 1, r, 6);
       ws.getCell(r, 1).value = "一、組織文化實踐：部屬自評實例 vs 主管評核回饋（一列一個面向）";
       styleRange(ws, r, 1, r, 6, fontSubHeader, COLOR_SECTION_BG, { horizontal: 'left', vertical: 'middle', indent: 1 });
       ws.getRow(r).height = 24;
       r++;
 
-      const cultHeaders = ["文化面向", "文化定義與行為指引", "部屬自評實例 (STAR)", "部屬自評", "主管評定", "主管評核回饋與觀察"];
-      cultHeaders.forEach((h, i) => ws.getCell(r, i + 1).value = h);
+      ws.getCell(r, 1).value = "文化面向";
+      ws.getCell(r, 2).value = "文化定義與行為指引";
+      ws.getCell(r, 3).value = "部屬自評實例 (STAR)";
+      ws.mergeCells(r, 4, r, 6);
+      ws.getCell(r, 4).value = "主管評核回饋與觀察";
       styleRange(ws, r, 1, r, 6, fontTableHdr, COLOR_SECTION_BG, { horizontal: 'center', vertical: 'middle', wrapText: true });
       ws.getRow(r).height = 24;
       r++;
@@ -3181,22 +3184,21 @@
         ws.getCell(r, 1).value = cTitle;
         ws.getCell(r, 2).value = cDesc;
         ws.getCell(r, 3).value = selfVal; // 全部公布文字
-        ws.getCell(r, 4).value = "";
-        ws.getCell(r, 5).value = "";
-        ws.getCell(r, 6).value = SUPERVISOR_EVAL_STATE[memberName]?.[`文化_${cTitle.replace(/[【】]/g,'')}`]?.feedback || "【待主管填寫回饋】";
+        ws.mergeCells(r, 4, r, 6);
+        ws.getCell(r, 4).value = SUPERVISOR_EVAL_STATE[memberName]?.[`文化_${cTitle.replace(/[【】]/g,'')}`]?.feedback || "【待主管填寫回饋】";
 
         styleRange(ws, r, 1, r, 6, fontBody, COLOR_WHITE, { horizontal: 'left', vertical: 'top', wrapText: true });
         ws.getCell(r, 1).alignment = { horizontal: 'center', vertical: 'middle' };
         ws.getCell(r, 1).font = fontBodyBold;
-        ws.getCell(r, 4).alignment = { horizontal: 'center', vertical: 'middle' };
-        ws.getCell(r, 5).alignment = { horizontal: 'center', vertical: 'middle' };
-        ws.getCell(r, 6).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: COLOR_FEEDBACK_BG } };
+        for (let c = 4; c <= 6; c++) {
+          ws.getCell(r, c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: COLOR_FEEDBACK_BG } };
+        }
         ws.getRow(r).height = Math.max(30, Math.min(120, Math.floor((cSelf || "").length / 35 * 18) + 18));
         r++;
       });
 
       r++;
-      // 2. 專業職能 (文字全部公布，等級統一寫「尚不公布」以避免影響主管評分)
+      // 2. 專業職能 (6 欄結構：文字全部公布，等級統一寫「尚不公布」以避免影響主管評分)
       ws.mergeCells(r, 1, r, 6);
       ws.getCell(r, 1).value = `二、專業職能：自評 vs 主管評分並列對照【${jobRole}】（逐項比對認知差異）`;
       styleRange(ws, r, 1, r, 6, fontSubHeader, COLOR_SECTION_BG, { horizontal: 'left', vertical: 'middle', indent: 1 });
