@@ -128,19 +128,13 @@ html_content = r"""<!DOCTYPE html>
                 優先連線 Google 試算表
               </span>
             </div>
-            <p class="text-xs text-[#7A726D] mt-0.5">主管評估 Excel 交付系統 ｜ 支援自評公布狀態切換與完整題庫定義</p>
+            <p class="text-xs text-[#7A726D] mt-0.5">主管評核 Excel 交付系統 ｜ 包含完整自評文字事證與題庫總表定義</p>
           </div>
         </div>
 
         <!-- ACTION BUTTONS -->
         <div class="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
           
-          <!-- SELF EVAL REVEAL TOGGLE BUTTON -->
-          <button onclick="toggleSelfEvalReveal()" id="selfEvalRevealToggleBtn" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#FFF2D6] text-[#8C6D1F] hover:bg-[#FDE8B5] transition border border-[#ECD394] shadow-2xs" title="切換部屬自評是否公布（影響下載之 Excel 內容）">
-            <i data-lucide="eye-off" class="w-4 h-4" id="selfEvalToggleIcon"></i>
-            <span id="selfEvalToggleText">部屬自評：尚未公布（主管填答模式）</span>
-          </button>
-
           <!-- GAS SYNC BUTTON -->
           <button onclick="syncFromGoogleAppsScript(true)" id="gasSyncBtn" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#F2EEE6] text-[#4A433E] hover:bg-[#EBE4D8] transition border border-[#E0D7CA] shadow-2xs" title="優先讀取 Google 試算表（表單回覆1）">
             <i data-lucide="refresh-cw" class="w-4 h-4 text-[#557A61]" id="gasSyncIcon"></i>
@@ -165,22 +159,29 @@ html_content = r"""<!DOCTYPE html>
                 <button onclick="exportSupervisorTeamExcel('何維安')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#F2EEE6] rounded-xl transition">
                   <div class="p-2 bg-[#FCE5CD] text-[#4E342E] rounded-xl"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i></div>
                   <div>
-                    <div class="font-bold text-[#2E2827]">【何維安】品牌主管專用包</div>
+                    <div class="font-bold text-[#2E2827]">VVN品牌主管專用_【主管評下屬用】</div>
                     <div class="text-[11px] text-[#7A726D]">部屬：林文琇（美感設計師）</div>
                   </div>
                 </button>
                 <button onclick="exportSupervisorTeamExcel('姚品瑄')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#F2EEE6] rounded-xl transition">
                   <div class="p-2 bg-[#FCE5CD] text-[#4E342E] rounded-xl"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i></div>
                   <div>
-                    <div class="font-bold text-[#2E2827]">【姚品瑄】專案主管專用包</div>
+                    <div class="font-bold text-[#2E2827]">姚品瑄專案主管專用_【主管評下屬用】</div>
                     <div class="text-[11px] text-[#7A726D]">部屬：薛筑瑄、戴佑珍（專案經理）</div>
                   </div>
                 </button>
                 <button onclick="exportSupervisorTeamExcel('張希慈')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#F2EEE6] rounded-xl transition">
                   <div class="p-2 bg-[#FCE5CD] text-[#4E342E] rounded-xl"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i></div>
                   <div>
-                    <div class="font-bold text-[#2E2827]">【張希慈】執行長主管專用包</div>
+                    <div class="font-bold text-[#2E2827]">張希慈執行長主管專用_【主管評下屬用】</div>
                     <div class="text-[11px] text-[#7A726D]">何維安、陳泳璇、張芳媐、姚品瑄、胡喻翔</div>
+                  </div>
+                </button>
+                <button onclick="exportSupervisorTeamExcel('張希慈_執行長')" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm text-[#2E2827] hover:bg-[#F2EEE6] rounded-xl transition">
+                  <div class="p-2 bg-[#FCE5CD] text-[#4E342E] rounded-xl"><i data-lucide="file-spreadsheet" class="w-4 h-4"></i></div>
+                  <div>
+                    <div class="font-bold text-[#2E2827]">張希慈個人自評_【主管評下屬用】</div>
+                    <div class="text-[11px] text-[#7A726D]">執行長個人自評與同儕評估</div>
                   </div>
                 </button>
               </div>
@@ -189,7 +190,7 @@ html_content = r"""<!DOCTYPE html>
                 <button onclick="exportFullMasterWorkbook()" class="w-full text-left flex items-center gap-3 px-3 py-2 text-xs sm:text-sm font-bold text-[#557A61] hover:bg-[#F2EEE6] rounded-xl transition">
                   <div class="p-2 bg-[#557A61] text-white rounded-xl"><i data-lucide="layers" class="w-4 h-4"></i></div>
                   <div>
-                    <div>下載全組織 Master Excel（全部成員完整對照）</div>
+                    <div>好好星球_360年中成長評估_【主管評下屬用】Master總表</div>
                     <div class="text-[11px] text-[#557A61] font-normal">包含所有 9 位成員之自評對照表與同儕評分分頁</div>
                   </div>
                 </button>
@@ -636,9 +637,6 @@ html_content = r"""<!DOCTYPE html>
     let currentPeerFilter = 'ALL';
     let currentPeerAnonMember = '林文琇';
 
-    // TOGGLE STATE: IS SELF EVAL REVEALED
-    let isSelfEvalRevealed = false;
-
     let supervisorRadar = null;
     let supervisorBar = null;
     let peerRadar = null;
@@ -661,27 +659,6 @@ html_content = r"""<!DOCTYPE html>
       } catch (e) {
         console.warn("Failed to save SUPERVISOR_EVAL_STATE to localStorage", e);
       }
-    }
-
-    function toggleSelfEvalReveal() {
-      isSelfEvalRevealed = !isSelfEvalRevealed;
-      const toggleBtn = document.getElementById('selfEvalRevealToggleBtn');
-      const toggleIcon = document.getElementById('selfEvalToggleIcon');
-      const toggleText = document.getElementById('selfEvalToggleText');
-
-      if (isSelfEvalRevealed) {
-        toggleBtn.className = "inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#E4ECD3] text-[#2D5239] hover:bg-[#D4DFC0] transition border border-[#CDE0BC] shadow-2xs";
-        toggleIcon.setAttribute('data-lucide', 'eye');
-        toggleText.innerText = "部屬自評：已包含自評內容（完整對照）";
-        showToast("已切換為【已包含部屬自評】模式，匯出之 Excel 將包含員工填答內容！");
-      } else {
-        toggleBtn.className = "inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#FFF2D6] text-[#8C6D1F] hover:bg-[#FDE8B5] transition border border-[#ECD394] shadow-2xs";
-        toggleIcon.setAttribute('data-lucide', 'eye-off');
-        toggleText.innerText = "部屬自評：尚未公布（主管填答模式）";
-        showToast("已切換為【尚未公布部屬自評】模式，匯出之 Excel 將顯示為『尚不公布』！");
-      }
-      if (typeof lucide !== 'undefined') lucide.createIcons();
-      renderSubReviewSection();
     }
 
     function showToast(msg, isWarn = false) {
@@ -821,28 +798,10 @@ html_content = r"""<!DOCTYPE html>
       const hasSelf = Boolean(selfEntry && selfEntry.self_eval);
       const se = hasSelf ? selfEntry.self_eval : null;
 
-      let allPeerScores = [];
-      let itemStats = [];
-
-      PEER_QUESTIONS.forEach(([qNo, qCat, qDesc, qKey]) => {
-        const scores = peerRecords.map(r => r.peer_eval ? r.peer_eval[qKey] : null).filter(v => v !== null && v !== undefined);
-        if (scores.length > 0) {
-          const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-          const best = Math.max(...scores);
-          const worst = Math.min(...scores);
-          allPeerScores.push(...scores);
-          itemStats.push({ qNo, qCat, qDesc, qKey, avg, best, worst, scores });
-        } else {
-          itemStats.push({ qNo, qCat, qDesc, qKey, avg: null, best: null, worst: null, scores: [] });
-        }
-      });
-
-      const overallPeerAvg = allPeerScores.length ? (allPeerScores.reduce((a, b) => a + b, 0) / allPeerScores.length).toFixed(2) : "—";
-
       const roleKey = MEMBER_COMPETENCY_KEY[memName] || "專案經理_CGL";
       const compList = ROLE_COMPETENCIES_MAP[roleKey] || [];
 
-      // 1. SCREEN VIEW (EXACT VVN SECTION LAYOUT & COLORS)
+      // SCREEN VIEW (ALL TEXTS VISIBLE, ONLY SCORE COLUMN SHOWS 尚不公布)
       const screenContainer = document.getElementById('sub-review-report-container');
       if (screenContainer) {
         screenContainer.innerHTML = `
@@ -871,16 +830,13 @@ html_content = r"""<!DOCTYPE html>
             </div>
             
             <div class="flex items-center gap-3 text-xs sm:text-sm">
-              <div class="px-4 py-2 rounded-xl ${isSelfEvalRevealed ? 'bg-[#E4ECD3] text-[#2D5239]' : 'bg-[#FFF2D6] text-[#8C6D1F]'} font-bold border border-[#ECD394]">
-                自評顯示：${isSelfEvalRevealed ? '已公布' : '尚不公布'}
-              </div>
-              <button onclick="exportCurrentSubordinateExcel()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition font-bold shadow-xs">
-                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> 下載回覆 Excel
+              <button onclick="exportCurrentSubordinateExcel()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition font-bold shadow-xs">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> 下載【${memName}】回覆 Excel
               </button>
             </div>
           </div>
 
-          <!-- PART 1: 組織文化實踐：部屬自評實例 vs 主管評核回饋 (4 欄：移除不適用的等級與落差分析) -->
+          <!-- PART 1: 組織文化實踐：部屬自評實例 vs 主管評核回饋 (文字全部公布) -->
           <div class="space-y-4">
             <div class="bg-[#FCE5CD] px-5 py-3.5 rounded-2xl border border-[#EAD1B8] flex items-center justify-between">
               <div class="flex items-center gap-2.5">
@@ -910,7 +866,7 @@ html_content = r"""<!DOCTYPE html>
                       <td class="py-3.5 px-4 font-bold text-center text-[#2E2827] border-r border-[#E2DDD5]">${cTitle}</td>
                       <td class="py-3.5 px-4 text-[#4A433E] border-r border-[#E2DDD5] text-xs leading-relaxed">${cDesc}</td>
                       <td class="py-3.5 px-4 text-[#2E2827] border-r border-[#E2DDD5] leading-relaxed">
-                        ${isSelfEvalRevealed ? (cSelf || '<span class="text-[#7A726D] italic">（部屬未填寫）</span>') : '<span class="text-[#8C6D1F] font-bold bg-[#FFF2D6] px-2 py-0.5 rounded">尚不公布</span>'}
+                        ${cSelf || '<span class="text-[#7A726D] italic">（部屬未填寫）</span>'}
                       </td>
                       <td class="py-3.5 px-4 bg-[#FFF2D6]/30">
                         <textarea onblur="updateSupervisorFeedback('${memName}', '文化_${cTitle.replace(/[【】]/g,'')}', this.value)" placeholder="請輸入主管針對【${cTitle}】的回饋與觀察..." class="w-full text-xs p-2.5 rounded-xl border border-[#ECD394] bg-[#FFF2D6]/60 focus:bg-white transition focus:outline-[#557A61] resize-y" rows="2">${SUPERVISOR_EVAL_STATE[memName]?.[`文化_${cTitle.replace(/[【】]/g,'')}`]?.feedback || ''}</textarea>
@@ -922,7 +878,7 @@ html_content = r"""<!DOCTYPE html>
             </div>
           </div>
 
-          <!-- PART 2: 專業職能：自評 vs 主管評分並列對照 (含 1~4 點題庫總表定義與說明) -->
+          <!-- PART 2: 專業職能：自評 vs 主管評分並列對照 (文字全部公布，等級統一寫「尚不公布」以避免影響主管評分) -->
           <div class="space-y-4">
             <div class="bg-[#FCE5CD] px-5 py-3.5 rounded-2xl border border-[#EAD1B8] flex items-center justify-between">
               <div class="flex items-center gap-2.5">
@@ -959,10 +915,10 @@ html_content = r"""<!DOCTYPE html>
                         <td class="py-3.5 px-3.5 font-bold text-[#2E2827] border-r border-[#E2DDD5]">${cTitle}</td>
                         <td class="py-3.5 px-4 text-[#4A433E] border-r border-[#E2DDD5] text-xs leading-relaxed whitespace-pre-line">${cDef}</td>
                         <td class="py-3.5 px-4 text-[#2E2827] border-r border-[#E2DDD5] leading-relaxed">
-                          ${isSelfEvalRevealed ? (selfAns || '<span class="text-[#7A726D] italic">（部屬未填寫自評實例）</span>') : '<span class="text-[#8C6D1F] font-bold bg-[#FFF2D6] px-2 py-0.5 rounded">尚不公布</span>'}
+                          ${selfAns || '<span class="text-[#7A726D] italic">（部屬未填寫自評實例）</span>'}
                         </td>
-                        <td class="py-3.5 px-3 text-center border-r border-[#E2DDD5] font-bold text-[#2D5239]">
-                          ${isSelfEvalRevealed ? (hasSelf ? '已自評' : '尚未自評') : '<span class="text-[#8C6D1F]">尚不公布</span>'}
+                        <td class="py-3.5 px-3 text-center border-r border-[#E2DDD5] font-bold text-[#8C6D1F]">
+                          <span class="bg-[#FFF2D6] px-2 py-0.5 rounded border border-[#ECD394]">尚不公布</span>
                         </td>
                         <td class="py-3.5 px-3 text-center border-r border-[#E2DDD5] bg-[#FFF2D6]/30">
                           <select onchange="updateSupervisorRating('${memName}', '${cTitle}', this.value)" class="text-xs font-bold p-2 rounded-xl border border-[#ECD394] bg-[#FFF2D6] focus:bg-white focus:outline-[#557A61] w-full">
@@ -1478,7 +1434,7 @@ html_content = r"""<!DOCTYPE html>
       if (exportContainer) {
         exportContainer.innerHTML = `
           <button onclick="exportCurrentSubordinateExcel()" class="inline-flex items-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-semibold rounded-xl bg-[#557A61] text-white hover:bg-[#466551] transition shadow-xs">
-            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> 下載【${name}】同儕評估與自評綜合 XLSX
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> 下載【${name}】專用回覆 XLSX
           </button>
         `;
       }
@@ -1717,7 +1673,7 @@ html_content = r"""<!DOCTYPE html>
     const COLOR_RATING_HDR_BG = "FFE8638A";
     const COLOR_L5_BG = "FFE4EDF7";
     const COLOR_L4_BG = "FFE3F1E6";
-    const COLOR_L3_BG = "FFFFFF7E0";
+    const COLOR_L3_BG = "FFFFF7E0"; // Fixed: 8 hex chars (was FFFFFF7E0)
     const COLOR_L2_BG = "FFFCE8EC";
     const COLOR_L1_BG = "FFFCE8EC";
     const COLOR_WHITE = "FFFFFFFF";
@@ -1787,7 +1743,7 @@ html_content = r"""<!DOCTYPE html>
       return r;
     }
 
-    function buildSubordinateSupervisorWorksheet(wb, memberName, isRevealed) {
+    function buildSubordinateSupervisorWorksheet(wb, memberName) {
       const ws = wb.addWorksheet(`【${memberName}】自評vs主管評`, { views: [{ showGridLines: true }] });
       const jobRole = JOB_ROLES_MAP[memberName] || "專案經理";
       const supName = MEMBER_SUPERVISOR_MAP[memberName] || "主管";
@@ -1815,7 +1771,7 @@ html_content = r"""<!DOCTYPE html>
       ws.getRow(2).height = 24;
 
       let r = 3;
-      // 1. 組織文化 (一列一個面向，4 欄：移除不適用的等級與落差分析)
+      // 1. 組織文化 (一列一個面向，文字全部公布)
       ws.mergeCells(r, 1, r, 6);
       ws.getCell(r, 1).value = "一、組織文化實踐：部屬自評實例 vs 主管評核回饋（一列一個面向）";
       styleRange(ws, r, 1, r, 6, fontSubHeader, COLOR_SECTION_BG, { horizontal: 'left', vertical: 'middle', indent: 1 });
@@ -1836,10 +1792,10 @@ html_content = r"""<!DOCTYPE html>
       ];
 
       cultRows.forEach(([cTitle, cDesc, cSelf]) => {
-        const selfVal = isRevealed ? (cSelf || "（部屬未填寫）") : "尚不公布";
+        const selfVal = cSelf || "（部屬未填寫）";
         ws.getCell(r, 1).value = cTitle;
         ws.getCell(r, 2).value = cDesc;
-        ws.getCell(r, 3).value = selfVal;
+        ws.getCell(r, 3).value = selfVal; // 全部公布文字
         ws.getCell(r, 4).value = "";
         ws.getCell(r, 5).value = "";
         ws.getCell(r, 6).value = SUPERVISOR_EVAL_STATE[memberName]?.[`文化_${cTitle.replace(/[【】]/g,'')}`]?.feedback || "【待主管填寫回饋】";
@@ -1855,7 +1811,7 @@ html_content = r"""<!DOCTYPE html>
       });
 
       r++;
-      // 2. 專業職能
+      // 2. 專業職能 (文字全部公布，等級統一寫「尚不公布」以避免影響主管評分)
       ws.mergeCells(r, 1, r, 6);
       ws.getCell(r, 1).value = `二、專業職能：自評 vs 主管評分並列對照【${jobRole}】（逐項比對認知差異）`;
       styleRange(ws, r, 1, r, 6, fontSubHeader, COLOR_SECTION_BG, { horizontal: 'left', vertical: 'middle', indent: 1 });
@@ -1879,8 +1835,8 @@ html_content = r"""<!DOCTYPE html>
           if (item) selfAns = item.answer;
         }
 
-        const selfStar = isRevealed ? (selfAns || "（部屬未填寫自評實例）") : "尚不公布";
-        const selfLvl = isRevealed ? (hasSelf ? "已自評" : "尚未自評") : "尚不公布";
+        const selfStar = selfAns || "（部屬未填寫自評實例）";
+        const selfLvl = "尚不公布"; // 等級統一寫「尚不公布」避免影響主管評分
         const supLvl = SUPERVISOR_EVAL_STATE[memberName]?.[cT]?.level || "尚未評分";
         const supFb = SUPERVISOR_EVAL_STATE[memberName]?.[cT]?.feedback || "【待主管填寫回饋】";
 
@@ -1906,6 +1862,7 @@ html_content = r"""<!DOCTYPE html>
         styleRange(ws, r, 1, r, 6, fontBody, COLOR_WHITE, { horizontal: 'left', vertical: 'top', wrapText: true });
         ws.getCell(r, 1).font = fontBodyBold;
         ws.getCell(r, 4).alignment = { horizontal: 'center', vertical: 'middle' };
+        ws.getCell(r, 4).font = fontBodyBold;
         ws.getCell(r, 5).alignment = { horizontal: 'center', vertical: 'middle' };
         ws.getCell(r, 5).font = fontBodyBold;
         ws.getCell(r, 5).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: COLOR_FEEDBACK_BG } };
@@ -1920,7 +1877,7 @@ html_content = r"""<!DOCTYPE html>
       addRatingStandardsBlockToSheet(ws, r);
     }
 
-    function buildSubordinatePeerWorksheet(wb, memberName, isRevealed) {
+    function buildSubordinatePeerWorksheet(wb, memberName) {
       const ws = wb.addWorksheet(`【${memberName}】同儕評`, { views: [{ showGridLines: true }] });
       const jobRole = JOB_ROLES_MAP[memberName] || "專案經理";
       const supName = MEMBER_SUPERVISOR_MAP[memberName] || "主管";
@@ -2031,7 +1988,7 @@ html_content = r"""<!DOCTYPE html>
       ws.getRow(r).height = 24;
       r++;
 
-      // 二、部屬自評細節
+      // 二、部屬自評細節 (文字全部公布)
       ws.mergeCells(r, 1, r, 7);
       ws.getCell(r, 1).value = "二、部屬自評細節：部屬填答內容與自評完整實例";
       styleRange(ws, r, 1, r, 7, fontSubHeader, COLOR_SECTION_BG, { horizontal: 'left', vertical: 'middle', indent: 1 });
@@ -2059,10 +2016,9 @@ html_content = r"""<!DOCTYPE html>
       });
 
       selfDetails.forEach(([sec, sub, val]) => {
-        const valDisp = isRevealed ? val : "尚不公布";
         ws.getCell(r, 1).value = sec;
         ws.getCell(r, 2).value = sub;
-        ws.getCell(r, 3).value = valDisp;
+        ws.getCell(r, 3).value = val;
         ws.mergeCells(r, 3, r, 7);
 
         styleRange(ws, r, 1, r, 7, fontBody, COLOR_WHITE, { horizontal: 'left', vertical: 'top', wrapText: true });
@@ -2124,13 +2080,12 @@ html_content = r"""<!DOCTYPE html>
 
     async function exportCurrentSubordinateExcel() {
       const wb = new ExcelJS.Workbook();
-      buildSubordinateSupervisorWorksheet(wb, currentSubReviewMember, isSelfEvalRevealed);
-      buildSubordinatePeerWorksheet(wb, currentSubReviewMember, isSelfEvalRevealed);
+      buildSubordinateSupervisorWorksheet(wb, currentSubReviewMember);
+      buildSubordinatePeerWorksheet(wb, currentSubReviewMember);
       const buffer = await wb.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      const suffix = isSelfEvalRevealed ? "含部屬自評" : "尚未公布自評";
-      saveAs(blob, `【主管專用】${currentSubReviewMember}_部屬自評與同儕評回覆表_${suffix}.xlsx`);
-      showToast(`已成功下載【${currentSubReviewMember}】專用回覆 Excel（${suffix}）！`);
+      saveAs(blob, `【${currentSubReviewMember}】_【主管評下屬用】.xlsx`);
+      showToast(`已成功下載【${currentSubReviewMember}】_【主管評下屬用】.xlsx！`);
     }
 
     async function exportCurrentSupervisorTeamExcel() {
@@ -2141,28 +2096,34 @@ html_content = r"""<!DOCTYPE html>
       const wb = new ExcelJS.Workbook();
       const members = SUPERVISOR_TEAMS[supKey] || [];
       members.forEach(m => {
-        buildSubordinateSupervisorWorksheet(wb, m, isSelfEvalRevealed);
-        buildSubordinatePeerWorksheet(wb, m, isSelfEvalRevealed);
+        buildSubordinateSupervisorWorksheet(wb, m);
+        buildSubordinatePeerWorksheet(wb, m);
       });
       const buffer = await wb.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      const supClean = supKey.replace('_執行長','');
-      const suffix = isSelfEvalRevealed ? "含部屬自評" : "尚未公布自評";
-      saveAs(blob, `【${supClean}主管專用】部屬自評與同儕評回覆表_${suffix}.xlsx`);
-      showToast(`已成功下載【${supClean}】主管專用回覆包（${suffix}）！`);
+      
+      let outName = "VVN品牌主管專用_【主管評下屬用】.xlsx";
+      if (supKey === "何維安") outName = "VVN品牌主管專用_【主管評下屬用】.xlsx";
+      else if (supKey === "姚品瑄") outName = "姚品瑄專案主管專用_【主管評下屬用】.xlsx";
+      else if (supKey === "張希慈") outName = "張希慈執行長主管專用_【主管評下屬用】.xlsx";
+      else if (supKey === "張希慈_執行長") outName = "張希慈個人自評_【主管評下屬用】.xlsx";
+      else outName = `${supKey}主管專用_【主管評下屬用】.xlsx`;
+
+      saveAs(blob, outName);
+      showToast(`已成功下載 ${outName}！`);
     }
 
     async function exportFullMasterWorkbook() {
       const wb = new ExcelJS.Workbook();
       ALL_MEMBERS.forEach(m => {
-        buildSubordinateSupervisorWorksheet(wb, m, isSelfEvalRevealed);
-        buildSubordinatePeerWorksheet(wb, m, isSelfEvalRevealed);
+        buildSubordinateSupervisorWorksheet(wb, m);
+        buildSubordinatePeerWorksheet(wb, m);
       });
       const buffer = await wb.xlsx.writeBuffer();
       const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      const suffix = isSelfEvalRevealed ? "含部屬自評" : "尚未公布自評";
-      saveAs(blob, `好好星球_360年中成長評估_全組織自評與主管評Master彙整表_${suffix}.xlsx`);
-      showToast(`已成功下載全組織 Master 彙整 Excel（${suffix}）！`);
+      const outName = "好好星球_360年中成長評估_【主管評下屬用】Master總表.xlsx";
+      saveAs(blob, outName);
+      showToast(`已成功下載 ${outName}！`);
     }
 
     // =========================================================================

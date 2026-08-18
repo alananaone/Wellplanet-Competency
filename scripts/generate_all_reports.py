@@ -26,7 +26,7 @@ COLOR_RATING_TITLE_BG = "FBE4EA"# Pink header for rating table
 COLOR_RATING_HDR_BG = "E8638A"  # Deep rose header for rating table
 COLOR_L5_BG = "E4EDF7"          # Amazing! soft sky blue
 COLOR_L4_BG = "E3F1E6"          # Good soft mint green
-COLOR_L3_BG = "FFF7E0"          # Keep soft warm yellow
+COLOR_L3_BG = "FFF7E0"          # Keep soft warm yellow (fixed!)
 COLOR_L2_BG = "FCE8EC"          # Grow soft blush pink
 COLOR_L1_BG = "FCE8EC"          # Start soft blush pink
 
@@ -210,7 +210,7 @@ def add_rating_standard_block(ws, start_r):
 
     return r
 
-def add_subordinate_supervisor_sheet(wb, member_name, is_revealed=False):
+def add_subordinate_supervisor_sheet(wb, member_name):
     sheet_title = f"【{member_name}】自評vs主管評"
     ws = wb.create_sheet(title=sheet_title)
     ws.views.sheetView[0].showGridLines = True
@@ -238,7 +238,7 @@ def add_subordinate_supervisor_sheet(wb, member_name, is_revealed=False):
     ws.row_dimensions[2].height = 24
 
     r = 3
-    # 1. 組織文化 (一列一個面向，4 欄：移除不適用的等級與落差分析)
+    # 1. 組織文化 (一列一個面向，文字全部公布)
     ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=6)
     ws.cell(row=r, column=1, value="一、組織文化實踐：部屬自評實例 vs 主管評核回饋（一列一個面向）")
     style_cell_range(ws, r, 1, r, 6, font_sub_header, COLOR_SECTION_BG, Alignment(horizontal="left", vertical="center", indent=1))
@@ -260,10 +260,9 @@ def add_subordinate_supervisor_sheet(wb, member_name, is_revealed=False):
     ]
 
     for c_title, c_desc, c_self in cult_rows:
-        self_display = c_self if is_revealed else "尚不公布"
         ws.cell(row=r, column=1, value=c_title)
         ws.cell(row=r, column=2, value=c_desc)
-        ws.cell(row=r, column=3, value=self_display)
+        ws.cell(row=r, column=3, value=c_self) # 全部公布文字
         ws.cell(row=r, column=4, value="")
         ws.cell(row=r, column=5, value="")
         ws.cell(row=r, column=6, value="【待主管填寫回饋】")
@@ -278,7 +277,7 @@ def add_subordinate_supervisor_sheet(wb, member_name, is_revealed=False):
         r += 1
 
     r += 1
-    # 2. 專業職能 (6 欄，含題庫總表定義與說明)
+    # 2. 專業職能 (文字全部公布，等級統一寫「尚不公布」以避免影響主管評分)
     ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=6)
     ws.cell(row=r, column=1, value=f"二、專業職能：自評 vs 主管評分並列對照【{job_role}】（逐項比對認知差異）")
     style_cell_range(ws, r, 1, r, 6, font_sub_header, COLOR_SECTION_BG, Alignment(horizontal="left", vertical="center", indent=1))
@@ -292,7 +291,6 @@ def add_subordinate_supervisor_sheet(wb, member_name, is_revealed=False):
     ws.row_dimensions[r].height = 24
     r += 1
 
-    # Data validation dropdown for Supervisor Level
     dv = DataValidation(type="list", formula1='"Amazing! (Lv5),Good (L4),Keep (L3),Grow (L2),Start (Lv1),尚未評分"', allow_blank=True)
     dv.error ='請從選單選擇等級：Amazing! (Lv5)、Good (L4)、Keep (L3)、Grow (L2)、Start (Lv1)'
     dv.errorTitle = '評分無效'
@@ -311,19 +309,17 @@ def add_subordinate_supervisor_sheet(wb, member_name, is_revealed=False):
             if item and item.get("answer"):
                 self_ans = item["answer"]
 
-        self_star_display = self_ans if is_revealed else "尚不公布"
-        self_lvl_display = "已自評" if (is_revealed and has_self) else "尚不公布"
-
         ws.cell(row=r, column=1, value=c_title)
         ws.cell(row=r, column=2, value=c_def)
-        ws.cell(row=r, column=3, value=self_star_display)
-        ws.cell(row=r, column=4, value=self_lvl_display)
+        ws.cell(row=r, column=3, value=self_ans) # 文字全部公布
+        ws.cell(row=r, column=4, value="尚不公布") # 等級統一寫「尚不公布」避免影響主管評分
         ws.cell(row=r, column=5, value="尚未評分")
         ws.cell(row=r, column=6, value="【待主管填寫回饋】")
 
         style_cell_range(ws, r, 1, r, 6, font_body, COLOR_WHITE, align_left)
         ws.cell(row=r, column=1).font = font_body_bold
         ws.cell(row=r, column=4).alignment = align_center
+        ws.cell(row=r, column=4).font = font_body_bold
         ws.cell(row=r, column=5).alignment = align_center
         ws.cell(row=r, column=5).font = font_body_bold
         ws.cell(row=r, column=5).fill = PatternFill(start_color=COLOR_FEEDBACK_BG, end_color=COLOR_FEEDBACK_BG, fill_type="solid")
@@ -340,11 +336,11 @@ def add_subordinate_supervisor_sheet(wb, member_name, is_revealed=False):
     ws.column_dimensions["A"].width = 16
     ws.column_dimensions["B"].width = 45
     ws.column_dimensions["C"].width = 45
-    ws.column_dimensions["D"].width = 12
-    ws.column_dimensions["E"].width = 18
-    ws.column_dimensions["F"].width = 40
+    ws.column_dimensions["D"].width = 14
+    ws.column_dimensions["E"].width = 20
+    ws.column_dimensions["F"].width = 42
 
-def add_subordinate_peer_sheet(wb, member_name, is_revealed=False):
+def add_subordinate_peer_sheet(wb, member_name):
     sheet_title = f"【{member_name}】同儕評"
     ws = wb.create_sheet(title=sheet_title)
     ws.views.sheetView[0].showGridLines = True
@@ -458,7 +454,7 @@ def add_subordinate_peer_sheet(wb, member_name, is_revealed=False):
     ws.row_dimensions[r].height = 24
     r += 1
 
-    # 二、部屬自評細節
+    # 二、部屬自評細節 (文字全部公布)
     ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7)
     ws.cell(row=r, column=1, value="二、部屬自評細節：部屬填答內容與自評完整實例")
     style_cell_range(ws, r, 1, r, 7, font_sub_header, COLOR_SECTION_BG, Alignment(horizontal="left", vertical="center", indent=1))
@@ -484,10 +480,9 @@ def add_subordinate_peer_sheet(wb, member_name, is_revealed=False):
         self_details.append(("專業職能", c_title, c_ans))
 
     for c_sec, c_sub, c_val in self_details:
-        val_display = c_val if is_revealed else "尚不公布"
         ws.cell(row=r, column=1, value=c_sec)
         ws.cell(row=r, column=2, value=c_sub)
-        ws.cell(row=r, column=3, value=val_display)
+        ws.cell(row=r, column=3, value=c_val)
         ws.merge_cells(start_row=r, start_column=3, end_row=r, end_column=7)
 
         style_cell_range(ws, r, 1, r, 7, font_body, COLOR_WHITE, align_left)
@@ -550,33 +545,52 @@ def add_subordinate_peer_sheet(wb, member_name, is_revealed=False):
     ws.column_dimensions["F"].width = 14
     ws.column_dimensions["G"].width = 25
 
-# Generate All Supervisor Workbooks (Both Unrevealed Template & Revealed Version)
-for sup_name, members in SUPERVISOR_TEAMS.items():
-    # 1. Unrevealed (Default template to send to supervisors)
-    wb_unrevealed = openpyxl.Workbook()
-    wb_unrevealed.remove(wb_unrevealed.active)
-    for m in members:
-        add_subordinate_supervisor_sheet(wb_unrevealed, m, is_revealed=False)
-        add_subordinate_peer_sheet(wb_unrevealed, m, is_revealed=False)
-    fname_un = f"【{sup_name}主管專用】部屬自評與同儕評回覆表_尚未公布自評.xlsx"
-    wb_unrevealed.save(os.path.join(OUTPUT_DIR, fname_un))
-    print(f"Generated {fname_un}")
+# Generate Official Supervisor Workbooks Following Exact Naming Convention
+# 1. 何維安 (VVN)
+wb_vvn = openpyxl.Workbook()
+wb_vvn.remove(wb_vvn.active)
+for m in SUPERVISOR_TEAMS["何維安"]:
+    add_subordinate_supervisor_sheet(wb_vvn, m)
+    add_subordinate_peer_sheet(wb_vvn, m)
+fname_vvn = "VVN品牌主管專用_【主管評下屬用】.xlsx"
+wb_vvn.save(os.path.join(OUTPUT_DIR, fname_vvn))
+print(f"Generated {fname_vvn}")
 
-    # 2. Revealed Version
-    wb_revealed = openpyxl.Workbook()
-    wb_revealed.remove(wb_revealed.active)
-    for m in members:
-        add_subordinate_supervisor_sheet(wb_revealed, m, is_revealed=True)
-        add_subordinate_peer_sheet(wb_revealed, m, is_revealed=True)
-    fname_rev = f"【{sup_name}主管專用】部屬自評與同儕評回覆表_含部屬自評.xlsx"
-    wb_revealed.save(os.path.join(OUTPUT_DIR, fname_rev))
-    print(f"Generated {fname_rev}")
+# 2. 姚品瑄
+wb_ypx = openpyxl.Workbook()
+wb_ypx.remove(wb_ypx.active)
+for m in SUPERVISOR_TEAMS["姚品瑄"]:
+    add_subordinate_supervisor_sheet(wb_ypx, m)
+    add_subordinate_peer_sheet(wb_ypx, m)
+fname_ypx = "姚品瑄專案主管專用_【主管評下屬用】.xlsx"
+wb_ypx.save(os.path.join(OUTPUT_DIR, fname_ypx))
+print(f"Generated {fname_ypx}")
 
-# Master Workbook with all 9 members
+# 3. 張希慈
+wb_zxc = openpyxl.Workbook()
+wb_zxc.remove(wb_zxc.active)
+for m in SUPERVISOR_TEAMS["張希慈"]:
+    add_subordinate_supervisor_sheet(wb_zxc, m)
+    add_subordinate_peer_sheet(wb_zxc, m)
+fname_zxc = "張希慈執行長主管專用_【主管評下屬用】.xlsx"
+wb_zxc.save(os.path.join(OUTPUT_DIR, fname_zxc))
+print(f"Generated {fname_zxc}")
+
+# 4. 張希慈 (個人自評)
+wb_zxc_self = openpyxl.Workbook()
+wb_zxc_self.remove(wb_zxc_self.active)
+add_subordinate_supervisor_sheet(wb_zxc_self, "張希慈")
+add_subordinate_peer_sheet(wb_zxc_self, "張希慈")
+fname_zxc_self = "張希慈個人自評_【主管評下屬用】.xlsx"
+wb_zxc_self.save(os.path.join(OUTPUT_DIR, fname_zxc_self))
+print(f"Generated {fname_zxc_self}")
+
+# 5. Master Workbook with all 9 members
 wb_master = openpyxl.Workbook()
 wb_master.remove(wb_master.active)
 for m in ALL_MEMBERS:
-    add_subordinate_supervisor_sheet(wb_master, m, is_revealed=True)
-    add_subordinate_peer_sheet(wb_master, m, is_revealed=True)
-wb_master.save(os.path.join(OUTPUT_DIR, "好好星球_360年中成長評估_全組織自評與主管評Master彙整表.xlsx"))
-print("Generated Master Workbook successfully!")
+    add_subordinate_supervisor_sheet(wb_master, m)
+    add_subordinate_peer_sheet(wb_master, m)
+fname_master = "好好星球_360年中成長評估_【主管評下屬用】Master總表.xlsx"
+wb_master.save(os.path.join(OUTPUT_DIR, fname_master))
+print(f"Generated {fname_master}")
